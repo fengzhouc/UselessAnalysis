@@ -341,9 +341,9 @@ public class AnalysisUI {
                             entity.setVisible(hit);
                         }
                     }
-                    TreePath path = parent.pathByAddingChild(n); // 父节点path拼接子节点
-                    search(path); // 递归子节点，进行查询
                 }
+                TreePath path = parent.pathByAddingChild(n); // 父节点path拼接子节点
+                search(path); // 递归子节点，进行查询
             }
         }
     }

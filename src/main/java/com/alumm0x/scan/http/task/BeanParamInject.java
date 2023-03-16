@@ -87,7 +87,7 @@ public class BeanParamInject extends TaskImpl {
                                 "##origin:\n" + new String(BurpReqRespTools.getReqBody(entity.getRequestResponse())) + "\n" +
                                 "##temper:\n" + new_body);
                         //新的请求包
-                        CommonStore.okHttpRequester.send(BurpReqRespTools.getUrl(entity.getRequestResponse()),
+                        CommonStore.okHttpRequester.send(BurpReqRespTools.getUrlWithOutQuery(entity.getRequestResponse()),
                                 BurpReqRespTools.getMethod(entity.getRequestResponse()),
                                 BurpReqRespTools.getReqHeaders(entity.getRequestResponse()),
                                 BurpReqRespTools.getQuery(entity.getRequestResponse()),

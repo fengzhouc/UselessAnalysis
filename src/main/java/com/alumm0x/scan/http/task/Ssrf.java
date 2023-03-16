@@ -50,7 +50,7 @@ public class Ssrf extends TaskImpl {
                 // 修改为别的域名
                 String req_body = new String(BurpReqRespTools.getReqBody(entity.getRequestResponse())).replace(domain, evilHost);
                 //新的请求包
-                CommonStore.okHttpRequester.send(BurpReqRespTools.getUrl(entity.getRequestResponse()),
+                CommonStore.okHttpRequester.send(BurpReqRespTools.getUrlWithOutQuery(entity.getRequestResponse()),
                         BurpReqRespTools.getMethod(entity.getRequestResponse()),
                         BurpReqRespTools.getReqHeaders(entity.getRequestResponse()),
                         BurpReqRespTools.getQuery(entity.getRequestResponse()),
@@ -68,7 +68,7 @@ public class Ssrf extends TaskImpl {
                 // 修改为别的域名
                 String req_query = BurpReqRespTools.getQuery(entity.getRequestResponse()).replace(domain, evilHost);
                 //新的请求包
-                CommonStore.okHttpRequester.send(BurpReqRespTools.getUrl(entity.getRequestResponse()),
+                CommonStore.okHttpRequester.send(BurpReqRespTools.getUrlWithOutQuery(entity.getRequestResponse()),
                         BurpReqRespTools.getMethod(entity.getRequestResponse()),
                         BurpReqRespTools.getReqHeaders(entity.getRequestResponse()),
                         req_query,

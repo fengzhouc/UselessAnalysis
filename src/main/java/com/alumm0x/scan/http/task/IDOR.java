@@ -53,7 +53,7 @@ public class IDOR extends TaskImpl {
         // 请求没有cookie,则不测试
         if (hasCookie){
             //新的请求包
-            CommonStore.okHttpRequester.send(BurpReqRespTools.getUrl(entity.getRequestResponse()),
+            CommonStore.okHttpRequester.send(BurpReqRespTools.getUrlWithOutQuery(entity.getRequestResponse()),
                     BurpReqRespTools.getMethod(entity.getRequestResponse()),
                     new_headers,
                     BurpReqRespTools.getQuery(entity.getRequestResponse()),

@@ -52,7 +52,7 @@ public class Csrf extends TaskImpl {
                         }
                     }
                 }
-               CommonStore.okHttpRequester.send(BurpReqRespTools.getUrl(entity.getRequestResponse()),
+               CommonStore.okHttpRequester.send(BurpReqRespTools.getUrlWithOutQuery(entity.getRequestResponse()),
                        BurpReqRespTools.getMethod(entity.getRequestResponse()),
                        new_headers,
                        BurpReqRespTools.getQuery(entity.getRequestResponse()),

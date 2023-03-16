@@ -61,7 +61,7 @@ public class Redirect extends TaskImpl  {
             String new_query = isBypass ? bypass : nobypass;
 
             //新的请求包
-            CommonStore.okHttpRequester.send(BurpReqRespTools.getUrl(entity.getRequestResponse()),
+            CommonStore.okHttpRequester.send(BurpReqRespTools.getUrlWithOutQuery(entity.getRequestResponse()),
                     BurpReqRespTools.getMethod(entity.getRequestResponse()),
                     BurpReqRespTools.getReqHeaders(entity.getRequestResponse()),
                     new_query,
@@ -116,6 +116,10 @@ class RedirectCallback implements Callback {
                     Redirect bypass = new Redirect(entity);
                     bypass.isBypass = true;
                     bypass.run();
+                } else {
+                    logEntry.onResponse();
+                    logEntry.Comments = "";
+                    logEntry.Status = (short) response.code();
                 }
             }
         } else {

@@ -77,11 +77,11 @@ public class JsonCsrf extends TaskImpl {
                 }
             }else{
                 CommonStore.callbacks.printError("[JsonCsrf] 不满足前置条件2: ContentType必须要是'application/json'\n" +
-                        "##url: "+ BurpReqRespTools.getUrlWithQuery(entity.getRequestResponse()));
+                        "##url: "+ BurpReqRespTools.getUrl(entity.getRequestResponse()));
             }
         }else{
             CommonStore.callbacks.printError("[JsonCsrf] 不满足前置条件1: 必须要有'Cookie'\n" +
-                    "##url: "+ BurpReqRespTools.getUrlWithQuery(entity.getRequestResponse()));
+                    "##url: "+ BurpReqRespTools.getUrl(entity.getRequestResponse()));
         }
     }
 }

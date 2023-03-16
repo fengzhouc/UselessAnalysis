@@ -70,7 +70,7 @@ public class Redirect extends TaskImpl  {
                     new RedirectCallback(this));
         }else{
             CommonStore.callbacks.printError("[Redirect] 不满足前置条件: 必须要有匹配特征的参数名\n" +
-                    "##url: "+ BurpReqRespTools.getUrlWithQuery(entity.getRequestResponse()));
+                    "##url: "+ BurpReqRespTools.getUrl(entity.getRequestResponse()));
         }
     }
 }

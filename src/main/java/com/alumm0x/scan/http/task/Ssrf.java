@@ -78,7 +78,7 @@ public class Ssrf extends TaskImpl {
             }
         }else{
             CommonStore.callbacks.printError("[Ssrf] 不满足前置条件: 必须要有请求参数\n" +
-                    "##url: "+ BurpReqRespTools.getUrlWithQuery(entity.getRequestResponse()));
+                    "##url: "+ BurpReqRespTools.getUrl(entity.getRequestResponse()));
         }
     }
 

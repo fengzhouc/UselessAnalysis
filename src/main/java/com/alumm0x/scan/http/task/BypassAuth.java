@@ -66,7 +66,7 @@ public class BypassAuth extends TaskImpl {
             }
         }else{
             CommonStore.callbacks.printError("[BypassAuth] 不满足前置条件: 必须要是响应状态码是401/403\n" +
-                    "##url: "+ BurpReqRespTools.getUrlWithQuery(entity.getRequestResponse()));
+                    "##url: "+ BurpReqRespTools.getUrl(entity.getRequestResponse()));
         }
     }
 

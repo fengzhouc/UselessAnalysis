@@ -96,16 +96,16 @@ public class BeanParamInject extends TaskImpl {
                                 new BeanParamInjectCallback(this));
                     }else{
                         CommonStore.callbacks.printError("[BypassAuth] 不满足前置条件3: 通过遍历比对，没有构造出new_body.\n" +
-                                "##url: "+ BurpReqRespTools.getUrlWithQuery(entity.getRequestResponse()));
+                                "##url: "+ BurpReqRespTools.getUrl(entity.getRequestResponse()));
                     }
                 }
             }else{
                 CommonStore.callbacks.printError("[BypassAuth] 不满足前置条件2: 必须要是有请求参数，且是JsonObject.\n" +
-                        "##url: "+ BurpReqRespTools.getUrlWithQuery(entity.getRequestResponse()));
+                        "##url: "+ BurpReqRespTools.getUrl(entity.getRequestResponse()));
             }
         }else{
             CommonStore.callbacks.printError("[BypassAuth] 不满足前置条件1: ContentType必须要是'application/json'\n" +
-                    "##url: "+ BurpReqRespTools.getUrlWithQuery(entity.getRequestResponse()));
+                    "##url: "+ BurpReqRespTools.getUrl(entity.getRequestResponse()));
         }
     }
     //获取bean的jsonMap

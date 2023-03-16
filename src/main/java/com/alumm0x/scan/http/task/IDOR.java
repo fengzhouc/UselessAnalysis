@@ -62,7 +62,7 @@ public class IDOR extends TaskImpl {
                     new IDORCallback(this));
         }else{
             CommonStore.callbacks.printError("[IDOR] 不满足前置条件: 必须要有'Cookie'\n" +
-                    "##url: "+ BurpReqRespTools.getUrlWithQuery(entity.getRequestResponse()));
+                    "##url: "+ BurpReqRespTools.getUrl(entity.getRequestResponse()));
         }
     }
 }

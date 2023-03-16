@@ -268,27 +268,27 @@ public class BurpReqRespTools {
     }
 
     /**
-     * 获取请求的url，不带查询参数的
+     * 获取请求的url，带查询参数的
      * @param requestResponse  burp的IHttpRequestResponse
      * @return String
      */
     public static String getUrl(IHttpRequestResponse requestResponse){
         if (requestResponse != null) {
             IRequestInfo requestInfo = CommonStore.helpers.analyzeRequest(requestResponse);
-            return requestInfo.getUrl().toString().replace(":443", "").replace(":80", "").split("\\?")[0];
+            return requestInfo.getUrl().toString().replace(":443", "").replace(":80", "");
         }
         return "";
     }
 
     /**
-     * 获取请求的url，带查询参数的
+     * 获取请求的url，不带查询参数的
      * @param requestResponse  burp的IHttpRequestResponse
      * @return String
      */
-    public static String getUrlWithQuery(IHttpRequestResponse requestResponse){
+    public static String getUrlWithOutQuery(IHttpRequestResponse requestResponse){
         if (requestResponse != null) {
             IRequestInfo requestInfo = CommonStore.helpers.analyzeRequest(requestResponse);
-            return requestInfo.getUrl().toString().replace(":443", "").replace(":80", "");
+            return requestInfo.getUrl().toString().replace(":443", "").replace(":80", "").split("\\?", 2)[0];
         }
         return "";
     }

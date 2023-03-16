@@ -312,7 +312,7 @@ public class AnalysisUI {
                             boolean hit = false;
                             switch ((String) Objects.requireNonNull(type.getSelectedItem())) {
                                 case "Url":
-                                    if (BurpReqRespTools.getUrl(entity.getRequestResponse()).contains(search.getText())) {
+                                    if (BurpReqRespTools.getUrlWithOutQuery(entity.getRequestResponse()).contains(search.getText())) {
                                         hit = true;
                                     }
                                     break;

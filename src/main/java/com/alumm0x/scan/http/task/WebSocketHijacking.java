@@ -68,11 +68,11 @@ public class WebSocketHijacking extends TaskImpl {
                         new WebSocketHijackingCallback(this));
             }else{
                 CommonStore.callbacks.printError("[WebSocketHijacking] 不满足前置条件2: 必须要有'Sec-WebSocket-Key'请求头\n" +
-                        "##url: "+ BurpReqRespTools.getUrlWithQuery(entity.getRequestResponse()));
+                        "##url: "+ BurpReqRespTools.getUrl(entity.getRequestResponse()));
             }
         }else{
             CommonStore.callbacks.printError("[WebSocketHijacking] 不满足前置条件1: 必须要有Cookie\n" +
-                    "##url: "+ BurpReqRespTools.getUrlWithQuery(entity.getRequestResponse()));
+                    "##url: "+ BurpReqRespTools.getUrl(entity.getRequestResponse()));
         }
     }
 }

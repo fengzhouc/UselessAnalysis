@@ -91,17 +91,14 @@ class IDORCallback implements Callback {
             // 响应体与原来相同，则存在问题
             if (Arrays.equals(BurpReqRespTools.getRespBody(requestResponse),BurpReqRespTools.getRespBody(entity.getRequestResponse()))) {
                 logEntry.hasVuln();
-                logEntry.Comments = "";
                 logEntry.Status = (short) response.code();
             } else {
                 logEntry.onResponse();
                 logEntry.Status = (short) response.code();
-                logEntry.Comments = "";
             }
         } else {
             logEntry.onResponse();
             logEntry.Status = (short) response.code();
-            logEntry.Comments = "";
         }
         CommonStore.logModel.update();
     }

@@ -108,7 +108,6 @@ class SsrfCallback implements Callback {
         // 检查响应中是否存在flag
         if (new String(BurpReqRespTools.getRespBody(entity.getRequestResponse())).contains("evil6666.com")) {
             logEntry.hasVuln();
-            logEntry.Comments = "";
             logEntry.Status = (short) response.code();
         }else if (response.isSuccessful()){
             logEntry.hasVuln();
@@ -116,7 +115,6 @@ class SsrfCallback implements Callback {
             logEntry.Status = (short) response.code();
         }else {
             logEntry.onResponse();
-            logEntry.Comments = "";
             logEntry.Status = (short) response.code();
         }
         CommonStore.logModel.update();

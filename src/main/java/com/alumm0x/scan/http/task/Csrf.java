@@ -96,17 +96,14 @@ class CsrfCallback implements Callback {
             if (BurpReqRespTools.getStatus(entity.getRequestResponse()) == BurpReqRespTools.getStatus(requestResponse)
                     && Arrays.equals(BurpReqRespTools.getRespBody(entity.getRequestResponse()), BurpReqRespTools.getRespBody(requestResponse))) {
                 logEntry.hasVuln();
-                logEntry.Comments = "";
                 logEntry.Status = (short) response.code();
             } else {
                 logEntry.onResponse();
                 logEntry.Status = (short) response.code();
-                logEntry.Comments = "";
             }
         } else {
             logEntry.onResponse();
             logEntry.Status = (short) response.code();
-            logEntry.Comments = "";
         }
         CommonStore.logModel.update();
     }

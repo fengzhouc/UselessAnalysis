@@ -100,11 +100,9 @@ class WebSocketHijackingCallback implements Callback {
         logEntry.requestResponse = CommonStore.callbacks.saveBuffersToTempFiles(requestResponse);
         if (BurpReqRespTools.getStatus(requestResponse) == 101){
             logEntry.hasVuln();
-            logEntry.Comments = "";
             logEntry.Status = (short) response.code();
         } else {
             logEntry.onResponse();
-            logEntry.Comments = "";
             logEntry.Status = (short) response.code();
         }
         CommonStore.logModel.update();

@@ -17,6 +17,7 @@ public class Redirect extends TaskImpl  {
 
     public static String name = "Redirect";
     public static String comments = "任意重定向检测。会根据特征匹配可能影响重定向的参数，构造恶意数据，重访请求是否重定向地址与构造的一致。";
+    public static String fix = "白名单限制重定向的地址，注意域名的获取需要准确，不然可能绕过限制";
 
     boolean isBypass = false; //标记bypass，callback的时候可以判断
     public UselessTreeNodeEntity entity;
@@ -84,7 +85,10 @@ class RedirectCallback implements Callback {
     public RedirectCallback(TaskImpl task){
         this.task = task;
         this.entity = ((Redirect)task).entity;
-        this.logEntry = task.logAddToScanLogger(entity.getCurrent(),"Redirect");
+        this.logEntry = task.logAddToScanLogger(entity.getCurrent(), "Redirect");
+        if (((Redirect)task).isBypass) {
+            this.logEntry.Comments = "try Bypass";
+        }
     }
     @Override
     public void onFailure(@NotNull Call call, @NotNull IOException e) {
@@ -103,7 +107,6 @@ class RedirectCallback implements Callback {
                 String location = response.headers().get("Location");
                 if (location != null && location.contains("evil.com")) {
                     logEntry.hasVuln();
-                    logEntry.Comments = "";
                     logEntry.Status = (short) response.code();
                 }
             } else if (new String(BurpReqRespTools.getRespBody(requestResponse)).contains("evil.com")) { //检查响应体中，有些是页面加载后重定向
@@ -111,20 +114,18 @@ class RedirectCallback implements Callback {
                 logEntry.Comments = "Redirect and inResp";
                 logEntry.Status = (short) response.code();
             }else {
+                logEntry.onResponse();
+                logEntry.Status = (short) response.code();
+                CommonStore.logModel.update();
                 // 不为bypass才会进行绕过测试
                 if (!((Redirect)task).isBypass) {
                     Redirect bypass = new Redirect(entity);
                     bypass.isBypass = true;
                     bypass.run();
-                } else {
-                    logEntry.onResponse();
-                    logEntry.Comments = "";
-                    logEntry.Status = (short) response.code();
                 }
             }
         } else {
             logEntry.onResponse();
-            logEntry.Comments = "";
             logEntry.Status = (short) response.code();
         }
         CommonStore.logModel.update();

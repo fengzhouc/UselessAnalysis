@@ -17,8 +17,6 @@ import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.List;
@@ -321,11 +319,12 @@ public class HttpListener implements IHttpListener, IMessageEditorController {
     public DefaultMutableTreeNode addNodeByDomain(UselessTreeNodeEntity entity) {
         if (CommonStore.ROOTNODE != null) {
             UselessTreeNodeEntity empty = new UselessTreeNodeEntity();
-            String url_ = entity.getCurrent().split(" ")[1];
-            try {
-                URI url = new URI(url_);
-                String current = new URI(url.getScheme(),null,url.getHost(),url.getPort(),"/",null,null).toString();
-                empty.setCurrent(current);
+            // 通过正则获取url根部，用于构造网站的根节点
+            String regex = "http[s]?://(.*?)/+";
+            Pattern pattern = Pattern.compile(regex);
+            Matcher m = pattern.matcher(entity.getCurrent());
+            if (m.find()){
+                empty.setCurrent(m.group());
                 // 新增的domain节点需要判断下是否在黑名单,在则设置为false
                 if (SettingUI.isBlackList(empty)) {
                     empty.setVisible(false);
@@ -353,8 +352,8 @@ public class HttpListener implements IHttpListener, IMessageEditorController {
                 } else {
                     return in;
                 }
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
+            } else {
+                CommonStore.callbacks.printError("[addNodeByDomain] 正则未获取url根部,entity.getCurrent: " + entity.getCurrent());
             }
         }
         return  null;

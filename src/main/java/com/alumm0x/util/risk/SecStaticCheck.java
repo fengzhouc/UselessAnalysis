@@ -2,9 +2,7 @@ package com.alumm0x.util.risk;
 
 
 import burp.IHttpRequestResponse;
-import burp.IRequestInfo;
 import com.alumm0x.util.BurpReqRespTools;
-import com.alumm0x.util.CommonStore;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -17,9 +15,10 @@ public class SecStaticCheck {
 
     /**
      * 检查安全响应头配置
-     * @param respHeaders 响应头列表
+     * @param requestResponse burp请求响应
      */
-    protected List<StaticCheckResult> checkSecHeader(List<String> respHeaders) {
+    public static List<StaticCheckResult> checkSecHeader(IHttpRequestResponse requestResponse) {
+        List<String> respHeaders = BurpReqRespTools.getRespHeaders(requestResponse);
         List<StaticCheckResult> results = new ArrayList<>();
         if (check(respHeaders, "x-xss-protection") == null) {
             StaticCheckResult result = new StaticCheckResult();
@@ -49,10 +48,11 @@ public class SecStaticCheck {
 
     /**
      * 检查CORS跨域配置
-     * @param reqHeaders 请求头列表
-     * @param respHeaders 响应头列表
+     * @param requestResponse burp请求响应
      */
-    protected List<StaticCheckResult> checkCors(List<String> reqHeaders, List<String> respHeaders) {
+    public static List<StaticCheckResult> checkCors(IHttpRequestResponse requestResponse) {
+        List<String> reqHeaders = BurpReqRespTools.getReqHeaders(requestResponse);
+        List<String> respHeaders = BurpReqRespTools.getRespHeaders(requestResponse);
         //cors会利用浏览器的cookie自动发送机制，如果不是使用cookie做会话管理就没这个问题了
         if (check(reqHeaders, "Cookie") != null){
             List<StaticCheckResult> results = new ArrayList<>();
@@ -93,9 +93,10 @@ public class SecStaticCheck {
 
     /**
      * 检查中间件版本信息
-     * @param headers 响应头列表
+     * @param requestResponse burp请求响应
      */
-    protected List<StaticCheckResult> checkServer(List<String> headers) {
+    public static List<StaticCheckResult> checkServer(IHttpRequestResponse requestResponse) {
+        List<String> headers = BurpReqRespTools.getRespHeaders(requestResponse);
         String server = check(headers, "Server");
         if (server != null) {
             // 获取Server的值，并以空格分割，一般版本都是/分隔的
@@ -115,9 +116,10 @@ public class SecStaticCheck {
 
     /**
      * 检查重定向风险
-     * @param querys 查询参数列表
+     * @param requestResponse burp请求响应
      */
-    protected List<StaticCheckResult> checkRedirect(Map<String, String> querys) {
+    public static List<StaticCheckResult> checkRedirect(IHttpRequestResponse requestResponse) {
+        Map<String, String> querys = BurpReqRespTools.getQueryMap(requestResponse);
         //2.请求的url中含redirect敏感参数
         for (String query : querys.keySet()) {
             if (query.contains("redirect")
@@ -143,10 +145,11 @@ public class SecStaticCheck {
 
     /**
      * 检查ssrf,在参数中是否有url
-     * @param querys 查询参数列表
-     * @param reqBody 请求体
+     * @param requestResponse burp请求响应
      */
-    protected List<StaticCheckResult> checkSsrf(Map<String, String> querys, byte[] reqBody) {
+    public static List<StaticCheckResult> checkSsrf(IHttpRequestResponse requestResponse) {
+        Map<String, String> querys = BurpReqRespTools.getQueryMap(requestResponse);
+        byte[] reqBody = BurpReqRespTools.getReqBody(requestResponse);
         // ssrf就是需要传入完整的url，所以正则匹配请求参数
         String regex = "http[s]?://(.*?)[/&\"]+?[\\w/\\-\\._]*";
         List<StaticCheckResult> results = new ArrayList<>();
@@ -184,7 +187,7 @@ public class SecStaticCheck {
      * 检查可能的反序列化
      * @param tabs 标签列表
      */
-    protected List<StaticCheckResult> checkSerialization(List<String> tabs) {
+    public static List<StaticCheckResult> checkSerialization(List<String> tabs) {
         List<StaticCheckResult> results = new ArrayList<>();
         if (tabs.contains("json")) {
             StaticCheckResult result = new StaticCheckResult();
@@ -206,7 +209,7 @@ public class SecStaticCheck {
 
     /**
      * 检查csrf防护
-     * @param reqHeaders 请求头列表
+     * @param requestResponse burp请求响应
      * @param reqHeaders_custom 非标请求头列表，包含可能的token
      *
      * 条件：
@@ -214,7 +217,9 @@ public class SecStaticCheck {
      * 2.使用cookie
      * 3.是否有携带token
      */
-    protected List<StaticCheckResult> checkCsrf(List<String> reqHeaders, Map<String, String> reqHeaders_custom, byte[] reqBody) {
+    public static List<StaticCheckResult> checkCsrf(IHttpRequestResponse requestResponse,Map<String, String> reqHeaders_custom) {
+        List<String> reqHeaders = BurpReqRespTools.getReqHeaders(requestResponse);
+        byte[] reqBody = BurpReqRespTools.getReqBody(requestResponse);
         //cors会利用浏览器的cookie自动发送机制，如果不是使用cookie做会话管理就没这个问题了
         if (check(reqHeaders, "Cookie") != null) {
             //要包含centen-type,且为form表单
@@ -250,14 +255,16 @@ public class SecStaticCheck {
     /**
      * 检查Jsoncsrf防护
      * @param tabs 标签列表
-     * @param reqHeaders 请求头列表
+     * @param requestResponse burp请求响应
      *
      * 条件：其实就是因为服务端没有限制centen-type，所以请求专程form提交
      * 1.json数据
      * 2.使用cookie
      * 3.后端没有限制content-type（这个是需要后续验证，满足上面三条就报问题了）
      */
-    protected List<StaticCheckResult> checkJsonCsrf(List<String> tabs, List<String> reqHeaders, byte[] reqBody) {
+    public static List<StaticCheckResult> checkJsonCsrf(List<String> tabs, IHttpRequestResponse requestResponse) {
+        List<String> reqHeaders = BurpReqRespTools.getReqHeaders(requestResponse);
+        byte[] reqBody = BurpReqRespTools.getReqBody(requestResponse);
         if (tabs.contains("json") && check(reqHeaders, "Cookie") != null && reqBody.length > 0) {
                 List<StaticCheckResult> results = new ArrayList<>();
                 StaticCheckResult result = new StaticCheckResult();
@@ -272,9 +279,10 @@ public class SecStaticCheck {
 
     /**
      * 检查响应中的敏感信息
-     * @param body 响应体
+     * @param requestResponse burp请求响应
      */
-    protected List<StaticCheckResult> checkSensitiveInfo(byte[] body) {
+    public static List<StaticCheckResult> checkSensitiveInfo(IHttpRequestResponse requestResponse) {
+        byte[] body = BurpReqRespTools.getRespBody(requestResponse);
         //如果有响应才检测
         if (body.length > 0) {
             String body_str = new String(body);
@@ -330,7 +338,7 @@ public class SecStaticCheck {
      * 给登录登出的请求提示安全要求并验证
      * @param tabs 标签列表
      */
-    protected List<StaticCheckResult> checkLoginAndout(List<String> tabs) {
+    public static List<StaticCheckResult> checkLoginAndout(List<String> tabs) {
         // com.alumm0x.tree.UselessTreeNodeEntity.parserLoginAndOut里面会识别登录登出的请求，并打标签，所以这里识别标签就可以了
         if (tabs.contains("login/out")) {
             // 生成登录相关的风险提醒验证
@@ -377,7 +385,7 @@ public class SecStaticCheck {
      * 给文件上传的请求提示安全要求并验证
      * @param tabs 标签列表
      */
-    protected List<StaticCheckResult> checkUpload(List<String> tabs) {
+    public static List<StaticCheckResult> checkUpload(List<String> tabs) {
         // com.alumm0x.tree.UselessTreeNodeEntity.parserUpload里面会识别文件上传的请求，并打标签，所以这里识别标签就可以了
         if (tabs.contains("upload")) {
             // 生成上传相关的风险提醒验证
@@ -408,9 +416,10 @@ public class SecStaticCheck {
 
     /**
      * 检测是否存在异常上抛到用户侧
-     * @param body 响应体
+     * @param requestResponse burp请求响应
      */
-    protected List<StaticCheckResult> checkStraceError(byte[] body) {
+    public static List<StaticCheckResult> checkStraceError(IHttpRequestResponse requestResponse) {
+        byte[] body = BurpReqRespTools.getRespBody(requestResponse);
         //如果有响应才检测
         if (body.length > 0) {
             String body_str = new String(body);
@@ -449,10 +458,11 @@ public class SecStaticCheck {
 
     /**
      * 检查请求参数中是否包含手机号及邮箱，可能是验证码获取的请求
-     * @param reqBody 请求体
-     * @param querys 查询参数
+     * @param requestResponse burp请求响应
      */
-    protected List<StaticCheckResult> checkPhoneEmail(byte[] reqBody, Map<String, String> querys) {
+    public static List<StaticCheckResult> checkPhoneEmail(IHttpRequestResponse requestResponse) {
+        byte[] reqBody = BurpReqRespTools.getReqBody(requestResponse);
+        Map<String, String> querys = BurpReqRespTools.getQueryMap(requestResponse);
         String desc = "";
         String phoneRegex = "['\"&<;\\s/,]+?1(3\\d|4[5-9]|5[0-35-9]|6[567]|7[0-8]|8\\d|9[0-35-9])\\d{8}['\"&<;\\s/,]+?"; //手机号的正则
         String emailRegex = "\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*"; //邮箱的正则
@@ -520,10 +530,9 @@ public class SecStaticCheck {
      * @param tabs 标签列表
      * @param requestResponse burp请求响应
      */
-    protected List<StaticCheckResult> checkUnsfeDesignLoginout(List<String> tabs, IHttpRequestResponse requestResponse) {
+    public static List<StaticCheckResult> checkUnsfeDesignLoginout(List<String> tabs, IHttpRequestResponse requestResponse) {
         if (tabs.contains("login/out")) {
-            IRequestInfo requestInfo = CommonStore.helpers.analyzeRequest(requestResponse);
-            if (requestInfo.getMethod().equalsIgnoreCase("GET")) {
+            if (BurpReqRespTools.getMethod(requestResponse).equalsIgnoreCase("GET")) {
                 List<StaticCheckResult> results = new ArrayList<>();
                 StaticCheckResult result = new StaticCheckResult();
                 result.desc = "不安全设计-login/out使用GET方法";

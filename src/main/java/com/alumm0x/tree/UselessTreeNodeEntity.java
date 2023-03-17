@@ -8,7 +8,6 @@ import com.alumm0x.util.SourceLoader;
 import com.alumm0x.util.risk.SecStaticCheck;
 import com.alumm0x.util.risk.StaticCheckResult;
 
-import java.io.Serializable;
 import java.net.URI;
 import java.util.*;
 
@@ -19,7 +18,7 @@ import java.util.*;
  * requestResponse: 当前请求的请求及响应信息，用于选中节点时展示其请求及响应信息
  *
  */
-public class UselessTreeNodeEntity extends SecStaticCheck implements Serializable {
+public class UselessTreeNodeEntity {
 
     private boolean isVisible = true; //默认都是需要展示的
 
@@ -33,17 +32,6 @@ public class UselessTreeNodeEntity extends SecStaticCheck implements Serializabl
     // 标签，存放的数据类型：自定义/数据类型/指纹
     public List<String> tabs = new ArrayList<>();
 
-    // 存放请求及响应参数
-//    public String url;
-//    public IHttpService httpService; //构造新的请求包需要
-//    public String method; //请求方式
-//    public String contentYtpe;
-//    public String querystring = null; //查询参数字符串
-//    public Map<String, String> queryParams = new HashMap<>(); //默认空数据
-//    public byte[] reqBody = null; //body参数，默认null
-//    public byte[] respBody = null; //响应体，默认为null
-//    public List<String> reqHeaders = new ArrayList<>(); //请求头参数，默认空
-//    public List<String> respHeaders = new ArrayList<>(); //响应头信息
     //请求头参数，排除掉常规header，留下自定义的头，默认空
     public Map<String, String> reqHeaders_custom = new HashMap<>();
     //响应头，排除掉常规header，留下自定义的头，默认空
@@ -99,7 +87,7 @@ public class UselessTreeNodeEntity extends SecStaticCheck implements Serializabl
     private void parserBanner() {
         IRequestInfo requestInfo = BurpReqRespTools.getRequestInfo(requestResponse);
         // Server指纹
-        String server = check(BurpReqRespTools.getReqHeaders(requestResponse), "Server");
+        String server = SecStaticCheck.check(BurpReqRespTools.getReqHeaders(requestResponse), "Server");
         if (server != null) {
             addTag(server);
         }
@@ -131,63 +119,63 @@ public class UselessTreeNodeEntity extends SecStaticCheck implements Serializabl
         // -安全响应头配置（太多了，基本都有，低危先忽略吧）
 //        addMap(checkSecHeader(respHeaders));
         // -CORS配置
-        List<StaticCheckResult> cors = checkCors(BurpReqRespTools.getReqHeaders(requestResponse), BurpReqRespTools.getRespHeaders(requestResponse));
+        List<StaticCheckResult> cors = SecStaticCheck.checkCors(requestResponse);
         if (cors != null && cors.size() > 0){
             addTag("cors");
             addMap(cors);
         }
         // -中间件版本
-        addMap(checkServer(BurpReqRespTools.getRespHeaders(requestResponse)));
+        addMap(SecStaticCheck.checkServer(requestResponse));
         // -重定向
-        List<StaticCheckResult> rs = checkRedirect(BurpReqRespTools.getQueryMap(requestResponse));
+        List<StaticCheckResult> rs = SecStaticCheck.checkRedirect(requestResponse);
         if (rs != null && rs.size() > 0){
             addTag("redirect");
             addMap(rs);
         }
         // -ssrf（请求和响应中是否有url的数据）
-        List<StaticCheckResult> ssrf = checkSsrf(BurpReqRespTools.getQueryMap(requestResponse), BurpReqRespTools.getReqBody(requestResponse));
+        List<StaticCheckResult> ssrf = SecStaticCheck.checkSsrf(requestResponse);
         if (ssrf != null && ssrf.size() > 0){
             addTag("ssrf");
             addMap(ssrf);
         }
         // -请求数据是json/xml的，根据tabs判断，列出需要验证的list
-        addMap(checkSerialization(tabs));
+        addMap(SecStaticCheck.checkSerialization(tabs));
         // -csrf防护
-        List<StaticCheckResult> csrf = checkCsrf(BurpReqRespTools.getReqHeaders(requestResponse), reqHeaders_custom, BurpReqRespTools.getReqBody(requestResponse));
+        List<StaticCheckResult> csrf = SecStaticCheck.checkCsrf(requestResponse, reqHeaders_custom);
         if (csrf != null && csrf.size() > 0){
             addTag("csrf");
             addMap(csrf);
         }
         // -jsoncsrf防护
-        List<StaticCheckResult> jsrf = checkJsonCsrf(tabs, BurpReqRespTools.getReqHeaders(requestResponse), BurpReqRespTools.getReqBody(requestResponse));
+        List<StaticCheckResult> jsrf = SecStaticCheck.checkJsonCsrf(tabs, requestResponse);
         if (jsrf != null && jsrf.size() > 0){
             addTag("jsonCsrf");
             addMap(jsrf);
         }
         // -响应中的敏感信息
-        List<StaticCheckResult> sens = checkSensitiveInfo(BurpReqRespTools.getRespBody(requestResponse));
+        List<StaticCheckResult> sens = SecStaticCheck.checkSensitiveInfo(requestResponse);
         if (sens != null && sens.size() > 0){
             addTag("可能存在敏感信息");
             addMap(sens);
         }
         // 登录相关请求追加安全要求提示验证
-        addMap(checkLoginAndout(tabs));
+        addMap(SecStaticCheck.checkLoginAndout(tabs));
         // 文件上传相关请求追加安全要求提示验证
-        addMap(checkUpload(tabs));
+        addMap(SecStaticCheck.checkUpload(tabs));
         // -响应中的堆栈异常信息
-        List<StaticCheckResult> err = checkStraceError(BurpReqRespTools.getRespBody(requestResponse));
+        List<StaticCheckResult> err = SecStaticCheck.checkStraceError(requestResponse);
         if (err != null && err.size() > 0){
             addTag("可能存在堆栈异常");
             addMap(err);
         }
         // 检测请求参数中是否包含手机号或邮箱，可能存在轰炸风险
-        List<StaticCheckResult> hong = checkPhoneEmail(BurpReqRespTools.getRespBody(requestResponse), BurpReqRespTools.getQueryMap(requestResponse));
+        List<StaticCheckResult> hong = SecStaticCheck.checkPhoneEmail(requestResponse);
         if (hong != null && hong.size() > 0){
             addTag("可能存在短信/邮箱轰炸");
             addMap(hong);
         }
         // -设计不合理的，如logout使用get
-        List<StaticCheckResult> unsafe = checkUnsfeDesignLoginout(tabs, requestResponse);
+        List<StaticCheckResult> unsafe = SecStaticCheck.checkUnsfeDesignLoginout(tabs, requestResponse);
         if (unsafe != null && unsafe.size() > 0){
             addTag("可能的不安全设计");
             addMap(unsafe);
@@ -231,7 +219,7 @@ public class UselessTreeNodeEntity extends SecStaticCheck implements Serializabl
             addTag("login/out");
         }
         //2.识别响应头Set-Cookie，一般是登录登出的时候会有这类操作，当然排除不使用cookie作会话凭证的
-        String setCookie = check(BurpReqRespTools.getRespHeaders(requestResponse), "Set-Cookie");
+        String setCookie = SecStaticCheck.check(BurpReqRespTools.getRespHeaders(requestResponse), "Set-Cookie");
         if (setCookie != null) {
             addTag("login/out");
         }

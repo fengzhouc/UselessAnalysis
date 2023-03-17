@@ -159,11 +159,11 @@ public class TreeMouseMune {
         menu.add(scan);
         menu.add(scan_search);
         menu.addSeparator(); //分割符
-        menu.add(analysis);
-        menu.addSeparator(); //分割符
         menu.add(expand);
         menu.add(collapse);
         menu.add (delete);
+        menu.addSeparator(); //分割符
+        menu.add(analysis);
 
         return  menu;
     }

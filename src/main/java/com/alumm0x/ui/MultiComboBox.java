@@ -38,7 +38,7 @@ public class MultiComboBox extends JComponent implements ActionListener {
         editor = new JTextField();
         editor.setBackground(Color.WHITE);
         editor.setEditable(false);
-        editor.setPreferredSize(new Dimension(100, 20));
+        editor.setPreferredSize(new Dimension(50, 20));
         editor.addActionListener(this);
         arrowButton = createArrowButton();
         arrowButton.addActionListener(this);

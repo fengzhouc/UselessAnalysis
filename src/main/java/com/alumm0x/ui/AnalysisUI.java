@@ -78,6 +78,7 @@ public class AnalysisUI {
         type = new JComboBox<>();
         type.addItem("");
         type.addItem("Url");
+        type.addItem("Status");
         type.addItem("Params");
         type.addItem("Request");
         type.addItem("Response");
@@ -336,6 +337,11 @@ public class AnalysisUI {
                                         if (new String(BurpReqRespTools.getRespBody(entity.getRequestResponse())).contains(search.getText())) {
                                             hit = true;
                                         }
+                                    break;
+                                case "Status":
+                                    if (BurpReqRespTools.getStatus(entity.getRequestResponse()) == Short.parseShort(search.getText())) {
+                                        hit = true;
+                                    }
                                     break;
                             }
                             entity.setVisible(hit);

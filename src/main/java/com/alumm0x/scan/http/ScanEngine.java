@@ -32,6 +32,9 @@ public class ScanEngine {
             case "Ssrf":
                 new Ssrf(entity).run();
                 break;
+            case "Upload":
+                new UploadSecure(entity).run();
+                break;
             default:
                 CommonStore.callbacks.printError("do not has this tash: " + poc);
         }

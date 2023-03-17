@@ -79,6 +79,8 @@ public class TreeMouseMune {
         addMenuItemBySearch("WebSocketHijacking", scan_search);
         addMenuItem("Ssrf", entity,scan);
         addMenuItemBySearch("Ssrf", scan_search);
+        addMenuItem("Upload", entity,scan);
+        addMenuItemBySearch("Upload", scan_search);
 
         // 展开tree
         JMenu expand = new JMenu("Expand branch");

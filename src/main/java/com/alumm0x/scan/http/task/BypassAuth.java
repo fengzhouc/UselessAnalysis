@@ -1,8 +1,5 @@
 package com.alumm0x.scan.http.task;
 
-import burp.BurpExtender;
-import burp.IBurpExtenderCallbacks;
-import burp.IExtensionHelpers;
 import burp.IHttpRequestResponse;
 import com.alumm0x.scan.LogEntry;
 import com.alumm0x.scan.http.task.impl.TaskImpl;
@@ -18,7 +15,6 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class BypassAuth extends TaskImpl {
@@ -40,17 +36,10 @@ public class BypassAuth extends TaskImpl {
          */
         //条件：403/401禁止访问的才需要测试
         if (BurpReqRespTools.getStatus(entity.getRequestResponse()) == 401 || BurpReqRespTools.getStatus(entity.getRequestResponse()) == 403){
-            String payloads = SourceLoader.loadPayloads("/payloads/BypassAuth.bbm");
-            List<String> bypass_str = new ArrayList<String>();
-            Collections.addAll(bypass_str, payloads.split("\n"));
+            List<String> payloads = SourceLoader.loadSources("/payloads/BypassAuth.bbm");
 
             // 将path拆解
-            List<String> bypass_path = createPath(bypass_str, BurpReqRespTools.getUrlPath(entity.getRequestResponse()));
-            StringBuilder stringBuilder = new StringBuilder();
-            for (String p :
-                    bypass_path) {
-                stringBuilder.append("// ").append(p).append("\n");
-            }
+            List<String> bypass_path = createPath(payloads, BurpReqRespTools.getUrlPath(entity.getRequestResponse()));
 
             for (String bypass : bypass_path) {
                 //url有参数

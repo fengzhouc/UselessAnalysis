@@ -3,6 +3,7 @@ package com.alumm0x.util.risk;
 
 import burp.IHttpRequestResponse;
 import burp.IRequestInfo;
+import com.alumm0x.util.BurpReqRespTools;
 import com.alumm0x.util.CommonStore;
 
 import java.util.*;
@@ -549,5 +550,22 @@ public class SecStaticCheck {
             }
         }
         return null;
+    }
+
+    /**
+     * 静态检测jsonp
+     * @return
+     */
+    public static boolean checkJsonp(IHttpRequestResponse requestResponse){
+        // 1.响应content-type需要是js
+        if (BurpReqRespTools.getContentType(requestResponse).contains("application/javascript")) {
+            String resp = new String(BurpReqRespTools.getRespBody(requestResponse));
+            for (String queryvalue : BurpReqRespTools.getQueryMap(requestResponse).values()) {
+                if (resp.startsWith(queryvalue + "(")){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

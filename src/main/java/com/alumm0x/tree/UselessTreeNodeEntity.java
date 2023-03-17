@@ -192,6 +192,10 @@ public class UselessTreeNodeEntity extends SecStaticCheck implements Serializabl
             addTag("可能的不安全设计");
             addMap(unsafe);
         }
+        // 检测jsonp
+        if (SecStaticCheck.checkJsonp(requestResponse)){
+            addTag("jsonp");
+        }
     }
 
     /**

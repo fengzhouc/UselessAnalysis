@@ -91,19 +91,17 @@ class CsrfCallback implements Callback {
     public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
         IHttpRequestResponse requestResponse = BurpReqRespTools.makeBurpReqRespFormOkhttp(call,response, BurpReqRespTools.getHttpService(entity.getRequestResponse()));
         logEntry.requestResponse = CommonStore.callbacks.saveBuffersToTempFiles(requestResponse);
+        logEntry.Status = (short) response.code();
         if (response.isSuccessful()){
             //如果状态码相同及响应内容一样，则可能存在问题
             if (BurpReqRespTools.getStatus(entity.getRequestResponse()) == BurpReqRespTools.getStatus(requestResponse)
                     && Arrays.equals(BurpReqRespTools.getRespBody(entity.getRequestResponse()), BurpReqRespTools.getRespBody(requestResponse))) {
                 logEntry.hasVuln();
-                logEntry.Status = (short) response.code();
             } else {
                 logEntry.onResponse();
-                logEntry.Status = (short) response.code();
             }
         } else {
             logEntry.onResponse();
-            logEntry.Status = (short) response.code();
         }
         CommonStore.logModel.update();
     }

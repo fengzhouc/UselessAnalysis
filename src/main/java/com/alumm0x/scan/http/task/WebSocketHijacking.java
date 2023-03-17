@@ -98,12 +98,11 @@ class WebSocketHijackingCallback implements Callback {
     public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
         IHttpRequestResponse requestResponse = BurpReqRespTools.makeBurpReqRespFormOkhttp(call,response, BurpReqRespTools.getHttpService(entity.getRequestResponse()));
         logEntry.requestResponse = CommonStore.callbacks.saveBuffersToTempFiles(requestResponse);
+        logEntry.Status = (short) response.code();
         if (BurpReqRespTools.getStatus(requestResponse) == 101){
             logEntry.hasVuln();
-            logEntry.Status = (short) response.code();
         } else {
             logEntry.onResponse();
-            logEntry.Status = (short) response.code();
         }
         CommonStore.logModel.update();
     }

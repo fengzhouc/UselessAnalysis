@@ -238,16 +238,15 @@ class BeanParamInjectCallback implements Callback {
     public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
         IHttpRequestResponse requestResponse = BurpReqRespTools.makeBurpReqRespFormOkhttp(call,response, BurpReqRespTools.getHttpService(entity.getRequestResponse()));
         logEntry.requestResponse = CommonStore.callbacks.saveBuffersToTempFiles(requestResponse);
+        logEntry.Status = (short) response.code();
         //如果响应成功，则检查值是否被修改
         if (response.isSuccessful()) {
             // 检查响应中是否存在flag
             if (new String(BurpReqRespTools.getRespBody(requestResponse)).contains("beanInject")) {
                 logEntry.hasVuln();
-                logEntry.Status = (short) response.code();
             }
         }else { //啥情况会不成功，做了些数据校验的时候，比如这个字段只允许String，我改成int，可能就会报错，那报错就可能就是用了bean
             logEntry.onResponse();
-            logEntry.Status = (short) response.code();
             logEntry.Comments = "异常参数报错了，自己搞搞看呢.";
         }
         CommonStore.logModel.update();

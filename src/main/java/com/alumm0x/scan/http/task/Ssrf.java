@@ -105,17 +105,15 @@ class SsrfCallback implements Callback {
     public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
         IHttpRequestResponse requestResponse = BurpReqRespTools.makeBurpReqRespFormOkhttp(call,response, BurpReqRespTools.getHttpService(entity.getRequestResponse()));
         logEntry.requestResponse = CommonStore.callbacks.saveBuffersToTempFiles(requestResponse);
+        logEntry.Status = (short) response.code();
         // 检查响应中是否存在flag
         if (new String(BurpReqRespTools.getRespBody(entity.getRequestResponse())).contains("evil6666.com")) {
             logEntry.hasVuln();
-            logEntry.Status = (short) response.code();
         }else if (response.isSuccessful()){
             logEntry.hasVuln();
             logEntry.Comments = "并没有在响应中呈现，需要在使用dnslog的url确认是否会发起请求";
-            logEntry.Status = (short) response.code();
         }else {
             logEntry.onResponse();
-            logEntry.Status = (short) response.code();
         }
         CommonStore.logModel.update();
     }

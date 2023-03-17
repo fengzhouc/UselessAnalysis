@@ -109,13 +109,12 @@ class BypassAuthCallback implements Callback {
     public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
         IHttpRequestResponse requestResponse = BurpReqRespTools.makeBurpReqRespFormOkhttp(call,response, BurpReqRespTools.getHttpService(entity.getRequestResponse()));
         logEntry.requestResponse = CommonStore.callbacks.saveBuffersToTempFiles(requestResponse);
+        logEntry.Status = (short) response.code();
         //如果状态码200,然后响应内容不同，则存在url鉴权绕过
         if (response.isSuccessful() && Arrays.equals(BurpReqRespTools.getRespBody(entity.getRequestResponse()), BurpReqRespTools.getRespBody(requestResponse))) {
             logEntry.hasVuln();
-            logEntry.Status = (short) response.code();
         } else {
             logEntry.onResponse();
-            logEntry.Status = (short) response.code();
         }
     }
 }

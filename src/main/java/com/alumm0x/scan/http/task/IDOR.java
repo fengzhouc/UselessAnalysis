@@ -87,18 +87,16 @@ class IDORCallback implements Callback {
     public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
         IHttpRequestResponse requestResponse = BurpReqRespTools.makeBurpReqRespFormOkhttp(call,response, BurpReqRespTools.getHttpService(entity.getRequestResponse()));
         logEntry.requestResponse = CommonStore.callbacks.saveBuffersToTempFiles(requestResponse);
+        logEntry.Status = (short) response.code();
         if (response.isSuccessful()){
             // 响应体与原来相同，则存在问题
             if (Arrays.equals(BurpReqRespTools.getRespBody(requestResponse),BurpReqRespTools.getRespBody(entity.getRequestResponse()))) {
                 logEntry.hasVuln();
-                logEntry.Status = (short) response.code();
             } else {
                 logEntry.onResponse();
-                logEntry.Status = (short) response.code();
             }
         } else {
             logEntry.onResponse();
-            logEntry.Status = (short) response.code();
         }
         CommonStore.logModel.update();
     }

@@ -333,7 +333,7 @@ public class BurpReqRespTools {
                 for (String query : kv) {
                     String[] keyvalue = query.split("=", 2);
                     if (keyvalue.length == 2) {
-                        queryParams.put(keyvalue[0], keyvalue[1]);
+                        queryParams.put(keyvalue[0].trim(), keyvalue[1].trim());
                     }
                 }
             }

@@ -26,19 +26,6 @@ public class SourceLoader {
         return payloads;
     }
 
-    //从resource中加载payloa文件
-    //filepath:/com/sss/sss.bb
-    public static String loadPayloads(String filepath){
-        StringBuilder payloads = new StringBuilder();
-        InputStream inStream = SourceLoader.class.getResourceAsStream(filepath);
-        assert inStream != null;
-        try(Scanner scanner = new Scanner(inStream)){
-            while (scanner.hasNextLine()){
-                payloads.append(scanner.nextLine()).append("\n");
-            }
-        }
-        return payloads.toString();
-    }
 
     /**
      * 获取resource下的文件，返回其URL对象

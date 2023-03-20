@@ -1,45 +1,34 @@
-package com.alumm0x.util;
+package com.alumm0x.util.jsontools;
 
 import org.json.JSONObject;
 
 import java.util.*;
 
+/**
+ * 用于遍历json传，并进行一些修改或判断是否存在某数据
+ */
 public class JsonTools {
-    //存储json参数名的，用于bean参数注入
-    //TODO 注入的参数值，为了保证业务处理，最好是根据原数据类型去生成，怎么搞？？
-    // 改为map，保存原value，在原值基础上进行修改？？
-    // 数据共三种情况：布尔/数字/字符串
-    public List<String> paramKeys;
+
     // 保存篡改的json串
-    public final StringBuilder stringBuilder;
+    public final StringBuilder NEW_JSON; //新的json串
 
     public JsonTools(){
-        this.stringBuilder = new StringBuilder();
-        this.paramKeys = new ArrayList<>();
-    }
-
-    //保存json的key参数名
-    private void addParam(String param){
-        // 不存在才添加
-        if (!this.paramKeys.contains(param)){
-            this.paramKeys.add(param);
-        }
+        this.NEW_JSON = new StringBuilder();
     }
 
     //修改后还原json字符串
     private void write(String hash, boolean add){
         if (!add) {
-            stringBuilder.append(hash);
+            NEW_JSON.append(hash);
         }else {
-            stringBuilder.append(hash).append(",");
+            NEW_JSON.append(hash).append(",");
         }
     }
     /**
      * 遍历json对象，每个值中插入标记
      * @niject 注入的参数
      * */
-    //初始是jsonObject
-    public void jsonObjInject(Map<String, Object> jsonMap, String inject) {
+    public void jsonObjHandler(Map<String, Object> jsonMap, JsonHandlerImpl handler) {
         write("{", false);
         Iterator<Map.Entry<String, Object>> iterator = jsonMap.entrySet().iterator();
         while (iterator.hasNext()){
@@ -53,10 +42,11 @@ public class JsonTools {
                 while (iteratorValue.hasNext()){
                     Map.Entry<String, Object> entryValue = iteratorValue.next();
                     if (entryValue instanceof HashMap) { //值也可能是对象
-                        jsonObjInject((Map<String, Object>) entryValue, inject);
+                        jsonObjHandler((Map<String, Object>) entryValue, handler);
                     }else {//基础类型数据就是最里层的结果了 key:value
 //                        System.out.println("--Key = " + entryValue.getKey() + ", Value = " + entryValue.getValue() + ", type: " + entryValue.getValue().getClass());
-                        write(String.format("\"%s\":\"%s\"", entryValue.getKey(), entryValue.getValue() + inject), iteratorValue.hasNext());
+                        JsonKeyValue jsonKeyValue = handler.handler(entryValue.getKey(), entryValue.getValue());
+                        write(String.format("\"%s\":\"%s\"", jsonKeyValue.getKey(), jsonKeyValue.getValue()), iteratorValue.hasNext());
                     }
                 }
                 write("}", iterator.hasNext());
@@ -67,36 +57,38 @@ public class JsonTools {
                 while (iteratorArray.hasNext()){
                     Object obj = iteratorArray.next();
                     if (obj instanceof HashMap) { //有可能是对象数组
-                        jsonObjInject((Map<String, Object>) obj, inject);
+                        jsonObjHandler((Map<String, Object>) obj, handler);
                     }else { //要么就是基础类型数据了,就是最终结果了
 //                        System.out.println("--Value = " + obj + ", type: " + obj.getClass());
-                        write(String.format("\"%s\"", obj + inject), iteratorArray.hasNext());
+                        JsonKeyValue jsonKeyValue = handler.handler(key, obj);
+                        write(String.format("\"%s\"", jsonKeyValue.getValue()), iteratorArray.hasNext());
                     }
                 }
                 write("]", iterator.hasNext());
             }else {//基础类型数据就是最里层的结果了 key:value
-                write(String.format("\"%s\":\"%s\"",key, value + inject), iterator.hasNext());
+                JsonKeyValue jsonKeyValue = handler.handler(key, value);
+                write(String.format("\"%s\":\"%s\"",jsonKeyValue.getKey(), jsonKeyValue.getValue()), iterator.hasNext());
 //                System.out.println(String.format("Key = %s  Value = %s, type: %s",key, value, value.getClass()));
             }
         }
         write("}", false);
     }
 
-    //初始是jsonArray的
     /**
      * 遍历json数组，每个值中插入标记
      * @niject 注入的参数
      * */
-    public void jsonArrInject(List<Object> jsonList, String inject) {
+    public void jsonArrHandler(List<Object> jsonList, JsonHandlerImpl handler) {
         write("[", false);
         Iterator<Object> iterator = jsonList.iterator();
         while (iterator.hasNext()){
             Object value = iterator.next();
 //            System.out.println(value + " ,type: " + value.getClass());
             if (value instanceof HashMap){ //json对象数组
-                jsonObjInject((Map<String, Object>)value, inject);
+                jsonObjHandler((Map<String, Object>)value, handler);
             }else {//基础类型数据就是最里层的结果了 value，value1，value2
-                write(String.format("\"%s\"", value + inject), iterator.hasNext());
+                JsonKeyValue jsonKeyValue = handler.handler("", value);
+                write(String.format("\"%s\"", jsonKeyValue.getValue()), iterator.hasNext());
             }
         }
         write("]", false);
@@ -107,11 +99,11 @@ public class JsonTools {
      * @param object
      * @return Map
      */
-    public static Map jsonObjectToMap(Object object) {
-        String source = object.toString().substring(1,object.toString().length()-1).replace("=",":");
-        JSONObject jsonObject = new JSONObject(source);
-        Map objectMap = jsonObject.toMap();
-        objectMap.forEach((key,value) -> System.out.println(key + "\t" + value));
+    public static Map<String,Object> jsonObjectToMap(Object object) {
+        JSONObject jsonObject = new JSONObject(object.toString());
+        Map<String,Object> objectMap = jsonObject.toMap();
+        // 打印健值对看看
+        // objectMap.forEach((key,value) -> System.out.println(key + "=" + value));
         return objectMap;
     }
 }

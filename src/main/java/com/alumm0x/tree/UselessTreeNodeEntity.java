@@ -57,9 +57,10 @@ public class UselessTreeNodeEntity {
 
     public void parser() {
         if (requestResponse != null) {
-            // 解析请求
             // 会话凭证信息 cookie/token/jwt
-            parserReqResp();
+            parserHeaders();
+            //解析出banner
+            parserBanner();
             // 筛出可能存在使用反序列化的请求
             parserSerialization();
             // 检查请求的类型，资源请求或业务请求(主要是跟外部有交互的)
@@ -70,6 +71,14 @@ public class UselessTreeNodeEntity {
             parserUpload();
             // 识别文件下载请求，打上标签
             parserDownload();
+            // 是否websocket
+            if (SecStaticCheck.isWebsocket(requestResponse)){
+                addTag("websocket");
+            }
+            // 是否使用jwt
+            if (SecStaticCheck.isJWT(requestResponse)){
+                addTag("JWT");
+            }
             // 静态安全风险分析,仅分析存在交互的请求
             if (!color.equals("") && !color.equalsIgnoreCase("green")) {
                 parserRisks();
@@ -87,7 +96,7 @@ public class UselessTreeNodeEntity {
     private void parserBanner() {
         IRequestInfo requestInfo = BurpReqRespTools.getRequestInfo(requestResponse);
         // Server指纹
-        String server = SecStaticCheck.check(BurpReqRespTools.getReqHeaders(requestResponse), "Server");
+        String server = SecStaticCheck.hasHdeader(BurpReqRespTools.getReqHeaders(requestResponse), "Server");
         if (server != null) {
             addTag(server);
         }
@@ -181,31 +190,11 @@ public class UselessTreeNodeEntity {
             addMap(unsafe);
         }
         // 检测jsonp
-        if (SecStaticCheck.checkJsonp(requestResponse)){
+        if (SecStaticCheck.isJsonp(requestResponse)){
             addTag("jsonp");
         }
     }
 
-    /**
-     * 添加检查结果到安全风险模型中，以便展示
-     * @param results List<StaticCheckResult>
-     */
-    private void addMap(List<StaticCheckResult> results) {
-        if (results != null) {
-            for (StaticCheckResult result : results) {
-                // 直接put，已经存在的key会直接覆盖
-                secs.put(result.desc, result);
-            }
-        }
-    }
-
-    /**
-     * 解析请求及响应，如参数/头部
-     */
-    private void parserReqResp() {
-        parserHeaders();
-        parserBanner(); //解析出banner
-    }
 
     /**
      * 识别登录跟登出的请求
@@ -219,7 +208,7 @@ public class UselessTreeNodeEntity {
             addTag("login/out");
         }
         //2.识别响应头Set-Cookie，一般是登录登出的时候会有这类操作，当然排除不使用cookie作会话凭证的
-        String setCookie = SecStaticCheck.check(BurpReqRespTools.getRespHeaders(requestResponse), "Set-Cookie");
+        String setCookie = SecStaticCheck.hasHdeader(BurpReqRespTools.getRespHeaders(requestResponse), "Set-Cookie");
         if (setCookie != null) {
             addTag("login/out");
         }
@@ -231,7 +220,7 @@ public class UselessTreeNodeEntity {
      */
     private void parserUpload() {
         //识别请求头的contentype，文件上传的是multipart/
-        String mul = SecStaticCheck.check(BurpReqRespTools.getRespHeaders(requestResponse), "Content-Type");
+        String mul = SecStaticCheck.hasHdeader(BurpReqRespTools.getRespHeaders(requestResponse), "Content-Type");
         if (mul != null && mul.equalsIgnoreCase("multipart/")) {
             addTag("upload");
         }
@@ -275,7 +264,7 @@ public class UselessTreeNodeEntity {
             }
         }
         // 检测shiro的指纹
-        String setCookie = SecStaticCheck.check(BurpReqRespTools.getRespHeaders(requestResponse), "Set-Cookie");
+        String setCookie = SecStaticCheck.hasHdeader(BurpReqRespTools.getRespHeaders(requestResponse), "Set-Cookie");
         if (setCookie != null && setCookie.contains("rememberMe=")) {
             addTag("shiro");
         }
@@ -375,6 +364,19 @@ public class UselessTreeNodeEntity {
         SettingUI.notInsideAdd(this.tabs,tag);
         // 再添加到全局的tags中
         SettingUI.notInsideAdd(CommonStore.ALL_TAGS,tag);
+    }
+
+    /**
+     * 添加检查结果到安全风险模型中，以便展示
+     * @param results List<StaticCheckResult>
+     */
+    private void addMap(List<StaticCheckResult> results) {
+        if (results != null) {
+            for (StaticCheckResult result : results) {
+                // 直接put，已经存在的key会直接覆盖
+                secs.put(result.desc, result);
+            }
+        }
     }
 
     /**

@@ -81,6 +81,8 @@ public class TreeMouseMune {
         addMenuItemBySearch("Ssrf", scan_search);
         addMenuItem("Upload", entity,scan);
         addMenuItemBySearch("Upload", scan_search);
+        addMenuItem("JWT", entity,scan);
+        addMenuItemBySearch("JWT", scan_search);
 
         // 展开tree
         JMenu expand = new JMenu("Expand branch");

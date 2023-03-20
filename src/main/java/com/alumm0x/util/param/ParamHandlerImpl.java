@@ -1,4 +1,6 @@
-package com.alumm0x.util.param.json;
+package com.alumm0x.util.param;
+
+import com.alumm0x.util.param.ParamKeyValue;
 
 /**
  * 用于处理json数据的类，可以继承复写相关方法

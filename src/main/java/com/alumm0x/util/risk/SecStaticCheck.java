@@ -5,8 +5,8 @@ import burp.IHttpRequestResponse;
 import burp.IParameter;
 import com.alumm0x.util.BurpReqRespTools;
 import com.alumm0x.util.CommonStore;
-import com.alumm0x.util.param.json.ParamHandlerImpl;
-import com.alumm0x.util.param.json.ParamKeyValue;
+import com.alumm0x.util.param.ParamHandlerImpl;
+import com.alumm0x.util.param.ParamKeyValue;
 import com.alumm0x.util.param.json.JsonTools;
 
 import java.util.*;

@@ -1,7 +1,7 @@
 package com.alumm0x.util.param.header;
 
-import com.alumm0x.util.param.json.ParamHandlerImpl;
-import com.alumm0x.util.param.json.ParamKeyValue;
+import com.alumm0x.util.param.ParamHandlerImpl;
+import com.alumm0x.util.param.ParamKeyValue;
 
 import java.util.ArrayList;
 import java.util.Iterator;

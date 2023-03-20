@@ -1,4 +1,4 @@
-package com.alumm0x.util.param.json;
+package com.alumm0x.util.param;
 
 /**
  * 用户保存健值对

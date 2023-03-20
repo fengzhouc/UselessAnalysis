@@ -6,8 +6,8 @@ import com.alumm0x.scan.http.task.impl.TaskImpl;
 import com.alumm0x.tree.UselessTreeNodeEntity;
 import com.alumm0x.util.BurpReqRespTools;
 import com.alumm0x.util.CommonStore;
-import com.alumm0x.util.param.json.ParamHandlerImpl;
-import com.alumm0x.util.param.json.ParamKeyValue;
+import com.alumm0x.util.param.ParamHandlerImpl;
+import com.alumm0x.util.param.ParamKeyValue;
 import com.alumm0x.util.param.json.JsonTools;
 
 
@@ -25,6 +25,7 @@ public class JWTSensitiveMessage extends TaskImpl {
     @Override
     public void run() {
         LogEntry logEntry = logAddToScanLogger(entity.getCurrent(), "JWTSensitiveMessage");
+
         // 检查请求的参数，使用burp解析的，包含如下:查询参数/cookie/form参数
         for (IParameter parameter : CommonStore.helpers.analyzeRequest(entity.getRequestResponse()).getParameters()) {
             byte[] decode = CommonStore.helpers.base64Decode(parameter.getValue());

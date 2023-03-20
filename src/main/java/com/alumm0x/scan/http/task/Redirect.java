@@ -54,9 +54,9 @@ public class Redirect extends TaskImpl  {
                     case "goto":
                     case "callbackIframeUrl":
                         if (isBypass) {
-                            payloads.addAll(getBypassPayload(qm.get(paramname), querystring));
+                            payloads.addAll(getBypassPayload(paramname,qm.get(paramname), querystring));
                         } else {
-                            payloads.addAll(getPayload(qm.get(paramname), querystring));
+                            payloads.addAll(getPayload(paramname,qm.get(paramname), querystring));
                         }
                 }
             }
@@ -82,12 +82,16 @@ public class Redirect extends TaskImpl  {
      * @param querystring 完整的
      * @return List<String>
      */
-    private List<String> getPayload(String originValue, String querystring){
+    private List<String> getPayload(String paranname, String originValue, String querystring){
         List<String> ret = new ArrayList<>();
         // 加载payload的模版
         String payload = "http://evil.com/";
-        // 将原参数值替换，形成新的querystring
-        ret.add(querystring.replace(originValue, payload));
+        if (!originValue.equals("")) {
+            // 将原参数值替换，形成新的querystring
+            ret.add(querystring.replace(originValue, payload));
+        } else {
+            ret.add(querystring.replace(String.format("%s=",paranname), String.format("%s=%s",paranname, payload)));
+        }
 
         return ret;
     }
@@ -98,7 +102,7 @@ public class Redirect extends TaskImpl  {
      * @param querystring 完整的
      * @return List<String>
      */
-    private List<String> getBypassPayload(String originValue, String querystring){
+    private List<String> getBypassPayload(String paranname, String originValue, String querystring){
         List<String> ret = new ArrayList<>();
         // 获取原参数值中的域名,默认为当前请求的host:port,避免参数值是urlpath，获取不到域名的情况
         String originDomain = BurpReqRespTools.getHttpService(entity.getRequestResponse()).getHost() + ":" + BurpReqRespTools.getHttpService(entity.getRequestResponse()).getPort();
@@ -114,9 +118,15 @@ public class Redirect extends TaskImpl  {
         // 根据模版构造payload
         for (String templete : payloads) {
             if (!templete.startsWith("#") && !templete.equals("")) {
-                // 将原参数值替换，形成新的querystring
-                String payload = querystring.replace(originValue, templete.replaceAll("#domain#", originDomain));
-                if (templete.contains("#encode#")){
+                String payload;
+                if (!originValue.equals("")) {
+                    // 将原参数值替换，形成新的querystring
+                    payload = querystring.replace(originValue, templete.replaceAll("#domain#", originDomain));
+                } else {
+                    payload = querystring.replace(String.format("%s=", paranname), String.format("%s=%s", paranname, templete.replaceAll("#domain#", originDomain)));
+                }
+                // 处理#encode#的payload
+                if (templete.contains("#encode#")) {
                     for (String s : encodeStr) {
                         // 将原参数值替换，形成新的querystring
                         payload = payload.replaceAll("#encode#", CommonStore.helpers.urlEncode(s));

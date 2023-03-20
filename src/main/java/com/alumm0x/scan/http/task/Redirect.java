@@ -120,11 +120,10 @@ public class Redirect extends TaskImpl  {
                         String payload = querystring.replace(originValue, templete.replaceAll("#encode#", CommonStore.helpers.urlEncode(s)));
                         ret.add(payload);
                     }
-                } else {
-                    // 将原参数值替换，形成新的querystring
-                    String payload = querystring.replace(originValue, templete.replaceAll("#domain#", originDomain));
-                    ret.add(payload);
                 }
+                // 将原参数值替换，形成新的querystring
+                String payload = querystring.replace(originValue, templete.replaceAll("#domain#", originDomain));
+                ret.add(payload);
             }
         }
         return ret;

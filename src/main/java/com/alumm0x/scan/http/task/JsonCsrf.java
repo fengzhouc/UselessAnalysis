@@ -7,6 +7,7 @@ import com.alumm0x.scan.http.task.impl.TaskImpl;
 import com.alumm0x.tree.UselessTreeNodeEntity;
 import com.alumm0x.util.BurpReqRespTools;
 import com.alumm0x.util.CommonStore;
+import com.alumm0x.util.risk.SecStaticCheck;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
@@ -39,11 +40,11 @@ public class JsonCsrf extends TaskImpl {
          *   （3）不满足（2）则修改/添加请求头Origin为http://evil.com，查看响应头Access-Control-Allow-Origin的值是否是http://evil.com
          * */
         //csrf会利用浏览器的cookie自动发送机制，如果不是使用cookie做会话管理就没这个问题了
-        if (check(BurpReqRespTools.getReqHeaders(entity.getRequestResponse()), "Cookie") != null){
+        if (SecStaticCheck.hasHdeader(BurpReqRespTools.getReqHeaders(entity.getRequestResponse()), "Cookie") != null){
             /*
              * 1、请求头包含application/json
              */
-            String ct = check(BurpReqRespTools.getReqHeaders(entity.getRequestResponse()), "Content-Type");
+            String ct = SecStaticCheck.hasHdeader(BurpReqRespTools.getReqHeaders(entity.getRequestResponse()), "Content-Type");
             if (ct != null && ct.contains("application/json")) {
                 List<String> new_headers = new ArrayList<String>();
                 String CT = "Content-Type: application/x-www-form-urlencoded";

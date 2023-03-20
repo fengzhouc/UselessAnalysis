@@ -36,19 +36,4 @@ public abstract class TaskImpl {
         return poc;
     }
 
-    //检查头部是否包含某信息
-    //头部信息包含如下
-    //1、请求头/响应头
-    //2、首部
-    public String check(List<String> headers, String header) {
-        if (null == headers) {
-            return null;
-        }
-        for (String s : headers) {
-            if (s.toLowerCase(Locale.ROOT).startsWith(header.toLowerCase(Locale.ROOT))) {
-                return s;
-            }
-        }
-        return null;
-    }
 }

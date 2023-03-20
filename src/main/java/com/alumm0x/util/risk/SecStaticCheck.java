@@ -2,7 +2,12 @@ package com.alumm0x.util.risk;
 
 
 import burp.IHttpRequestResponse;
+import burp.IParameter;
 import com.alumm0x.util.BurpReqRespTools;
+import com.alumm0x.util.CommonStore;
+import com.alumm0x.util.jsontools.JsonHandlerImpl;
+import com.alumm0x.util.jsontools.JsonKeyValue;
+import com.alumm0x.util.jsontools.JsonTools;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -20,21 +25,21 @@ public class SecStaticCheck {
     public static List<StaticCheckResult> checkSecHeader(IHttpRequestResponse requestResponse) {
         List<String> respHeaders = BurpReqRespTools.getRespHeaders(requestResponse);
         List<StaticCheckResult> results = new ArrayList<>();
-        if (check(respHeaders, "x-xss-protection") == null) {
+        if (hasHdeader(respHeaders, "x-xss-protection") == null) {
             StaticCheckResult result = new StaticCheckResult();
             result.desc = "未开启X-XSS-Protection";
             result.risk_param = "";
             result.fix = "建议开启，纵深防御，客户端防护XSS。推荐配置 1;mode=block";
             results.add(result);
         }
-        if (check(respHeaders, "x-frame-options") == null) {
+        if (hasHdeader(respHeaders, "x-frame-options") == null) {
             StaticCheckResult result = new StaticCheckResult();
             result.desc = "未开启X-Frame-Options";
             result.risk_param = "";
             result.fix = "建议开启，纵深防御，客户端防护XSS。推荐配置 SAMEORIGIN";
             results.add(result);
         }
-        if (check(respHeaders, "x-content-type-options") == null) {
+        if (hasHdeader(respHeaders, "x-content-type-options") == null) {
             StaticCheckResult result = new StaticCheckResult();
             result.desc = "未开启X-Content-Type-Options";
             result.risk_param = "";
@@ -54,16 +59,16 @@ public class SecStaticCheck {
         List<String> reqHeaders = BurpReqRespTools.getReqHeaders(requestResponse);
         List<String> respHeaders = BurpReqRespTools.getRespHeaders(requestResponse);
         //cors会利用浏览器的cookie自动发送机制，如果不是使用cookie做会话管理就没这个问题了
-        if (check(reqHeaders, "Cookie") != null){
+        if (hasHdeader(reqHeaders, "Cookie") != null){
             List<StaticCheckResult> results = new ArrayList<>();
             /*
              * ajax请求跨域获取数据的条件
              * 1、Access-Control-Allow-Credentials为true
              * 2、Access-Control-Allow-Origin为*或者根据origin动态设置
              */
-            if (check(respHeaders, "Access-Control-Allow-Origin") != null){
-                String origin_resp = check(respHeaders, "Access-Control-Allow-Origin");
-                String credentials = check(respHeaders, "Access-Control-Allow-Credentials");
+            if (hasHdeader(respHeaders, "Access-Control-Allow-Origin") != null){
+                String origin_resp = hasHdeader(respHeaders, "Access-Control-Allow-Origin");
+                String credentials = hasHdeader(respHeaders, "Access-Control-Allow-Credentials");
                 if (credentials != null && credentials.contains("true")){
                     if (origin_resp.contains("*")) {
                         // 配置为*则允许任意跨域请求，存在风险
@@ -73,7 +78,7 @@ public class SecStaticCheck {
                         result.fix = "如需要跨域请求，则不要配置为* ，需根据业务场景，精确限制跨域范围；如不需要跨域，则Access-Control-Allow-Credentials配置为false。";
                         results.add(result);
                     }else {
-                        String origin_req = check(reqHeaders, "Origin");
+                        String origin_req = hasHdeader(reqHeaders, "Origin");
                         // 请求头中存在Orgin，且origin的值相同
                         if (origin_req != null && origin_req.split(":", 2)[1].trim().equalsIgnoreCase(origin_resp.split(":", 2)[1].trim())) {
                             // 检查下是否为Origin请求头的值，如果是，则需要验证下是否动态设置，动态设置相当于允许任意跨域
@@ -97,7 +102,7 @@ public class SecStaticCheck {
      */
     public static List<StaticCheckResult> checkServer(IHttpRequestResponse requestResponse) {
         List<String> headers = BurpReqRespTools.getRespHeaders(requestResponse);
-        String server = check(headers, "Server");
+        String server = hasHdeader(headers, "Server");
         if (server != null) {
             // 获取Server的值，并以空格分割，一般版本都是/分隔的
             String[] sv = server.trim().split(":")[1].trim().split("/");
@@ -221,9 +226,9 @@ public class SecStaticCheck {
         List<String> reqHeaders = BurpReqRespTools.getReqHeaders(requestResponse);
         byte[] reqBody = BurpReqRespTools.getReqBody(requestResponse);
         //cors会利用浏览器的cookie自动发送机制，如果不是使用cookie做会话管理就没这个问题了
-        if (check(reqHeaders, "Cookie") != null) {
+        if (hasHdeader(reqHeaders, "Cookie") != null) {
             //要包含centen-type,且为form表单
-            String ct = check(reqHeaders, "Content-Type");
+            String ct = hasHdeader(reqHeaders, "Content-Type");
             if (ct != null && ct.contains("application/x-www-form-urlencoded") && reqBody.length > 0) {
                 List<StaticCheckResult> results = new ArrayList<>();
                 // 也不包含可能的token，这里就宽泛点，非标请求头为0就存在问题，因为key也不一定带token字样
@@ -265,7 +270,7 @@ public class SecStaticCheck {
     public static List<StaticCheckResult> checkJsonCsrf(List<String> tabs, IHttpRequestResponse requestResponse) {
         List<String> reqHeaders = BurpReqRespTools.getReqHeaders(requestResponse);
         byte[] reqBody = BurpReqRespTools.getReqBody(requestResponse);
-        if (tabs.contains("json") && check(reqHeaders, "Cookie") != null && reqBody.length > 0) {
+        if (tabs.contains("json") && hasHdeader(reqHeaders, "Cookie") != null && reqBody.length > 0) {
                 List<StaticCheckResult> results = new ArrayList<>();
                 StaticCheckResult result = new StaticCheckResult();
                 result.desc = "JsonCsrf风险";
@@ -545,11 +550,12 @@ public class SecStaticCheck {
         return null;
     }
 
-    //检查头部是否包含某信息
-    //头部信息包含如下
-    //1、请求头/响应头
-    //2、首部
-    public static String check(List<String> headers, String header) {
+
+    /**
+     * 检查头部是否包含某信息
+     * @return 返回找到的头信息
+     */
+    public static String hasHdeader(List<String> headers, String header) {
         if (null == headers) {
             return null;
         }
@@ -565,7 +571,7 @@ public class SecStaticCheck {
      * 静态检测jsonp
      * @return
      */
-    public static boolean checkJsonp(IHttpRequestResponse requestResponse){
+    public static boolean isJsonp(IHttpRequestResponse requestResponse){
         // 1.响应content-type需要是js
         if (BurpReqRespTools.getContentType(requestResponse).contains("application/javascript")) {
             String resp = new String(BurpReqRespTools.getRespBody(requestResponse));
@@ -577,4 +583,61 @@ public class SecStaticCheck {
         }
         return false;
     }
+
+    /**
+     * 静态检测websocket,检查是否包含相关请求头
+     * @return
+     */
+    public static boolean isWebsocket(IHttpRequestResponse requestResponse){
+        // 头部信息包含Upgrade
+        return hasHdeader(BurpReqRespTools.getReqHeaders(requestResponse), "Sec-WebSocket-Key") != null;
+    }
+
+    /**
+     * 检测是否使用jwt
+     */
+    public static boolean isJWT(IHttpRequestResponse requestResponse) {
+        // 检查请求的参数，使用burp解析的，包含如下:查询参数/cookie/form参数
+        for (IParameter parameter : CommonStore.helpers.analyzeRequest(requestResponse).getParameters()) {
+            byte[] decode = CommonStore.helpers.base64Decode(parameter.getValue());
+            if (new String(decode).contains("\"alg\"")) {
+                return true;
+            }
+        }
+        // 检查请求头
+        for (String value : BurpReqRespTools.getReqHeadersToMap(requestResponse).values()) {
+            byte[] decode = CommonStore.helpers.base64Decode(value);
+            if (new String(decode).contains("\"alg\"")) {
+                return true;
+            }
+        }
+        // 检查json数据
+        if (BurpReqRespTools.getContentType(requestResponse).contains("application/json")){
+            JsonTools tools = new JsonTools();
+            try {
+                tools.jsonObjHandler(JsonTools.jsonObjectToMap(new String(BurpReqRespTools.getReqBody(requestResponse))), new JsonHandlerImpl() {
+                    @Override
+                    public JsonKeyValue handler(Object key, Object value) {
+                        byte[] decode = CommonStore.helpers.base64Decode(value.toString());
+                        if (new String(decode).contains("\"alg\"")) {
+                            return null; //匹配条件则返回bull，触发上层函数的空指针异常已反馈结果
+                        }
+                        return new JsonKeyValue(key, value);
+                    }
+                });
+            } catch (NullPointerException e) {
+                // 出现空指针则说明匹配到条件
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 遍历查询参数，并可以进行修改
+     * @param querystring 查询参数字符串
+     * @return 修改后的查询参数，不存在则返回null
+     */
+
+
 }

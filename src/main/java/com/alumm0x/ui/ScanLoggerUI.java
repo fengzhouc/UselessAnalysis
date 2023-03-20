@@ -62,9 +62,9 @@ public class ScanLoggerUI {
 
         TableColumn poc = cm.getColumn(3);
         poc.setCellRenderer(render);
-        poc.setPreferredWidth(100);
-        poc.setMaxWidth(200);
-        poc.setMinWidth(100);
+        poc.setPreferredWidth(200);
+        poc.setMaxWidth(300);
+        poc.setMinWidth(200);
         TableColumn scanning = cm.getColumn(4);
         scanning.setCellRenderer(render);
         scanning.setPreferredWidth(100);

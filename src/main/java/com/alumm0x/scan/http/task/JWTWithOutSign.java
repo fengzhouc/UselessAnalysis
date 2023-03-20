@@ -80,7 +80,7 @@ public class JWTWithOutSign extends TaskImpl {
                 return querystring.replace(entry.getValue(), String.format("%s.%s", CommonStore.helpers.base64Encode(jwts[0]), CommonStore.helpers.base64Encode(jwts[1])));
             }
         }
-        return null;
+        return querystring;
     }
 
     /**

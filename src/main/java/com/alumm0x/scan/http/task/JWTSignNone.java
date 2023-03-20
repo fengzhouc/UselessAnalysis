@@ -116,7 +116,7 @@ public class JWTSignNone extends TaskImpl {
                 return querystring.replace(entry.getValue(), String.format("%s.%s", CommonStore.helpers.base64Encode(jwt_header), CommonStore.helpers.base64Encode(jwt_payload)));
             }
         }
-        return null;
+        return querystring;
     }
 
     /**

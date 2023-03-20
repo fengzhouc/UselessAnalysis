@@ -82,6 +82,7 @@ public class CommonStore {
         pocs.add(new PocEntry(BypassAuth.name,BypassAuth.comments));
         pocs.add(new PocEntry(WebSocketHijacking.name,WebSocketHijacking.comments));
         pocs.add(new PocEntry(Ssrf.name,Ssrf.comments));
+        pocs.add(new PocEntry(UploadSecure.name,UploadSecure.comments));
     }
 
     // 单例http发包器

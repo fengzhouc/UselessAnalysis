@@ -541,8 +541,8 @@ public class SecStaticCheck {
                 List<StaticCheckResult> results = new ArrayList<>();
                 StaticCheckResult result = new StaticCheckResult();
                 result.desc = "不安全设计-login/out使用GET方法";
-                result.risk_param = "";
-                result.fix = "登录登出不允许使用GET请求方式";
+                result.risk_param = "登录登出不允许使用GET请求方式";
+                result.fix = "";
                 results.add(result);
                 return results;
             }
@@ -632,12 +632,5 @@ public class SecStaticCheck {
         }
         return false;
     }
-
-    /**
-     * 遍历查询参数，并可以进行修改
-     * @param querystring 查询参数字符串
-     * @return 修改后的查询参数，不存在则返回null
-     */
-
 
 }

@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 
 public class UploadSecure extends TaskImpl {
 
-    public static String name = "Upload";
+    public static String name = "UploadType";
     public static String comments = "任意文件上传检测。会修改上传的文件后缀及content-type，上传成功则可能存在问题。";
     public static String fix = "等保要求: 需要根据业务场景需要限制上传文件类型。";
 
@@ -89,7 +89,7 @@ class UploadSecureCallback implements Callback {
     public UploadSecureCallback(TaskImpl task){
         this.task = task;
         this.entity = ((IDOR)task).entity;
-        this.logEntry = task.logAddToScanLogger(entity.getCurrent(), "UploadSecure");
+        this.logEntry = task.logAddToScanLogger(entity.getCurrent(), "UploadType");
     }
     @Override
     public void onFailure(@NotNull Call call, @NotNull IOException e) {

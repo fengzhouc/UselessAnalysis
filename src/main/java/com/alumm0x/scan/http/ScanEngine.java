@@ -35,6 +35,11 @@ public class ScanEngine {
             case "Upload":
                 new UploadSecure(entity).run();
                 break;
+            case "JWT":
+                new JWTSensitiveMessage(entity).run();
+                new JWTWithOutSign(entity).run();
+                new JWTSignNone(entity).run();
+                break;
             default:
                 CommonStore.callbacks.printError("do not has this tash: " + poc);
         }

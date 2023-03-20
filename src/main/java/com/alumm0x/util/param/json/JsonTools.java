@@ -1,4 +1,4 @@
-package com.alumm0x.util.jsontools;
+package com.alumm0x.util.param.json;
 
 import org.json.JSONObject;
 
@@ -28,7 +28,7 @@ public class JsonTools {
      * 遍历json对象，每个值中插入标记
      * @niject 注入的参数
      * */
-    public void jsonObjHandler(Map<String, Object> jsonMap, JsonHandlerImpl handler) {
+    public void jsonObjHandler(Map<String, Object> jsonMap, ParamHandlerImpl handler) {
         write("{", false);
         Iterator<Map.Entry<String, Object>> iterator = jsonMap.entrySet().iterator();
         while (iterator.hasNext()){
@@ -45,8 +45,8 @@ public class JsonTools {
                         jsonObjHandler((Map<String, Object>) entryValue, handler);
                     }else {//基础类型数据就是最里层的结果了 key:value
 //                        System.out.println("--Key = " + entryValue.getKey() + ", Value = " + entryValue.getValue() + ", type: " + entryValue.getValue().getClass());
-                        JsonKeyValue jsonKeyValue = handler.handler(entryValue.getKey(), entryValue.getValue());
-                        write(String.format("\"%s\":\"%s\"", jsonKeyValue.getKey(), jsonKeyValue.getValue()), iteratorValue.hasNext());
+                        ParamKeyValue paramKeyValue = handler.handler(entryValue.getKey(), entryValue.getValue());
+                        write(String.format("\"%s\":\"%s\"", paramKeyValue.getKey(), paramKeyValue.getValue()), iteratorValue.hasNext());
                     }
                 }
                 write("}", iterator.hasNext());
@@ -60,14 +60,14 @@ public class JsonTools {
                         jsonObjHandler((Map<String, Object>) obj, handler);
                     }else { //要么就是基础类型数据了,就是最终结果了
 //                        System.out.println("--Value = " + obj + ", type: " + obj.getClass());
-                        JsonKeyValue jsonKeyValue = handler.handler(key, obj);
-                        write(String.format("\"%s\"", jsonKeyValue.getValue()), iteratorArray.hasNext());
+                        ParamKeyValue paramKeyValue = handler.handler(key, obj);
+                        write(String.format("\"%s\"", paramKeyValue.getValue()), iteratorArray.hasNext());
                     }
                 }
                 write("]", iterator.hasNext());
             }else {//基础类型数据就是最里层的结果了 key:value
-                JsonKeyValue jsonKeyValue = handler.handler(key, value);
-                write(String.format("\"%s\":\"%s\"",jsonKeyValue.getKey(), jsonKeyValue.getValue()), iterator.hasNext());
+                ParamKeyValue paramKeyValue = handler.handler(key, value);
+                write(String.format("\"%s\":\"%s\"", paramKeyValue.getKey(), paramKeyValue.getValue()), iterator.hasNext());
 //                System.out.println(String.format("Key = %s  Value = %s, type: %s",key, value, value.getClass()));
             }
         }
@@ -78,7 +78,7 @@ public class JsonTools {
      * 遍历json数组，每个值中插入标记
      * @niject 注入的参数
      * */
-    public void jsonArrHandler(List<Object> jsonList, JsonHandlerImpl handler) {
+    public void jsonArrHandler(List<Object> jsonList, ParamHandlerImpl handler) {
         write("[", false);
         Iterator<Object> iterator = jsonList.iterator();
         while (iterator.hasNext()){
@@ -87,8 +87,8 @@ public class JsonTools {
             if (value instanceof HashMap){ //json对象数组
                 jsonObjHandler((Map<String, Object>)value, handler);
             }else {//基础类型数据就是最里层的结果了 value，value1，value2
-                JsonKeyValue jsonKeyValue = handler.handler("", value);
-                write(String.format("\"%s\"", jsonKeyValue.getValue()), iterator.hasNext());
+                ParamKeyValue paramKeyValue = handler.handler("", value);
+                write(String.format("\"%s\"", paramKeyValue.getValue()), iterator.hasNext());
             }
         }
         write("]", false);

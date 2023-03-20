@@ -5,9 +5,9 @@ import burp.IHttpRequestResponse;
 import burp.IParameter;
 import com.alumm0x.util.BurpReqRespTools;
 import com.alumm0x.util.CommonStore;
-import com.alumm0x.util.jsontools.JsonHandlerImpl;
-import com.alumm0x.util.jsontools.JsonKeyValue;
-import com.alumm0x.util.jsontools.JsonTools;
+import com.alumm0x.util.param.json.ParamHandlerImpl;
+import com.alumm0x.util.param.json.ParamKeyValue;
+import com.alumm0x.util.param.json.JsonTools;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -615,14 +615,14 @@ public class SecStaticCheck {
         if (BurpReqRespTools.getContentType(requestResponse).contains("application/json")){
             JsonTools tools = new JsonTools();
             try {
-                tools.jsonObjHandler(JsonTools.jsonObjectToMap(new String(BurpReqRespTools.getReqBody(requestResponse))), new JsonHandlerImpl() {
+                tools.jsonObjHandler(JsonTools.jsonObjectToMap(new String(BurpReqRespTools.getReqBody(requestResponse))), new ParamHandlerImpl() {
                     @Override
-                    public JsonKeyValue handler(Object key, Object value) {
+                    public ParamKeyValue handler(Object key, Object value) {
                         byte[] decode = CommonStore.helpers.base64Decode(value.toString());
                         if (new String(decode).contains("\"alg\"")) {
                             return null; //匹配条件则返回bull，触发上层函数的空指针异常已反馈结果
                         }
-                        return new JsonKeyValue(key, value);
+                        return new ParamKeyValue(key, value);
                     }
                 });
             } catch (NullPointerException e) {

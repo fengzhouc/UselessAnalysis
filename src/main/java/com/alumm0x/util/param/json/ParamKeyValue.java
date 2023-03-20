@@ -1,15 +1,15 @@
-package com.alumm0x.util.jsontools;
+package com.alumm0x.util.param.json;
 
 /**
  * 用户保存健值对
  */
-public class JsonKeyValue {
+public class ParamKeyValue {
 
     private final Object Key;
     private final Object Value;
     private boolean isFind = false;
 
-    public JsonKeyValue(Object key, Object value) {
+    public ParamKeyValue(Object key, Object value) {
         this.Key = key;
         this.Value = value;
     }

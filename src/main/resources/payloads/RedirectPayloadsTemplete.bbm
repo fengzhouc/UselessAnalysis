@@ -6,7 +6,7 @@ http://evil.com.:80/
 http://@evil.com.:80/
 # 端口部分
 http://evil.com:/
-# username部分
+# username部分,
 http://@evil.com/
 http://#domain#@evil.com.:80/
 # username:password部分
@@ -19,7 +19,12 @@ http://#domain#:#domain#@evil.com.:80/
 # 2.重复特殊字符的部分
 /////////evil.com///
 http://@@@@@evil.com///
+http://@#domain#@@@@evil.com///
 http://:::::@@@@@evil.com///
+http://:::::#domain#@#domain#@@@@evil.com///
+http://#domain#::::::#domain#@#domain#@@@@evil.com///
 http://:::::@@@@@evil.com...///
+http://#domain#:::::#domain#@#domain#@@@@evil.com...///
 # 3.编码特殊字符，很多框架都自带url解码过滤器，但需要保证解码后的url浏览器上是可以访问的（host部分，浏览器访问是支持url编码的，也就是上面2的部分了）
-http://#encode#:#encode#@evil.com/
+http://#encode#:#encode#@#domain#@evil.com/
+http://#domain##encode#:#encode#@#domain#@evil.com/

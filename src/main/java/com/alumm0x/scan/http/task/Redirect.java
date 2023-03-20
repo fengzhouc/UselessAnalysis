@@ -114,15 +114,14 @@ public class Redirect extends TaskImpl  {
         // 根据模版构造payload
         for (String templete : payloads) {
             if (!templete.startsWith("#") && !templete.equals("")) {
-                if (templete.contains("encode")){
-                    for (String s : encodeStr) {
-                        // 将原参数值替换，形成新的querystring
-                        String payload = querystring.replace(originValue, templete.replaceAll("#encode#", CommonStore.helpers.urlEncode(s)));
-                        ret.add(payload);
-                    }
-                }
                 // 将原参数值替换，形成新的querystring
                 String payload = querystring.replace(originValue, templete.replaceAll("#domain#", originDomain));
+                if (templete.contains("#encode#")){
+                    for (String s : encodeStr) {
+                        // 将原参数值替换，形成新的querystring
+                        payload = payload.replaceAll("#encode#", CommonStore.helpers.urlEncode(s));
+                    }
+                }
                 ret.add(payload);
             }
         }

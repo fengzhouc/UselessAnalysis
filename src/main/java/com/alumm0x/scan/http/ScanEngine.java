@@ -40,6 +40,9 @@ public class ScanEngine {
                 new JWTWithOutSign(entity).run();
                 new JWTSignNone(entity).run();
                 break;
+            case "JsonpCors":
+                new JsonpCors(entity).run();
+                break;
             default:
                 CommonStore.callbacks.printError("do not has this tash: " + poc);
         }

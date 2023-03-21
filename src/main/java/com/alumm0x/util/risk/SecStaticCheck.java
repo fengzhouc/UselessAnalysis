@@ -576,7 +576,8 @@ public class SecStaticCheck {
         if (BurpReqRespTools.getContentType(requestResponse).contains("application/javascript")) {
             String resp = new String(BurpReqRespTools.getRespBody(requestResponse));
             for (Object queryvalue : BurpReqRespTools.getQueryMap(requestResponse).values()) {
-                if (resp.startsWith(queryvalue + "(")){
+                // fix: 现在返回的不一定是函数名开头了
+                if (resp.contains(queryvalue + "(")){
                     return true;
                 }
             }

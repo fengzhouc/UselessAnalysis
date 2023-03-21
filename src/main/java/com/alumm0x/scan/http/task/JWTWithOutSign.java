@@ -8,6 +8,8 @@ import com.alumm0x.util.BurpReqRespTools;
 import com.alumm0x.util.CommonStore;
 import com.alumm0x.util.param.ParamHandlerImpl;
 import com.alumm0x.util.param.ParamKeyValue;
+import com.alumm0x.util.param.form.FormTools;
+import com.alumm0x.util.param.header.HeaderTools;
 import com.alumm0x.util.param.json.JsonTools;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -34,72 +36,73 @@ public class JWTWithOutSign extends TaskImpl {
     }
     @Override
     public void run() {
+
         // 检查json数据
+        JsonTools tools = new JsonTools();
         if (BurpReqRespTools.getContentType(entity.getRequestResponse()).contains("application/json")
                 && BurpReqRespTools.getReqBody(entity.getRequestResponse()).length > 0
-                && new String(BurpReqRespTools.getReqBody(entity.getRequestResponse())).startsWith("{")){
-            JsonTools tools = new JsonTools();
+                && new String(BurpReqRespTools.getReqBody(entity.getRequestResponse())).startsWith("{")) {
             try {
                 tools.jsonObjHandler(JsonTools.jsonObjectToMap(new String(BurpReqRespTools.getReqBody(entity.getRequestResponse()))), new ParamHandlerImpl() {
                     @Override
-                    public ParamKeyValue handler(Object key, Object value) {
+                    public List<ParamKeyValue> handler(Object key, Object value) {
+                        List<ParamKeyValue> paramKeyValues = new ArrayList<>();
                         byte[] decode = CommonStore.helpers.base64Decode(value.toString());
                         if (new String(decode).contains("\"alg\"")) {
                             String[] jwts = value.toString().split("\\.");
-                            return new ParamKeyValue(key, String.format("%s.%s", CommonStore.helpers.base64Encode(jwts[0]), CommonStore.helpers.base64Encode(jwts[1])));
+                            paramKeyValues.add(new ParamKeyValue(key, String.format("%s.%s", jwts[0], jwts[1])));
+                        } else {
+                            paramKeyValues.add(new ParamKeyValue(key, value));
                         }
-                        return new ParamKeyValue(key, value);
+                        return paramKeyValues;
                     }
                 });
             } catch (Exception e) {
                 CommonStore.callbacks.printError(e.getMessage());
             }
-
-            //新的请求包
-            CommonStore.okHttpRequester.send(BurpReqRespTools.getUrlWithOutQuery(entity.getRequestResponse()),
-                    BurpReqRespTools.getMethod(entity.getRequestResponse()),
-                    headerHandler(),
-                    queryHandler(BurpReqRespTools.getQuery(entity.getRequestResponse())),
-                    tools.NEW_JSON.toString().getBytes(StandardCharsets.UTF_8),
-                    BurpReqRespTools.getContentType(entity.getRequestResponse()),
-                    new JWTWithOutSignCallback(this));
         }
-    }
-
-    /**
-     * 处理查询参数中的jwt，去掉签名部分
-     * @param querystring 完整的查询参数
-     * @return 返回修改后的查询参数
-     */
-    public String queryHandler(String querystring) {
-        for (Map.Entry<String, String> entry :
-                BurpReqRespTools.getQueryMap(entity.getRequestResponse()).entrySet()) {
-            byte[] decode = CommonStore.helpers.base64Decode(entry.getValue());
-            if (new String(decode).contains("\"alg\"")) {
-                String[] jwts = entry.getValue().split("\\.");
-                return querystring.replace(entry.getValue(), String.format("%s.%s", CommonStore.helpers.base64Encode(jwts[0]), CommonStore.helpers.base64Encode(jwts[1])));
+        // 查询参数
+        FormTools query = new FormTools();
+        query.formHandler(BurpReqRespTools.getQueryMap(entity.getRequestResponse()), new ParamHandlerImpl() {
+            @Override
+            public List<ParamKeyValue> handler(Object key, Object value) {
+                List<ParamKeyValue> paramKeyValues = new ArrayList<>();
+                byte[] decode = CommonStore.helpers.base64Decode(value.toString());
+                if (new String(decode).contains("\"alg\"")) {
+                    String[] jwts = value.toString().split("\\.");
+                    paramKeyValues.add(new ParamKeyValue(key, String.format("%s.%s", jwts[0], jwts[1])));
+                } else {
+                    paramKeyValues.add(new ParamKeyValue(key, value));
+                }
+                return paramKeyValues;
             }
-        }
-        return querystring;
-    }
-
-    /**
-     * 处理请求头中的jwt，删除其签名部分
-     * @return List<String>
-     */
-    public List<String> headerHandler(){
-        List<String> new_header = new ArrayList<>();
-        for (String header :
-                BurpReqRespTools.getReqHeaders(entity.getRequestResponse())) {
-            String value = header.split("=")[1];
-            byte[] decode = CommonStore.helpers.base64Decode(value);
-            if (new String(decode).contains("\"alg\"")) {
-                String[] jwts = value.split("\\.");
-                header = header.replace(value, String.format("%s.%s", CommonStore.helpers.base64Encode(jwts[0]), CommonStore.helpers.base64Encode(jwts[1])));
+        });
+        // 处理header的数据
+        HeaderTools header = new HeaderTools();
+        header.headerHandler(BurpReqRespTools.getReqHeadersToMap(entity.getRequestResponse()), new ParamHandlerImpl() {
+            @Override
+            public List<ParamKeyValue> handler(Object key, Object value) {
+                List<ParamKeyValue> paramKeyValues = new ArrayList<>();
+                byte[] decode = CommonStore.helpers.base64Decode(value.toString());
+                if (new String(decode).contains("\"alg\"")) {
+                    String[] jwts = value.toString().split("\\.");
+                    paramKeyValues.add(new ParamKeyValue(key, String.format("%s.%s", jwts[0], jwts[1])));
+                } else {
+                    paramKeyValues.add(new ParamKeyValue(key, value));
+                }
+                return paramKeyValues;
             }
-            new_header.add(header);
-        }
-        return new_header;
+        });
+
+        // 因为不知道是哪个参数有jwt，所以query/body/header都处理一边，再请求一次
+        //新的请求包
+        CommonStore.okHttpRequester.send(BurpReqRespTools.getUrlWithOutQuery(entity.getRequestResponse()),
+                BurpReqRespTools.getMethod(entity.getRequestResponse()),
+                header.NEW_HEADER,
+                query.toString(),
+                tools.toString().getBytes(StandardCharsets.UTF_8),
+                BurpReqRespTools.getContentType(entity.getRequestResponse()),
+                new JWTWithOutSignCallback(this));
     }
 }
 
@@ -110,7 +113,7 @@ class JWTWithOutSignCallback implements Callback {
 
     public JWTWithOutSignCallback(TaskImpl task){
         this.task = task;
-        this.entity = ((JWTSensitiveMessage)task).entity;
+        this.entity = ((JWTWithOutSign)task).entity;
         this.logEntry = task.logAddToScanLogger(entity.getCurrent(), "JWTWithOutSign");
     }
     @Override
@@ -124,7 +127,7 @@ class JWTWithOutSignCallback implements Callback {
         IHttpRequestResponse requestResponse = BurpReqRespTools.makeBurpReqRespFormOkhttp(call,response, BurpReqRespTools.getHttpService(entity.getRequestResponse()));
         logEntry.requestResponse = CommonStore.callbacks.saveBuffersToTempFiles(requestResponse);
         logEntry.Status = (short) response.code();
-        if (response.isSuccessful()){
+        if (response.code() == BurpReqRespTools.getStatus(entity.getRequestResponse())){
             // 响应体与原来相同，则存在问题
             if (Arrays.equals(BurpReqRespTools.getRespBody(requestResponse),BurpReqRespTools.getRespBody(entity.getRequestResponse()))) {
                 logEntry.hasVuln();

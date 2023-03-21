@@ -43,7 +43,7 @@ public class Redirect extends TaskImpl  {
         String querystring = BurpReqRespTools.getQuery(entity.getRequestResponse());
         if (querystring != null) {
             List<String> payloads = new ArrayList<>();
-            Map<String, String> qm = BurpReqRespTools.getQueryMap(entity.getRequestResponse());
+            Map<String, Object> qm = BurpReqRespTools.getQueryMap(entity.getRequestResponse());
             for (String paramname : qm.keySet()) {
                 switch (paramname) { // 下面匹配上都执行，就保留最后一个有处理逻辑即可
                     case "redirect":
@@ -54,9 +54,9 @@ public class Redirect extends TaskImpl  {
                     case "goto":
                     case "callbackIframeUrl":
                         if (isBypass) {
-                            payloads.addAll(getBypassPayload(paramname,qm.get(paramname), querystring));
+                            payloads.addAll(getBypassPayload(paramname,qm.get(paramname).toString(), querystring));
                         } else {
-                            payloads.addAll(getPayload(paramname,qm.get(paramname), querystring));
+                            payloads.addAll(getPayload(paramname,qm.get(paramname).toString(), querystring));
                         }
                 }
             }

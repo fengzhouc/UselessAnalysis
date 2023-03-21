@@ -10,6 +10,9 @@ import com.alumm0x.util.param.ParamHandlerImpl;
 import com.alumm0x.util.param.ParamKeyValue;
 import com.alumm0x.util.param.json.JsonTools;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class JWTSensitiveMessage extends TaskImpl {
 
@@ -25,25 +28,21 @@ public class JWTSensitiveMessage extends TaskImpl {
     @Override
     public void run() {
         LogEntry logEntry = logAddToScanLogger(entity.getCurrent(), "JWTSensitiveMessage");
-
+        logEntry.requestResponse = entity.getRequestResponse();
         // 检查请求的参数，使用burp解析的，包含如下:查询参数/cookie/form参数
         for (IParameter parameter : CommonStore.helpers.analyzeRequest(entity.getRequestResponse()).getParameters()) {
             byte[] decode = CommonStore.helpers.base64Decode(parameter.getValue());
-            if (new String(decode).contains("\"alg\"")) {
-                if (new String(decode).contains("password")) {
-                    logEntry.hasVuln();
-                    logEntry.Comments = new String(decode);
-                }
+            if (new String(decode).contains("\"alg\"") && isSensitiveKey(new String(decode))) {
+                logEntry.hasVuln();
+                logEntry.Comments = new String(decode);
             }
         }
         // 检查请求头
-        for (String value : BurpReqRespTools.getReqHeadersToMap(entity.getRequestResponse()).values()) {
-            byte[] decode = CommonStore.helpers.base64Decode(value);
-            if (new String(decode).contains("\"alg\"")) {
-                if (new String(decode).contains("password")) {
-                    logEntry.hasVuln();
-                    logEntry.Comments = new String(decode);
-                }
+        for (Object value : BurpReqRespTools.getReqHeadersToMap(entity.getRequestResponse()).values()) {
+            byte[] decode = CommonStore.helpers.base64Decode(value.toString());
+            if (new String(decode).contains("\"alg\"") && isSensitiveKey(new String(decode))) {
+                logEntry.hasVuln();
+                logEntry.Comments = new String(decode);
             }
         }
         // 检查json数据
@@ -54,20 +53,38 @@ public class JWTSensitiveMessage extends TaskImpl {
             try {
                 tools.jsonObjHandler(JsonTools.jsonObjectToMap(new String(BurpReqRespTools.getReqBody(entity.getRequestResponse()))), new ParamHandlerImpl() {
                     @Override
-                    public ParamKeyValue handler(Object key, Object value) {
+                    public List<ParamKeyValue> handler(Object key, Object value) {
+                        List<ParamKeyValue> paramKeyValues = new ArrayList<>();
                         byte[] decode = CommonStore.helpers.base64Decode(value.toString());
-                        if (new String(decode).contains("\"alg\"")) {
-                            if (new String(decode).contains("password")) {
-                                logEntry.hasVuln();
-                                logEntry.Comments = new String(decode);
-                            }
+                        if (new String(decode).contains("\"alg\"") && isSensitiveKey(new String(decode))) {
+                            logEntry.hasVuln();
+                            logEntry.Comments = new String(decode);
                         }
-                        return new ParamKeyValue(key, value);
+                        paramKeyValues.add(new ParamKeyValue(key, value));
+                        return paramKeyValues;
                     }
                 });
             } catch (Exception e) {
                 CommonStore.callbacks.printError(e.getMessage());
             }
         }
+        // 检查结束后查看是否存在漏洞，不存在则修改状态为Done
+        if (!logEntry.isVuln()) {
+            logEntry.onResponse();
+        }
+    }
+
+    /**
+     * 判断是否敏感信息的key
+     * @param key
+     * @return
+     */
+    public boolean isSensitiveKey(String key){
+        if (key.contains("password")
+                || key.contains("token")
+                || key.contains("phone")) {
+            return true;
+        }
+        return false;
     }
 }

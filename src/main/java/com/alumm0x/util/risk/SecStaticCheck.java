@@ -573,7 +573,7 @@ public class SecStaticCheck {
      */
     public static boolean isJsonp(IHttpRequestResponse requestResponse){
         // 1.响应content-type需要是js
-        if (BurpReqRespTools.getContentType(requestResponse).contains("application/javascript")) {
+        if (hasHdeader(BurpReqRespTools.getRespHeaders(requestResponse), "content-type").contains("/javascript")) {
             String resp = new String(BurpReqRespTools.getRespBody(requestResponse));
             for (Object queryvalue : BurpReqRespTools.getQueryMap(requestResponse).values()) {
                 // fix: 现在返回的不一定是函数名开头了

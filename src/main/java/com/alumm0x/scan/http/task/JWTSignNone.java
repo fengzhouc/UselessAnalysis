@@ -178,7 +178,7 @@ class JWTSignNoneCallback implements Callback {
     public JWTSignNoneCallback(TaskImpl task){
         this.task = task;
         this.entity = ((JWTSignNone)task).entity;
-        this.logEntry = task.logAddToScanLogger(entity.getCurrent(), "JWTWithOutSign");
+        this.logEntry = task.logAddToScanLogger(entity.getCurrent(), "JWTSignNone");
     }
     @Override
     public void onFailure(@NotNull Call call, @NotNull IOException e) {

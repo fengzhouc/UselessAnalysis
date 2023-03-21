@@ -33,8 +33,13 @@ public class HeaderTools {
         Iterator<Map.Entry<String, Object>> iterator = headerMap.entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<String, Object> entry = iterator.next();
-            ParamKeyValue paramKeyValue = handler.handler(entry.getKey(), entry.getValue());
-            write(String.format("\"%s\":\"%s\"", paramKeyValue.getKey(), paramKeyValue.getValue()));
+            List<ParamKeyValue> paramKeyValues = handler.handler(entry.getKey(), entry.getValue());
+            for (ParamKeyValue paramKeyValue :
+                    paramKeyValues) {
+                if (!paramKeyValue.isDelete()) {
+                    write(String.format("%s:%s", paramKeyValue.getKey(), paramKeyValue.getValue()));
+                }
+            }
         }
     }
 

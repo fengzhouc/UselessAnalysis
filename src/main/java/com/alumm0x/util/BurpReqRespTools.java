@@ -167,8 +167,8 @@ public class BurpReqRespTools {
      * @param requestResponse burp的IHttpRequestResponse
      * @return Map<String, String>
      */
-    public static Map<String, String> getReqHeadersToMap(IHttpRequestResponse requestResponse) {
-        Map<String, String> headers = new HashMap<>();
+    public static Map<String, Object> getReqHeadersToMap(IHttpRequestResponse requestResponse) {
+        Map<String, Object> headers = new HashMap<>();
         if (requestResponse != null) {
             IRequestInfo requestInfo = CommonStore.helpers.analyzeRequest(requestResponse);
             List<String> reqheaders = requestInfo.getHeaders();
@@ -324,8 +324,8 @@ public class BurpReqRespTools {
      * @param requestResponse  burp的IHttpRequestResponse
      * @return Map<String, String>
      */
-    public static Map<String, String> getQueryMap(IHttpRequestResponse requestResponse){
-        Map<String, String> queryParams = new HashMap<>();
+    public static Map<String, Object> getQueryMap(IHttpRequestResponse requestResponse){
+        Map<String, Object> queryParams = new HashMap<>();
         if (requestResponse != null) {
             String querystring = getQuery(requestResponse);
             if (querystring != null) { // getQuery会返回null

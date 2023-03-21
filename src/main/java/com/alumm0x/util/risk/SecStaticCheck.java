@@ -124,7 +124,7 @@ public class SecStaticCheck {
      * @param requestResponse burp请求响应
      */
     public static List<StaticCheckResult> checkRedirect(IHttpRequestResponse requestResponse) {
-        Map<String, String> querys = BurpReqRespTools.getQueryMap(requestResponse);
+        Map<String, Object> querys = BurpReqRespTools.getQueryMap(requestResponse);
         //2.请求的url中含redirect敏感参数
         for (String query : querys.keySet()) {
             if (query.contains("redirect")
@@ -135,7 +135,7 @@ public class SecStaticCheck {
                     || query.contains("goto")
                     || query.contains("callbackIframeUrl")
             ) {
-                String value = querys.get(query);
+                Object value = querys.get(query);
                 List<StaticCheckResult> results = new ArrayList<>();
                 StaticCheckResult result = new StaticCheckResult();
                 result.desc = "任意重定向风险";
@@ -153,7 +153,7 @@ public class SecStaticCheck {
      * @param requestResponse burp请求响应
      */
     public static List<StaticCheckResult> checkSsrf(IHttpRequestResponse requestResponse) {
-        Map<String, String> querys = BurpReqRespTools.getQueryMap(requestResponse);
+        Map<String, Object> querys = BurpReqRespTools.getQueryMap(requestResponse);
         byte[] reqBody = BurpReqRespTools.getReqBody(requestResponse);
         // ssrf就是需要传入完整的url，所以正则匹配请求参数
         String regex = "http[s]?://(.*?)[/&\"]+?[\\w/\\-\\._]*";
@@ -222,7 +222,7 @@ public class SecStaticCheck {
      * 2.使用cookie
      * 3.是否有携带token
      */
-    public static List<StaticCheckResult> checkCsrf(IHttpRequestResponse requestResponse,Map<String, String> reqHeaders_custom) {
+    public static List<StaticCheckResult> checkCsrf(IHttpRequestResponse requestResponse,Map<String, Object> reqHeaders_custom) {
         List<String> reqHeaders = BurpReqRespTools.getReqHeaders(requestResponse);
         byte[] reqBody = BurpReqRespTools.getReqBody(requestResponse);
         //cors会利用浏览器的cookie自动发送机制，如果不是使用cookie做会话管理就没这个问题了
@@ -467,7 +467,7 @@ public class SecStaticCheck {
      */
     public static List<StaticCheckResult> checkPhoneEmail(IHttpRequestResponse requestResponse) {
         byte[] reqBody = BurpReqRespTools.getReqBody(requestResponse);
-        Map<String, String> querys = BurpReqRespTools.getQueryMap(requestResponse);
+        Map<String, Object> querys = BurpReqRespTools.getQueryMap(requestResponse);
         String desc = "";
         String phoneRegex = "['\"&<;\\s/,]+?1(3\\d|4[5-9]|5[0-35-9]|6[567]|7[0-8]|8\\d|9[0-35-9])\\d{8}['\"&<;\\s/,]+?"; //手机号的正则
         String emailRegex = "\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*"; //邮箱的正则
@@ -497,9 +497,9 @@ public class SecStaticCheck {
             }
         }
         if (querys.size() > 0) {
-            for (String value : querys.values()) {
-                Matcher matcherPhone = patternPhone.matcher(value);
-                Matcher matcherEmail = patternEmail.matcher(value);
+            for (Object value : querys.values()) {
+                Matcher matcherPhone = patternPhone.matcher(value.toString());
+                Matcher matcherEmail = patternEmail.matcher(value.toString());
                 if (matcherPhone.find()) {
                     desc += "queryPhone";
                     desc += "\n" + matcherPhone.group();
@@ -575,7 +575,7 @@ public class SecStaticCheck {
         // 1.响应content-type需要是js
         if (BurpReqRespTools.getContentType(requestResponse).contains("application/javascript")) {
             String resp = new String(BurpReqRespTools.getRespBody(requestResponse));
-            for (String queryvalue : BurpReqRespTools.getQueryMap(requestResponse).values()) {
+            for (Object queryvalue : BurpReqRespTools.getQueryMap(requestResponse).values()) {
                 if (resp.startsWith(queryvalue + "(")){
                     return true;
                 }
@@ -605,24 +605,29 @@ public class SecStaticCheck {
             }
         }
         // 检查请求头
-        for (String value : BurpReqRespTools.getReqHeadersToMap(requestResponse).values()) {
-            byte[] decode = CommonStore.helpers.base64Decode(value);
+        for (Object value : BurpReqRespTools.getReqHeadersToMap(requestResponse).values()) {
+            byte[] decode = CommonStore.helpers.base64Decode(value.toString());
             if (new String(decode).contains("\"alg\"")) {
                 return true;
             }
         }
         // 检查json数据
-        if (BurpReqRespTools.getContentType(requestResponse).contains("application/json")){
+        if (BurpReqRespTools.getContentType(requestResponse).contains("application/json")
+                && BurpReqRespTools.getReqBody(requestResponse).length > 0
+                && new String(BurpReqRespTools.getReqBody(requestResponse)).startsWith("{")){
             JsonTools tools = new JsonTools();
             try {
                 tools.jsonObjHandler(JsonTools.jsonObjectToMap(new String(BurpReqRespTools.getReqBody(requestResponse))), new ParamHandlerImpl() {
                     @Override
-                    public ParamKeyValue handler(Object key, Object value) {
+                    public List<ParamKeyValue> handler(Object key, Object value) {
+                        List<ParamKeyValue> paramKeyValues = new ArrayList<>();
                         byte[] decode = CommonStore.helpers.base64Decode(value.toString());
                         if (new String(decode).contains("\"alg\"")) {
-                            return null; //匹配条件则返回bull，触发上层函数的空指针异常已反馈结果
+                            paramKeyValues.add(null); //匹配条件则返回bull，触发上层函数的空指针异常已反馈结果
+                        } else {
+                            paramKeyValues.add(new ParamKeyValue(key, value));
                         }
-                        return new ParamKeyValue(key, value);
+                        return paramKeyValues;
                     }
                 });
             } catch (NullPointerException e) {

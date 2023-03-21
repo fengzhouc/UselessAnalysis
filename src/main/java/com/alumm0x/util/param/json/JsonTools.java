@@ -1,5 +1,6 @@
 package com.alumm0x.util.param.json;
 
+import com.alumm0x.util.CommonStore;
 import com.alumm0x.util.param.ParamHandlerImpl;
 import com.alumm0x.util.param.ParamKeyValue;
 import org.json.JSONObject;
@@ -12,7 +13,7 @@ import java.util.*;
 public class JsonTools {
 
     // 保存篡改的json串
-    public final StringBuilder NEW_JSON; //新的json串
+    private final StringBuilder NEW_JSON; //新的json串
 
     public JsonTools(){
         this.NEW_JSON = new StringBuilder();
@@ -47,8 +48,11 @@ public class JsonTools {
                         jsonObjHandler((Map<String, Object>) entryValue, handler);
                     }else {//基础类型数据就是最里层的结果了 key:value
 //                        System.out.println("--Key = " + entryValue.getKey() + ", Value = " + entryValue.getValue() + ", type: " + entryValue.getValue().getClass());
-                        ParamKeyValue paramKeyValue = handler.handler(entryValue.getKey(), entryValue.getValue());
-                        write(String.format("\"%s\":\"%s\"", paramKeyValue.getKey(), paramKeyValue.getValue()), iteratorValue.hasNext());
+                        List<ParamKeyValue> paramKeyValues = handler.handler(entryValue.getKey(), entryValue.getValue());
+                        for (ParamKeyValue paramKeyValue :
+                                paramKeyValues) {
+                            write(String.format("\"%s\":\"%s\"", paramKeyValue.getKey(), paramKeyValue.getValue()), iteratorValue.hasNext());
+                        }
                     }
                 }
                 write("}", iterator.hasNext());
@@ -62,14 +66,20 @@ public class JsonTools {
                         jsonObjHandler((Map<String, Object>) obj, handler);
                     }else { //要么就是基础类型数据了,就是最终结果了
 //                        System.out.println("--Value = " + obj + ", type: " + obj.getClass());
-                        ParamKeyValue paramKeyValue = handler.handler(key, obj);
-                        write(String.format("\"%s\"", paramKeyValue.getValue()), iteratorArray.hasNext());
+                        List<ParamKeyValue> paramKeyValues = handler.handler(key, obj);
+                        for (ParamKeyValue paramKeyValue :
+                                paramKeyValues) {
+                            write(String.format("\"%s\"", paramKeyValue.getValue()), iteratorArray.hasNext());
+                        }
                     }
                 }
                 write("]", iterator.hasNext());
             }else {//基础类型数据就是最里层的结果了 key:value
-                ParamKeyValue paramKeyValue = handler.handler(key, value);
-                write(String.format("\"%s\":\"%s\"", paramKeyValue.getKey(), paramKeyValue.getValue()), iterator.hasNext());
+                List<ParamKeyValue> paramKeyValues = handler.handler(key, value);
+                for (ParamKeyValue paramKeyValue :
+                        paramKeyValues) {
+                    write(String.format("\"%s\":\"%s\"", paramKeyValue.getKey(), paramKeyValue.getValue()), iterator.hasNext());
+                }
 //                System.out.println(String.format("Key = %s  Value = %s, type: %s",key, value, value.getClass()));
             }
         }
@@ -89,8 +99,11 @@ public class JsonTools {
             if (value instanceof HashMap){ //json对象数组
                 jsonObjHandler((Map<String, Object>)value, handler);
             }else {//基础类型数据就是最里层的结果了 value，value1，value2
-                ParamKeyValue paramKeyValue = handler.handler("", value);
-                write(String.format("\"%s\"", paramKeyValue.getValue()), iterator.hasNext());
+                List<ParamKeyValue> paramKeyValues = handler.handler("", value);
+                for (ParamKeyValue paramKeyValue :
+                        paramKeyValues) {
+                    write(String.format("\"%s\"", paramKeyValue.getValue()), iterator.hasNext());
+                }
             }
         }
         write("]", false);
@@ -102,10 +115,19 @@ public class JsonTools {
      * @return Map
      */
     public static Map<String,Object> jsonObjectToMap(Object object) {
-        JSONObject jsonObject = new JSONObject(object.toString());
-        Map<String,Object> objectMap = jsonObject.toMap();
-        // 打印健值对看看
-        // objectMap.forEach((key,value) -> System.out.println(key + "=" + value));
-        return objectMap;
+        try {
+            JSONObject jsonObject = new JSONObject(object.toString());
+            Map<String, Object> objectMap = jsonObject.toMap();
+            // 打印健值对看看
+            // objectMap.forEach((key,value) -> System.out.println(key + "=" + value));
+            return objectMap;
+        } catch (Exception e) {
+            CommonStore.callbacks.printError("[jsonObjectToMap] " + e.getMessage());
+        }
+        return null;
+    }
+
+    public String toString() {
+        return this.NEW_JSON.toString();
     }
 }

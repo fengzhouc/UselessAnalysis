@@ -33,12 +33,12 @@ public class UselessTreeNodeEntity {
     public List<String> tabs = new ArrayList<>();
 
     //请求头参数，排除掉常规header，留下自定义的头，默认空
-    public Map<String, String> reqHeaders_custom = new HashMap<>();
+    public Map<String, Object> reqHeaders_custom = new HashMap<>();
     //响应头，排除掉常规header，留下自定义的头，默认空
-    public Map<String, String> respHeaders_custom = new HashMap<>();
+    public Map<String, Object> respHeaders_custom = new HashMap<>();
 
     // 存放会话凭证信息
-    public Map<String, String> credentials = new HashMap<>(); //默认空数据
+    public Map<String, Object> credentials = new HashMap<>(); //默认空数据
     // 存放可能的安全风险
     public Map<String, StaticCheckResult> secs = new HashMap<>(); //默认空数据
     // 存放poc验证成功的
@@ -241,19 +241,19 @@ public class UselessTreeNodeEntity {
      * 解析请求及响应头，并保存下来
      */
     private void parserHeaders() {
-        for (Map.Entry<String, String> entry : BurpReqRespTools.getReqHeadersToMap(requestResponse).entrySet()){
+        for (Map.Entry<String, Object> entry : BurpReqRespTools.getReqHeadersToMap(requestResponse).entrySet()){
             if (!CommonStore.rfc_reqheader.contains(entry.getKey().toLowerCase())) {
-                reqHeaders_custom.put(entry.getKey(), entry.getValue());
+                reqHeaders_custom.put(entry.getKey(), entry.getValue().toString());
             }
             // 将可能是会话凭证的头部保存下来
             switch (entry.getKey().toLowerCase()) {
                 case "cookie":
-                    credentials.put(entry.getKey(), entry.getValue());
+                    credentials.put(entry.getKey(), entry.getValue().toString());
                 case "www-authenticate":
-                    credentials.put(entry.getKey(), entry.getValue());
+                    credentials.put(entry.getKey(), entry.getValue().toString());
                 default:
                     if (entry.getKey().toLowerCase().contains("token") || entry.getKey().toLowerCase().contains("auth")) {
-                        credentials.put(entry.getKey(), entry.getValue());
+                        credentials.put(entry.getKey(), entry.getValue().toString());
                     }
             }
         }

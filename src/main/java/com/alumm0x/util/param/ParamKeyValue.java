@@ -7,7 +7,8 @@ public class ParamKeyValue {
 
     private final Object Key;
     private final Object Value;
-    private boolean isFind = false;
+    private boolean delete = false; //用于控制删除健值对
+
 
     public ParamKeyValue(Object key, Object value) {
         this.Key = key;
@@ -22,11 +23,11 @@ public class ParamKeyValue {
         return Value;
     }
 
-    public boolean isFind() {
-        return isFind;
+    public boolean isDelete() {
+        return this.delete;
     }
 
-    public void setFind(boolean find) {
-        isFind = find;
+    public void setDelete(boolean delete) {
+        this.delete = delete;
     }
 }

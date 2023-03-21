@@ -319,8 +319,8 @@ public class AnalysisUI {
                                     break;
                                 case "Params":
                                     // 这里需要准确，所以需要解析完全的参数
-                                    for (String value : BurpReqRespTools.getQueryMap(entity.getRequestResponse()).values()) {
-                                        if (value.equals(search.getText())) {
+                                    for (Object value : BurpReqRespTools.getQueryMap(entity.getRequestResponse()).values()) {
+                                        if (value.toString().equals(search.getText())) {
                                             hit = true;
                                         }
                                     }

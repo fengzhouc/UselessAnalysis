@@ -6,11 +6,11 @@ import java.util.Map;
 
 public class MyTableModel extends AbstractTableModel {
 
-    protected Map<String, String> messages  = new HashMap<>(); //默认空数据
+    protected Map<String, Object> messages  = new HashMap<>(); //默认空数据
 
     public  MyTableModel() {}
 
-    public void setMessages(Map<String, String> datas) {
+    public void setMessages(Map<String, Object> datas) {
         this.messages = datas;
         fireTableDataChanged();
     }

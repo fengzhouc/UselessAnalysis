@@ -46,6 +46,14 @@ public class LogEntry {
     }
 
     /**
+     * 检查结果是否存在漏洞
+     * @return
+     */
+    public boolean isVuln() {
+        return this.Scanning.equals("has vuln!!!");
+    }
+
+    /**
      * 回调onFailure的时候设置
      */
     public void onFailure(){

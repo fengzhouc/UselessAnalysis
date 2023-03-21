@@ -5,7 +5,6 @@ import burp.IHttpService;
 import burp.IRequestInfo;
 import burp.IResponseInfo;
 import com.alumm0x.scan.http.HttpRequestResponseFactory;
-import com.alumm0x.util.risk.SecStaticCheck;
 import okhttp3.*;
 import okio.Buffer;
 
@@ -349,9 +348,33 @@ public class BurpReqRespTools {
      */
     public static String getContentType(IHttpRequestResponse requestResponse){
         if (requestResponse != null) {
-            return SecStaticCheck.hasHdeader(BurpReqRespTools.getReqHeaders(requestResponse), "content-type");
+            IRequestInfo requestInfo = CommonStore.helpers.analyzeRequest(requestResponse);
+
+            // 获取content-type
+            switch (requestInfo.getContentType()) {
+                case 0:
+                case 1:
+                    // byte CONTENT_TYPE_URL_ENCODED = 1;
+                    // byte CONTENT_TYPE_NONE = 0;
+                    return "application/x-www-form-urlencoded";
+                case 2:
+                    //byte CONTENT_TYPE_MULTIPART = 2;
+                    return "multipart/form-data";
+                case 3:
+                    //byte CONTENT_TYPE_XML = 3;
+                    return "application/xml";
+                case 4:
+                    //byte CONTENT_TYPE_JSON = 4;byte CONTENT_TYPE_AMF = 5;
+                    return "application/json";
+                case 5:
+                    //byte CONTENT_TYPE_AMF = 5;
+                    return "application/x-amf";
+                default:
+                    //byte CONTENT_TYPE_UNKNOWN = -1;
+                    return "UNKNOWN";
+            }
         }
-        return null;
+        return "UNKNOWN";
     }
     /**
      * 获取burp的IRequestInfo

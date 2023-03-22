@@ -38,7 +38,7 @@ public class MultiComboBox extends JComponent implements ActionListener {
         editor = new JTextField();
         editor.setBackground(Color.WHITE);
         editor.setEditable(false);
-        editor.setPreferredSize(new Dimension(50, 20));
+        editor.setPreferredSize(new Dimension(100, 20));
         editor.addActionListener(this);
         arrowButton = createArrowButton();
         arrowButton.addActionListener(this);
@@ -68,6 +68,17 @@ public class MultiComboBox extends JComponent implements ActionListener {
         }
     }
 
+    /**
+     * 删除所有复选框
+     */
+    public void removeCheckBoxList() {
+        for (JCheckBox c : popup.checkBoxList) {
+            if (!c.getText().equals("全选")) {
+                popup.checkboxPane.remove(c);
+            }
+        }
+        popup.checkBoxList.clear();
+    }
 
     @Override
     public void actionPerformed(ActionEvent arg0) {
@@ -102,9 +113,28 @@ public class MultiComboBox extends JComponent implements ActionListener {
         }
 
         private void initComponent() {
+            initCheckboxPane();
+            JPanel buttonPane = new JPanel();
+            commitButton = new JButton("确定");
+            commitButton.addActionListener(this);
+
+            cancelButton = new JButton("取消");
+            cancelButton.addActionListener(this);
+
+            buttonPane.add(commitButton);
+            buttonPane.add(cancelButton);
+
+            JScrollPane checkboxtscrollPane = new JScrollPane(checkboxPane); //滚动条
+            checkboxtscrollPane.setMaximumSize(new Dimension(checkboxPane.getWidth(),200)); // 设置最大size，这样超过这个大小就会出现滚动条
+            checkboxtscrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED); // 垂直方向滚动
+
+            this.add(checkboxtscrollPane, BorderLayout.CENTER);
+            this.add(buttonPane, BorderLayout.SOUTH);
+        }
+
+        public void initCheckboxPane(){
             checkboxPane = new JPanel();
             checkboxPane.setLayout(new GridLayout(checkBoxList.size(), 1, 3, 3));
-            JPanel buttonPane = new JPanel();
             this.setLayout(new BorderLayout());
             JCheckBox allselect = new JCheckBox("全选");
             allselect.addItemListener(new ItemListener() {
@@ -128,23 +158,6 @@ public class MultiComboBox extends JComponent implements ActionListener {
             for (JCheckBox box : checkBoxList) {
                 checkboxPane.add(box);
             }
-            refreshCheckboxPane();
-
-            commitButton = new JButton("确定");
-            commitButton.addActionListener(this);
-
-            cancelButton = new JButton("取消");
-            cancelButton.addActionListener(this);
-
-            buttonPane.add(commitButton);
-            buttonPane.add(cancelButton);
-
-            JScrollPane checkboxtscrollPane = new JScrollPane(checkboxPane); //滚动条
-            checkboxtscrollPane.setMaximumSize(new Dimension(checkboxPane.getWidth(),200)); // 设置最大size，这样超过这个大小就会出现滚动条
-            checkboxtscrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED); // 垂直方向滚动
-
-            this.add(checkboxtscrollPane, BorderLayout.CENTER);
-            this.add(buttonPane, BorderLayout.SOUTH);
         }
 
         /**
@@ -164,9 +177,10 @@ public class MultiComboBox extends JComponent implements ActionListener {
                     JCheckBox temp = new JCheckBox(v);
                     checkBoxList.add(temp);
                     checkboxPane.add(temp);
-                    checkboxPane.setLayout(new GridLayout(checkBoxList.size(), 1, 3, 3));
                 }
             }
+            // 根据复选框梳理更新样式，保持尺寸符合内容
+            checkboxPane.setLayout(new GridLayout(checkBoxList.size(), 1, 3, 3));
             this.updateUI();
         }
 

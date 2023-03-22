@@ -145,6 +145,7 @@ public class TreeMouseMune {
                     //确认继续操作
                     CommonStore.ROOTNODE.removeAllChildren(); //删除所有节点
                     CommonStore.ALL_TAGS.clear(); //清空标签
+                    AnalysisUI.tags.removeCheckBoxList(); //清空标签多选框控件
                     CommonStore.TREE.updateUI();
                 }
             }

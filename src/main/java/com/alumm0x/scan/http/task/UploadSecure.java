@@ -88,7 +88,7 @@ class UploadSecureCallback implements Callback {
 
     public UploadSecureCallback(TaskImpl task){
         this.task = task;
-        this.entity = ((IDOR)task).entity;
+        this.entity = ((UploadSecure)task).entity;
         this.logEntry = task.logAddToScanLogger(entity.getCurrent(), "UploadType");
     }
     @Override

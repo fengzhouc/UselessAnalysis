@@ -39,8 +39,9 @@ public class JsonCsrf extends TaskImpl {
          *   （2）再检查Access-Control-Allow-Origin是否为*
          *   （3）不满足（2）则修改/添加请求头Origin为http://evil.com，查看响应头Access-Control-Allow-Origin的值是否是http://evil.com
          * */
+
         //csrf会利用浏览器的cookie自动发送机制，如果不是使用cookie做会话管理就没这个问题了
-        if (SecStaticCheck.hasHdeader(BurpReqRespTools.getReqHeaders(entity.getRequestResponse()), "Cookie") != null){
+        if (SecStaticCheck.hasHdeader(BurpReqRespTools.getReqHeaders(entity.getRequestResponse()), "Cookie") != null) {
             /*
              * 1、请求头包含application/json
              */
@@ -75,14 +76,17 @@ public class JsonCsrf extends TaskImpl {
                             "application/x-www-form-urlencoded",
                             new JsonCsrfCallback(this));
 
+                } else {
+                    CommonStore.callbacks.printError("[JsonCsrf] 不满足前置条件3: Method必须要不是GET\n" +
+                            "##url: " + BurpReqRespTools.getUrl(entity.getRequestResponse()));
                 }
-            }else{
+            } else {
                 CommonStore.callbacks.printError("[JsonCsrf] 不满足前置条件2: ContentType必须要是'application/json'\n" +
-                        "##url: "+ BurpReqRespTools.getUrl(entity.getRequestResponse()));
+                        "##url: " + BurpReqRespTools.getUrl(entity.getRequestResponse()));
             }
-        }else{
+        } else {
             CommonStore.callbacks.printError("[JsonCsrf] 不满足前置条件1: 必须要有'Cookie'\n" +
-                    "##url: "+ BurpReqRespTools.getUrl(entity.getRequestResponse()));
+                    "##url: " + BurpReqRespTools.getUrl(entity.getRequestResponse()));
         }
     }
 }
@@ -95,7 +99,7 @@ class JsonCsrfCallback implements Callback {
 
     public JsonCsrfCallback(TaskImpl task){
         this.task = task;
-        this.entity = ((Csrf)task).entity;
+        this.entity = ((JsonCsrf)task).entity;
         this.logEntry = task.logAddToScanLogger(entity.getCurrent(), "JsonCsrf");
     }
     @Override

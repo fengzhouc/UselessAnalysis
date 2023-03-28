@@ -96,7 +96,7 @@ class BypassAuthCallback implements Callback {
 
     public BypassAuthCallback(TaskImpl task){
         this.task = task;
-        this.entity = ((IDOR)task).entity;
+        this.entity = ((BypassAuth)task).entity;
         this.logEntry = task.logAddToScanLogger(entity.getCurrent(), "BypassAuth");
     }
     @Override

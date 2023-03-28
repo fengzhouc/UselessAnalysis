@@ -56,16 +56,16 @@ public class JsonpCors extends TaskImpl {
                 BurpReqRespTools.getQuery(entity.getRequestResponse()),
                 BurpReqRespTools.getReqBody(entity.getRequestResponse()),
                 BurpReqRespTools.getContentType(entity.getRequestResponse()),
-                new JsonpCallback(this));
+                new JsonpCorsCallback(this));
     }
 }
 
-class JsonpCallback implements Callback {
+class JsonpCorsCallback implements Callback {
     TaskImpl task;
     UselessTreeNodeEntity entity;
     LogEntry logEntry;
 
-    public JsonpCallback(TaskImpl task){
+    public JsonpCorsCallback(TaskImpl task){
         this.task = task;
         this.entity = ((JsonpCors)task).entity;
         this.logEntry = task.logAddToScanLogger(entity.getCurrent(), "JsonpCors");

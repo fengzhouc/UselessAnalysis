@@ -90,7 +90,7 @@ class SsrfCallback implements Callback {
 
     public SsrfCallback(TaskImpl task){
         this.task = task;
-        this.entity = ((IDOR)task).entity;
+        this.entity = ((Ssrf)task).entity;
         this.logEntry = task.logAddToScanLogger(entity.getCurrent(), "Ssrf");
     }
     @Override

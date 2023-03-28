@@ -225,7 +225,7 @@ class BeanParamInjectCallback implements Callback {
 
     public BeanParamInjectCallback(TaskImpl task){
         this.task = task;
-        this.entity = ((IDOR)task).entity;
+        this.entity = ((BeanParamInject)task).entity;
         this.logEntry = task.logAddToScanLogger(entity.getCurrent(), "BeanParamInject");
     }
     @Override

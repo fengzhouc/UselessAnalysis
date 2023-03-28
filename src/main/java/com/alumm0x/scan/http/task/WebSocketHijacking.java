@@ -86,7 +86,7 @@ class WebSocketHijackingCallback implements Callback {
 
     public WebSocketHijackingCallback(TaskImpl task){
         this.task = task;
-        this.entity = ((IDOR)task).entity;
+        this.entity = ((WebSocketHijacking)task).entity;
         this.logEntry = task.logAddToScanLogger(entity.getCurrent(), "WebSocketHijacking");
     }
     @Override

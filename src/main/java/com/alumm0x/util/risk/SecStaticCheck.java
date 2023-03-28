@@ -242,14 +242,17 @@ public class SecStaticCheck {
                 } else {
                     for (String header : reqHeaders_custom.keySet()) {
                         // 没有携带token，常规关键字csrf
+                        StaticCheckResult result = new StaticCheckResult();
                         if (!header.toLowerCase().contains("csrf")) {
-                            StaticCheckResult result = new StaticCheckResult();
                             result.desc = "FORM表单CSRF风险";
-                            result.risk_param = "";
-                            result.fix = "建议增加csrf防护机制，如token令牌,form表单默认允许跨域";
-                            results.add(result);
-                            return results;
+                        } else {
+                            // 带了的需要验证是否正确验证
+                            result.desc = "CSRF验证机制，是否真实验证";
                         }
+                        result.risk_param = "";
+                        result.fix = "建议增加csrf防护机制，如token令牌,form表单默认允许跨域";
+                        results.add(result);
+                        return results;
                     }
                 }
             }

@@ -71,7 +71,7 @@ class CorsCallback implements Callback {
 
     public CorsCallback(TaskImpl task){
         this.task = task;
-        this.entity = ((JsonpCors)task).entity;
+        this.entity = ((Cors)task).entity;
         this.logEntry = task.logAddToScanLogger(entity.getCurrent(), "Cors");
     }
     @Override

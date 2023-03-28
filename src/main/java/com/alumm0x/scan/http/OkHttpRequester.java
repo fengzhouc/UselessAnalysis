@@ -1,14 +1,10 @@
 package com.alumm0x.scan.http;
 
-import burp.IBurpExtenderCallbacks;
-import burp.IExtensionHelpers;
 import com.alumm0x.util.CommonStore;
 import okhttp3.*;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 public class OkHttpRequester {
 

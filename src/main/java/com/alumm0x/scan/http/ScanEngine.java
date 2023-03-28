@@ -40,6 +40,9 @@ public class ScanEngine {
                 new JWTWithOutSign(entity).run();
                 new JWTSignNone(entity).run();
                 break;
+            case "Cors":
+                new Cors(entity).run();
+                break;
             case "JsonpCors":
                 new JsonpCors(entity).run();
                 break;

@@ -83,6 +83,8 @@ public class TreeMouseMune {
         addMenuItemBySearch("Upload", scan_search);
         addMenuItem("JWT", entity,scan);
         addMenuItemBySearch("JWT", scan_search);
+        addMenuItem("Cors", entity,scan);
+        addMenuItemBySearch("Cors", scan_search);
         addMenuItem("JsonpCors", entity,scan);
         addMenuItemBySearch("JsonpCors", scan_search);
 

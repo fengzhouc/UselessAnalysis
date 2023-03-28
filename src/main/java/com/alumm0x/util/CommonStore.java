@@ -87,6 +87,7 @@ public class CommonStore {
         pocs.add(new PocEntry(JWTWithOutSign.name,JWTWithOutSign.comments));
         pocs.add(new PocEntry(JWTSignNone.name,JWTSignNone.comments));
         pocs.add(new PocEntry(JsonpCors.name,JsonpCors.comments));
+        pocs.add(new PocEntry(Cors.name,Cors.comments));
     }
 
     // 单例http发包器

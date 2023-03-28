@@ -72,7 +72,7 @@ public class BurpReqRespTools {
             ok_reqBody = buffer.readString(charset);
         } catch (Exception e) {
             //保持默认值空字符串即可
-            CommonStore.callbacks.printError("[okhttpReqToburpReq] ok_reqBody -> " + e.getMessage());
+//            CommonStore.callbacks.printError("[okhttpReqToburpReq] ok_reqBody -> " + e.getMessage());
         }
 
         StringBuilder stringBuilder = new StringBuilder();

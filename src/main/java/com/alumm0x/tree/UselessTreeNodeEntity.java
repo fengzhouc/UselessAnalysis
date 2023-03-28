@@ -132,12 +132,6 @@ public class UselessTreeNodeEntity {
         // 安全风险分析
         // -安全响应头配置（太多了，基本都有，低危先忽略吧）
 //        addMap(checkSecHeader(respHeaders));
-        // -CORS配置
-        List<StaticCheckResult> cors = SecStaticCheck.checkCors(requestResponse);
-        if (cors != null && cors.size() > 0){
-            addTag("cors");
-            addMap(cors);
-        }
         // -中间件版本
         addMap(SecStaticCheck.checkServer(requestResponse));
         // -重定向
@@ -171,6 +165,15 @@ public class UselessTreeNodeEntity {
         if (sens != null && sens.size() > 0){
             addTag("可能存在敏感信息");
             addMap(sens);
+        }
+        // -CORS配置
+        List<StaticCheckResult> cors = SecStaticCheck.checkCors(requestResponse);
+        if (cors != null && cors.size() > 0){
+            // cors仅在ajax请求有限制，form无法限制，所以如果是form就不提示cors了
+            if (!tabs.contains("csrf")) {
+                addTag("cors");
+                addMap(cors);
+            }
         }
         // 登录相关请求追加安全要求提示验证
         addMap(SecStaticCheck.checkLoginAndout(tabs));

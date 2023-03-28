@@ -288,8 +288,10 @@ public class SecStaticCheck {
      */
     public static List<StaticCheckResult> checkSensitiveInfo(IHttpRequestResponse requestResponse) {
         byte[] body = BurpReqRespTools.getRespBody(requestResponse);
-        //如果有响应才检测
-        if (body.length > 0) {
+        // get请求获取数据才可能存在批量泄漏信息的可能，post/put/patch这种是更新数据，一般是单一用户信息
+        // 有响应才检测
+        if (BurpReqRespTools.getMethod(requestResponse).equalsIgnoreCase("get")
+                && body.length > 0) {
             String body_str = new String(body);
             String desc = "";
             //先检测是否存在url地址的参数，正则匹配
@@ -538,13 +540,18 @@ public class SecStaticCheck {
     public static List<StaticCheckResult> checkUnsfeDesignLoginout(List<String> tabs, IHttpRequestResponse requestResponse) {
         if (tabs.contains("login/out")) {
             if (BurpReqRespTools.getMethod(requestResponse).equalsIgnoreCase("GET")) {
-                List<StaticCheckResult> results = new ArrayList<>();
-                StaticCheckResult result = new StaticCheckResult();
-                result.desc = "不安全设计-login/out使用GET方法";
-                result.risk_param = "登录登出不允许使用GET请求方式";
-                result.fix = "";
-                results.add(result);
-                return results;
+                if (BurpReqRespTools.getQuery(requestResponse) != null && (
+                        BurpReqRespTools.getQuery(requestResponse).contains("username")
+                        || BurpReqRespTools.getQuery(requestResponse).contains("password")
+                )) {
+                    List<StaticCheckResult> results = new ArrayList<>();
+                    StaticCheckResult result = new StaticCheckResult();
+                    result.desc = "不安全设计-login/out使用GET方法";
+                    result.risk_param = "登录登出不允许使用GET请求方式";
+                    result.fix = "";
+                    results.add(result);
+                    return results;
+                }
             }
         }
         return null;

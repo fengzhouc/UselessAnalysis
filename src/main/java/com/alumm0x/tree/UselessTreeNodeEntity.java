@@ -118,6 +118,11 @@ public class UselessTreeNodeEntity {
                 addTag(kv[1]);
             }
         }
+        // 检测shiro的指纹
+        String setCookie = SecStaticCheck.hasHdeader(BurpReqRespTools.getRespHeaders(requestResponse), "Set-Cookie");
+        if (setCookie != null && setCookie.contains("rememberMe=")) {
+            addTag("shiro");
+        }
     }
 
     /**
@@ -257,18 +262,17 @@ public class UselessTreeNodeEntity {
                     }
             }
         }
+        if (credentials.size() != 0) {
+            addTag("auth");
+        }
 
         for (Map.Entry<String, String> entry : BurpReqRespTools.getRespHeadersToMap(requestResponse).entrySet()) {
             if (!CommonStore.rfc_reqheader.contains(entry.getKey().toLowerCase())) {
                 respHeaders_custom.put(entry.getKey(), entry.getValue());
             }
         }
-        // 检测shiro的指纹
-        String setCookie = SecStaticCheck.hasHdeader(BurpReqRespTools.getRespHeaders(requestResponse), "Set-Cookie");
-        if (setCookie != null && setCookie.contains("rememberMe=")) {
-            addTag("shiro");
-        }
     }
+
 
     /**
      * 解析请求的类型，主要区分资源请求或业务请求
@@ -276,7 +280,7 @@ public class UselessTreeNodeEntity {
      */
     private void parserContentType() {
         //1.先判定有没有请求参数，包含查询参数及body参数,没有的话就说明无外部交互，统一视为资源性，绿色
-        if (BurpReqRespTools.getQueryMap(requestResponse).size() != 0 || BurpReqRespTools.getReqBody(requestResponse).length != 0) {
+        if (BurpReqRespTools.getQuery(requestResponse) != null || BurpReqRespTools.getReqBody(requestResponse).length != 0) {
             //2.看请求方式，除了options/head/trace的请求
             if (!"OPTIONS/HEAD/TRACE".contains(BurpReqRespTools.getMethod(requestResponse))) {
                 // 进到这里就已经是yellow了，有参数就存在交互

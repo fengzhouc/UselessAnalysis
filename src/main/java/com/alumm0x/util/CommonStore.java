@@ -240,4 +240,38 @@ public class CommonStore {
         rfc_respheader.add("content-disposition");
         rfc_respheader.add("content-Language");
     }
+
+    // 关于认证的请求头
+    public static List<String> auth_header = new ArrayList<>();
+    static {
+        auth_header.add("authorization"); //定义应该用于访问资源的身份验证方法。
+        auth_header.add("www-authenticate"); //包含用于向服务器验证用户代理身份的凭据。
+        auth_header.add("proxy-authorization"); //包含用于使用代理服务器验证用户代理的凭据。
+        auth_header.add("proxy-authenticate"); //定义应用于访问代理服务器后面资源的身份验证方法。
+        auth_header.add("cookie"); //常规cookie
+    }
+
+    // 关于websocket的请求头
+    public static List<String> ws_reqheader = new ArrayList<>();
+    static {
+        ws_reqheader.add("sec-websocket-key");
+        ws_reqheader.add("sec-websocket-version");
+        ws_reqheader.add("sec-websocket-accept");
+        ws_reqheader.add("sec-websocket-protocol");
+        ws_reqheader.add("sec-websocket-extensions");
+        ws_reqheader.add("upgrade");
+    }
+
+    // 关于cors的响应头
+    public static List<String> cors_respheader = new ArrayList<>();
+    static {
+        cors_respheader.add("access-control-allow-origin");
+        cors_respheader.add("access-control-allow-headers");
+        cors_respheader.add("access-control-allow-methods");
+        cors_respheader.add("access-control-allow-credentials");
+        cors_respheader.add("access-control-expose-headers");
+        cors_respheader.add("access-control-max-age");
+    }
+
+
 }

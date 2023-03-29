@@ -103,28 +103,29 @@ public class HttpListener implements IHttpListener, IMessageEditorController {
         CommonStore.CUSTOMIZE_SUFFIX.add("font/");
         CommonStore.CUSTOMIZE_SUFFIX.add("image/");
         CommonStore.CUSTOMIZE_SUFFIX.add("text/css");
-        CommonStore.CUSTOMIZE_SUFFIX.add("application/javascript");
     }
 
     // 请求类型黑名单，不采集起信息
-    private boolean checkPruffix(IHttpRequestResponse messageInfo) {
-        IResponseInfo responseInfo = CommonStore.helpers.analyzeResponse(messageInfo.getResponse());
-        List<String> headers = responseInfo.getHeaders();
-        headers.remove(0); // 删除状态行，不然下面splite取值会越界
-        for (String header : headers) {
-            String kv = header.split(":")[1].trim();
-            for (String pruffix : CommonStore.CUSTOMIZE_SUFFIX) {
+    private boolean isBlack(IHttpRequestResponse messageInfo) {
+        for (String pruffix : CommonStore.CUSTOMIZE_SUFFIX) {
+            // 检查黑名单后缀
+            if (BurpReqRespTools.getUrlWithOutQuery(messageInfo).endsWith(pruffix)){
+                return true;
+            }
+            // 再检查响应的Content-type
+            for (String header : BurpReqRespTools.getRespHeaders(messageInfo)) {
+                String kv = header.split(":")[1].trim();
                 if (kv.startsWith(pruffix.trim())) {
-                    return false;
+                    return true;
                 }
             }
         }
-        return true;
+        return false;
     }
 
     @Override
     public void processHttpMessage(int toolFlag, boolean messageIsRequest, IHttpRequestResponse messageInfo) {
-        if (!messageIsRequest && CommonStore.ON_OFF && checkPruffix(messageInfo)) {
+        if (!messageIsRequest && CommonStore.ON_OFF && !isBlack(messageInfo)) {
             if (toolFlag == 4) {//proxy4/spider8/scanner16
                 // 修改响应的referer-prolicy，以便让所有请求都带referer
                 if (!Objects.equals(SettingUI.comboBox.getSelectedItem(), "默认目标de设置")) {

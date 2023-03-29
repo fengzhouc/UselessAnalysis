@@ -112,7 +112,7 @@ public class SettingUI {
         }
 
         //3.2 组装按钮,并添加到options
-        JLabel ct = new JLabel("黑名单Content-Type (用于限制采集的请求范围)");
+        JLabel ct = new JLabel("黑名单: Content-Type/Suffix (用于限制采集的请求范围)");
 
         makeJpanel(options, ct);
         makeJpanel(options, default_scrollPane);

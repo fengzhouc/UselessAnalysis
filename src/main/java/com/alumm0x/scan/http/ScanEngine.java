@@ -46,6 +46,9 @@ public class ScanEngine {
             case "JsonpCors":
                 new JsonpCors(entity).run();
                 break;
+           case "ReflectXss":
+                new ReflectXss(entity).run();
+                break;
             default:
                 CommonStore.callbacks.printError("do not has this tash: " + poc);
         }

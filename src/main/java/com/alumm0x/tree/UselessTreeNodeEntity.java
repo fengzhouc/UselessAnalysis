@@ -175,6 +175,12 @@ public class UselessTreeNodeEntity {
                 addMap(cors);
             }
         }
+        // 反射型xss的静态检测
+        List<StaticCheckResult> xss = SecStaticCheck.checkReflectXss(requestResponse);
+        if (xss != null && xss.size() > 0){
+            addTag("reflectXss");
+            addMap(xss);
+        }
         // 登录相关请求追加安全要求提示验证
         addMap(SecStaticCheck.checkLoginAndout(tabs));
         // 文件上传相关请求追加安全要求提示验证

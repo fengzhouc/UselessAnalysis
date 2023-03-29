@@ -87,6 +87,8 @@ public class TreeMouseMune {
         addMenuItemBySearch("Cors", scan_search);
         addMenuItem("JsonpCors", entity,scan);
         addMenuItemBySearch("JsonpCors", scan_search);
+        addMenuItem("ReflectXss", entity,scan);
+        addMenuItemBySearch("ReflectXss", scan_search);
 
         // 展开tree
         JMenu expand = new JMenu("Expand branch");

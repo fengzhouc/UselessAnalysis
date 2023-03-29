@@ -199,7 +199,7 @@ public class SettingUI {
                 CommonStore.TREE.updateUI();
             }
         });
-        JLabel cp = new JLabel("目标范围黑名单 (支持域名的模糊匹配,eg:'*.example.com')");
+        JLabel cp = new JLabel("树树图黑名单 (控制树的展示,支持域名的模糊匹配,eg:'*.example.com')");
         makeJpanel(options, cp);
         makeJpanel(options, scope_default_scrollPane);
         makeJpanel(options, scope_add, add_scope, scope_romove, scope_clear);

@@ -103,6 +103,7 @@ public class HttpListener implements IHttpListener, IMessageEditorController {
         CommonStore.CUSTOMIZE_SUFFIX.add("font/");
         CommonStore.CUSTOMIZE_SUFFIX.add("image/");
         CommonStore.CUSTOMIZE_SUFFIX.add("text/css");
+        CommonStore.CUSTOMIZE_SUFFIX.add(".js");
     }
 
     // 请求类型黑名单，不采集起信息

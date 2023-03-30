@@ -32,9 +32,10 @@ public class JsonpCors extends TaskImpl {
     }
     @Override
     public void run() {
-        // 修改请求头referer/origin为恶意的
-        HeaderTools header = new HeaderTools();
-        header.headerHandler(BurpReqRespTools.getReqHeadersToMap(entity.getRequestResponse()), new ParamHandlerImpl() {
+        List<HeaderTools> headerToolsList = new ArrayList<>();
+        // 修改请求头referer/origin为恶意的，或是删除
+        HeaderTools header0 = new HeaderTools();
+        header0.headerHandler(BurpReqRespTools.getReqHeadersToMap(entity.getRequestResponse()), new ParamHandlerImpl() {
             @Override
             public List<ParamKeyValue> handler(Object key, Object value) {
                 List<ParamKeyValue> paramKeyValues = new ArrayList<>();
@@ -48,15 +49,38 @@ public class JsonpCors extends TaskImpl {
                 return paramKeyValues;
             }
         });
+        headerToolsList.add(header0);
 
-        //新的请求包
-        CommonStore.okHttpRequester.send(BurpReqRespTools.getUrlWithOutQuery(entity.getRequestResponse()),
-                BurpReqRespTools.getMethod(entity.getRequestResponse()),
-                header.NEW_HEADER,
-                BurpReqRespTools.getQuery(entity.getRequestResponse()),
-                BurpReqRespTools.getReqBody(entity.getRequestResponse()),
-                BurpReqRespTools.getContentType(entity.getRequestResponse()),
-                new JsonpCorsCallback(this));
+        // 删除referer/origin，因为有些可能获取不到就默认放行，属于不安全设计，因为referer目前是存在不携带的场景的
+        HeaderTools header1 = new HeaderTools();
+        header1.headerHandler(BurpReqRespTools.getReqHeadersToMap(entity.getRequestResponse()), new ParamHandlerImpl() {
+            @Override
+            public List<ParamKeyValue> handler(Object key, Object value) {
+                List<ParamKeyValue> paramKeyValues = new ArrayList<>();
+                if (key.toString().equalsIgnoreCase("referer")
+                        || key.toString().equalsIgnoreCase("origin")) {
+                    ParamKeyValue paramKeyValue = new ParamKeyValue(key, value);
+                    paramKeyValue.setDelete(true); //设置删除
+                    paramKeyValues.add(paramKeyValue);
+                } else {
+                    paramKeyValues.add(new ParamKeyValue(key, value));
+                }
+                return paramKeyValues;
+            }
+        });
+        headerToolsList.add(header1);
+
+        for (HeaderTools header :
+                headerToolsList) {
+            //新的请求包
+            CommonStore.okHttpRequester.send(BurpReqRespTools.getUrlWithOutQuery(entity.getRequestResponse()),
+                    BurpReqRespTools.getMethod(entity.getRequestResponse()),
+                    header.NEW_HEADER,
+                    BurpReqRespTools.getQuery(entity.getRequestResponse()),
+                    BurpReqRespTools.getReqBody(entity.getRequestResponse()),
+                    BurpReqRespTools.getContentType(entity.getRequestResponse()),
+                    new JsonpCorsCallback(this));
+        }
     }
 }
 

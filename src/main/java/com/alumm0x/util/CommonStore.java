@@ -114,7 +114,11 @@ public class CommonStore {
         rfc_reqheader.add("accept-language");
         rfc_reqheader.add("accept-encoding");
         rfc_reqheader.add("accept-charset");
-        rfc_reqheader.add("authorization");
+//        rfc_reqheader.add("authorization");
+//        rfc_reqheader.add("cookie");
+//        rfc_reqheader.add("proxy-authenticate");
+//        rfc_reqheader.add("proxy-authorization");
+//        rfc_reqheader.add("www-authenticate");
         rfc_reqheader.add("cache-control");
         rfc_reqheader.add("connection");
         rfc_reqheader.add("accept-ch");
@@ -141,7 +145,6 @@ public class CommonStore {
         rfc_reqheader.add("content-security-policy");
         rfc_reqheader.add("content-security-policy-report-only");
         rfc_reqheader.add("content-type");
-        rfc_reqheader.add("cookie");
         rfc_reqheader.add("cross-origin-embedder-policy");
         rfc_reqheader.add("cross-origin-opener-policy");
         rfc_reqheader.add("cross-origin-resource-policy");
@@ -171,8 +174,6 @@ public class CommonStore {
         rfc_reqheader.add("nel");
         rfc_reqheader.add("origin");
         rfc_reqheader.add("permissions-policy");
-        rfc_reqheader.add("proxy-authenticate");
-        rfc_reqheader.add("proxy-authorization");
         rfc_reqheader.add("range");
         rfc_reqheader.add("referer");
         rfc_reqheader.add("referrer-policy");
@@ -209,7 +210,6 @@ public class CommonStore {
         rfc_reqheader.add("vary");
         rfc_reqheader.add("via");
         rfc_reqheader.add("want-digest");
-        rfc_reqheader.add("www-authenticate");
         rfc_reqheader.add("x-content-security-policy");
         rfc_reqheader.add("x-content-type-options");
         rfc_reqheader.add("x-frame-options");

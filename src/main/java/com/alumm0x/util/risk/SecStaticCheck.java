@@ -291,9 +291,11 @@ public class SecStaticCheck {
      */
     public static List<StaticCheckResult> checkSensitiveInfo(IHttpRequestResponse requestResponse) {
         byte[] body = BurpReqRespTools.getRespBody(requestResponse);
-        // get请求获取数据才可能存在批量泄漏信息的可能，post/put/patch这种是更新数据，一般是单一用户信息
-        // 有响应才检测
+        // 1.get请求获取数据才可能存在批量泄漏信息的可能，post/put/patch这种是更新数据，一般是单一用户信息
+        // 2.有查询参数，这样才有批量的可能
+        // 3.有响应才检测
         if (BurpReqRespTools.getMethod(requestResponse).equalsIgnoreCase("get")
+                && BurpReqRespTools.getQuery(requestResponse) != null
                 && body.length > 0) {
             String body_str = new String(body);
             String desc = "";

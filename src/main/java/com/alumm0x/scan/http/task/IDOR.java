@@ -33,37 +33,26 @@ public class IDOR extends TaskImpl {
     public void run() {
         /**
          * 未授权访问
-         * 检测逻辑
-         * 1、删除cookie发起请求
+         * 检测逻辑：删除会话凭证，如cookie，再发起请求
          * */
 
-        //1、删除cookie，重新发起请求，与原始请求状态码一致则可能存在未授权访问
-        // 只测试原本有cookie的请求
+        //1、删除会话凭证，重新发起请求，与原始请求状态码一致则可能存在未授权访问
         List<String> new_headers = new ArrayList<String>();
-        boolean hasCookie = false;
         for (String header : BurpReqRespTools.getReqHeaders(entity.getRequestResponse())) {
-            //删除cookie/authorization头部
+            //删除cookie/authorization等可能的会话凭证头部
             String key = header.split(":")[0];
-            if (HeaderTools.isAuth(key.toLowerCase(Locale.ROOT))) {
-                hasCookie = true;
-            }else {
+            if (HeaderTools.inNormal(key.toLowerCase(Locale.ROOT))) {
                 new_headers.add(header);
             }
         }
-        // 请求没有cookie,则不测试
-        if (hasCookie){
-            //新的请求包
-            CommonStore.okHttpRequester.send(BurpReqRespTools.getUrlWithOutQuery(entity.getRequestResponse()),
-                    BurpReqRespTools.getMethod(entity.getRequestResponse()),
-                    new_headers,
-                    BurpReqRespTools.getQuery(entity.getRequestResponse()),
-                    BurpReqRespTools.getReqBody(entity.getRequestResponse()),
-                    BurpReqRespTools.getContentType(entity.getRequestResponse()),
-                    new IDORCallback(this));
-        }else{
-            CommonStore.callbacks.printError("[IDOR] 不满足前置条件: 必须要有'Cookie'\n" +
-                    "##url: "+ BurpReqRespTools.getUrl(entity.getRequestResponse()));
-        }
+        //新的请求包
+        CommonStore.okHttpRequester.send(BurpReqRespTools.getUrlWithOutQuery(entity.getRequestResponse()),
+                BurpReqRespTools.getMethod(entity.getRequestResponse()),
+                new_headers,
+                BurpReqRespTools.getQuery(entity.getRequestResponse()),
+                BurpReqRespTools.getReqBody(entity.getRequestResponse()),
+                BurpReqRespTools.getContentType(entity.getRequestResponse()),
+                new IDORCallback(this));
     }
 }
 

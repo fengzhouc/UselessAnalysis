@@ -563,6 +563,26 @@ public class SecStaticCheck {
     }
 
     /**
+     * 检查不安全设计-content-type与实际数据不符
+     * @param tabs 标签列表
+     * @param requestResponse burp请求响应
+     */
+    public static List<StaticCheckResult> checkUnsfeDesignContentType(List<String> tabs, IHttpRequestResponse requestResponse) {
+        if (tabs.contains("json")) {
+            if (!BurpReqRespTools.getContentType(requestResponse).contains("json")) {
+                List<StaticCheckResult> results = new ArrayList<>();
+                StaticCheckResult result = new StaticCheckResult();
+                result.desc = "不安全设计-Content-Type不符合数据结构";
+                result.risk_param = "";
+                result.fix = "请求的Content-type必须与数据结构匹配,且服务端必须要限制";
+                results.add(result);
+                return results;
+            }
+        }
+        return null;
+    }
+
+    /**
      * 检查反射型XSS
      * @param requestResponse burp请求响应
      */

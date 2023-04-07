@@ -10,6 +10,8 @@ import com.alumm0x.util.risk.StaticCheckResult;
 
 import java.net.URI;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 树节点保存的对象，包含如下重要信息
@@ -354,7 +356,16 @@ public class UselessTreeNodeEntity {
                 if (!locationV.startsWith("http")) {
                     // 双斜杠开头是会跳转当前页面域名的该页面,一般这种是会有referer的
                     if (locationV.startsWith("//") && !this.getReferer().equals("root")) {
-                        this.location = "[GET] " + URI.create(BurpReqRespTools.getHttpService(this.requestResponse).getProtocol() + "://" + BurpReqRespTools.getHttpService(this.requestResponse).getHost() + ":" + BurpReqRespTools.getHttpService(this.requestResponse).getPort() + locationV).normalize();
+                        // 当然也有开发不规范的请求，如//path,而非//domain/path
+                        Pattern pattern = Pattern.compile("[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+");
+                        Matcher m = pattern.matcher(locationV);
+                        if (m.find()) {
+                            // 补充协议即可
+                            this.location = "[GET] " + URI.create(BurpReqRespTools.getHttpService(this.requestResponse).getProtocol() + ":" + locationV).normalize();
+                        } else {
+                            // 不规范的url，如//path，补充域名端口
+                            this.location = "[GET] " + URI.create(BurpReqRespTools.getHttpService(this.requestResponse).getProtocol() + "://" + BurpReqRespTools.getHttpService(this.requestResponse).getHost() + ":" + BurpReqRespTools.getHttpService(this.requestResponse).getPort() + "/" + locationV).normalize().toString().replace(":443", "").replace(":80", "");
+                        }
                     } else {
                         // 使用URI.normalize归一化处理，处理多余的/
                         this.location = "[GET] " + URI.create(BurpReqRespTools.getHttpService(this.requestResponse).getProtocol() + "://" + BurpReqRespTools.getHttpService(this.requestResponse).getHost() + ":" + BurpReqRespTools.getHttpService(this.requestResponse).getPort() + "/" + locationV).normalize().toString().replace(":443", "").replace(":80", "");

@@ -164,20 +164,13 @@ class RedirectCallback implements Callback {
         IHttpRequestResponse requestResponse = BurpReqRespTools.makeBurpReqRespFormOkhttp(call,response, BurpReqRespTools.getHttpService(entity.getRequestResponse()));
         logEntry.requestResponse = requestResponse;
         logEntry.Status = (short) response.code();
-        if (response.isSuccessful()) {
-            //检查响应头Location
-            if (response.isRedirect()) {
-                String location = response.headers().get("Location");
-                if (location != null && location.contains("evil.com")) {
-                    logEntry.hasVuln();
-                }
-            } else if (new String(BurpReqRespTools.getRespBody(requestResponse)).contains("evil.com")) { //检查响应体中，有些是页面加载后重定向
+        //检查响应头Location
+        if (response.isRedirect()) {
+            String location = response.headers().get("Location");
+            if (location != null && location.contains("evil.com")) {
                 logEntry.hasVuln();
-                logEntry.Comments += "Redirect and inResp";
             } else {
-                // 更新本次验证的结果
                 logEntry.onResponse();
-                CommonStore.logModel.update();
                 // 尝试bypass，bypass=false才会进行绕过测试
                 if (!((Redirect)task).isBypass) {
                     Redirect bypass = new Redirect(entity);
@@ -185,8 +178,19 @@ class RedirectCallback implements Callback {
                     bypass.run();
                 }
             }
+        } else if (new String(BurpReqRespTools.getRespBody(requestResponse)).contains("evil.com")) { //检查响应体中，有些是页面加载后重定向
+            logEntry.hasVuln();
+            logEntry.Comments += "Redirect and inResp";
         } else {
+            // 更新本次验证的结果
             logEntry.onResponse();
+            CommonStore.logModel.update();
+            // 尝试bypass，bypass=false才会进行绕过测试
+            if (!((Redirect)task).isBypass) {
+                Redirect bypass = new Redirect(entity);
+                bypass.isBypass = true;
+                bypass.run();
+            }
         }
         CommonStore.logModel.update();
     }

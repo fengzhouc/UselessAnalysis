@@ -207,6 +207,12 @@ public class UselessTreeNodeEntity {
         if (SecStaticCheck.isJsonp(requestResponse)){
             addTag("jsonp");
         }
+        // -设计不合理的，如contenttype不符合数据
+        List<StaticCheckResult> unsafe_ct = SecStaticCheck.checkUnsfeDesignContentType(tabs, requestResponse);
+        if (unsafe_ct != null && unsafe_ct.size() > 0){
+            addTag("可能的不安全设计");
+            addMap(unsafe_ct);
+        }
     }
 
 
@@ -313,15 +319,14 @@ public class UselessTreeNodeEntity {
         // json/xml可能存在反序列化，需要重点关注
         // 所以打个标签，后续好验证
         if (BurpReqRespTools.getReqBody(requestResponse).length > 0) {
-            for (String header : BurpReqRespTools.getReqHeaders(requestResponse)) {
-                if (header.trim().toLowerCase().startsWith("content-type")) {
-                    String kv = header.split(":")[1].trim().toLowerCase();
-                    if (kv.contains("json")) {
-                        addTag("json");
-                    } else if (kv.contains("xml")) {
-                        addTag("xml");
-                    }
-                }
+            // 检查请求体的内容
+            if (new String(BurpReqRespTools.getReqBody(requestResponse)).startsWith("{") 
+            || new String(BurpReqRespTools.getReqBody(requestResponse)).startsWith("[")) {
+                addTag("json");
+            }
+            String ct = BurpReqRespTools.getContentType(requestResponse);
+            if (ct != null && ct.contains("xml")) {
+                addTag("xml");
             }
         }
     }

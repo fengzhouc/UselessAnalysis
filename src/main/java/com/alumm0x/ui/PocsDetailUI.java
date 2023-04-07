@@ -1,6 +1,5 @@
 package com.alumm0x.ui;
 
-import com.alumm0x.scan.PocEntry;
 import com.alumm0x.scan.PocsDetailTableModel;
 import com.alumm0x.util.CommonStore;
 

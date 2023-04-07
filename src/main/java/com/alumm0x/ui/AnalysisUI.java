@@ -4,7 +4,6 @@ import com.alumm0x.listeners.HttpListener;
 import com.alumm0x.tree.UselessTreeNodeEntity;
 import com.alumm0x.util.BurpReqRespTools;
 import com.alumm0x.util.CommonStore;
-import com.alumm0x.util.SourceLoader;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;

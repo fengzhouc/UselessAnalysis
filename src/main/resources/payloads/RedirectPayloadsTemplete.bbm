@@ -13,6 +13,9 @@ http://#domain#@evil.com.:80/
 http://:@evil.com/
 http://:#domain#@evil.com.:80/
 http://#domain#:#domain#@evil.com.:80/
+# url其他特殊字符
+http://evil.com?@#domain#
+http://evil.com#@#domain#
 # 浏览器特性（如果跳转是通过浏览器的，则可以利用下）
 # 1.协议部分，浏览器跳转支持//，延续上一页面的协议进行访问
 //evil.com/

@@ -1,17 +1,6 @@
 package com.alumm0x.scan;
 
 import burp.IHttpRequestResponse;
-import burp.IHttpRequestResponsePersisted;
-import burp.IHttpService;
-import com.alumm0x.scan.http.HttpRequestResponseFactory;
-import com.alumm0x.util.CommonStore;
-import okhttp3.*;
-import okio.Buffer;
-
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
 
 public class LogEntry {
     public final int id;

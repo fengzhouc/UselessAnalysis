@@ -3,8 +3,6 @@ package com.alumm0x.scan;
 import com.alumm0x.util.CommonStore;
 
 import javax.swing.table.AbstractTableModel;
-import java.util.HashMap;
-import java.util.Map;
 
 public class PocsDetailTableModel extends AbstractTableModel {
 

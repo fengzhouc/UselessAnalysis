@@ -1,7 +1,6 @@
 package com.alumm0x.tree.mouse;
 
 import com.alumm0x.listeners.HttpListener;
-import com.alumm0x.scan.LogEntry;
 import com.alumm0x.scan.http.ScanEngine;
 import com.alumm0x.tree.UselessTreeNodeEntity;
 import com.alumm0x.ui.AnalysisUI;
@@ -17,7 +16,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Enumeration;
-import java.util.Objects;
 
 public class TreeMouseMune {
 

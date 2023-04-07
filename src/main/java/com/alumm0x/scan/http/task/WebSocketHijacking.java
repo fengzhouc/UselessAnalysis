@@ -1,8 +1,5 @@
 package com.alumm0x.scan.http.task;
 
-import burp.BurpExtender;
-import burp.IBurpExtenderCallbacks;
-import burp.IExtensionHelpers;
 import burp.IHttpRequestResponse;
 import com.alumm0x.scan.LogEntry;
 import com.alumm0x.scan.http.HeaderTools;

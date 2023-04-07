@@ -4,24 +4,13 @@ import com.alumm0x.listeners.HttpListener;
 import com.alumm0x.scan.MytableCellRenderer;
 import com.alumm0x.scan.ScanLoggerTable;
 import com.alumm0x.scan.ScanLoggerTableModel;
-import com.alumm0x.tree.UselessTreeNodeEntity;
 import com.alumm0x.util.CommonStore;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.util.Enumeration;
-import java.util.Objects;
 
 public class ScanLoggerUI {
 

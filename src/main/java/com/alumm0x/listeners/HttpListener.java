@@ -235,6 +235,8 @@ public class HttpListener implements IHttpListener, IMessageEditorController {
         // 如果该请求是30x，则在上面添加的节点下建一个空子节点
         if (!entity.getLocation().equals("")) {
             UselessTreeNodeEntity empty = new UselessTreeNodeEntity();
+            // 因为存在重定向，所以可能存在重定向漏洞，先打个tag(重定向方式：location/meta标签/js控制)
+            entity.addTag("redirect");
             // 将location地址设置为current，因为30x后肯定还会有个请求的，其current就是location
             empty.setCurrent(entity.getLocation());
             // 设置referer为上一个节点的current

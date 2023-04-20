@@ -43,10 +43,9 @@ public class JsonCsrf extends TaskImpl {
         //csrf会利用浏览器的cookie自动发送机制，如果不是使用cookie做会话管理就没这个问题了
         if (SecStaticCheck.hasHdeader(BurpReqRespTools.getReqHeaders(entity.getRequestResponse()), "Cookie") != null) {
             /*
-             * 1、请求头包含application/json
+             * 1、请求体需要是json数据
              */
-            String ct = SecStaticCheck.hasHdeader(BurpReqRespTools.getReqHeaders(entity.getRequestResponse()), "Content-Type");
-            if (ct != null && ct.contains("application/json")) {
+            if ( this.entity.tabs.contains("jsonCsrf")) {
                 List<String> new_headers = new ArrayList<String>();
                 String CT = "Content-Type: application/x-www-form-urlencoded";
                 //新请求修改content-type
@@ -81,7 +80,7 @@ public class JsonCsrf extends TaskImpl {
                             "##url: " + BurpReqRespTools.getUrl(entity.getRequestResponse()));
                 }
             } else {
-                CommonStore.callbacks.printError("[JsonCsrf] 不满足前置条件2: ContentType必须要是'application/json'\n" +
+                CommonStore.callbacks.printError("[JsonCsrf] 不满足前置条件2: 必须有'jsonCsrf'的标签\n" +
                         "##url: " + BurpReqRespTools.getUrl(entity.getRequestResponse()));
             }
         } else {

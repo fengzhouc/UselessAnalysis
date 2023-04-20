@@ -106,7 +106,7 @@ public class BurpReqRespTools {
             // https://blog.csdn.net/xx326664162/article/details/81661861?utm_medium=distribute.pc_aggpage_search_result.none-task-blog-2~aggregatepage~first_rank_ecpm_v1~rank_v31_ecpm-3-81661861-null-null.pc_agg_new_rank&utm_term=okhttp%E5%93%8D%E5%BA%94%E5%AD%97%E7%AC%A6%E4%B8%B2%E4%B9%B1%E7%A0%81&spm=1000.2123.3001.4430
             ok_respBody = Objects.requireNonNull(response.body()).string(); //只能调用一次，即关闭response,所以最后调用
         } catch (IOException e) {
-            CommonStore.callbacks.printError("[VulTaskImpl]response.body() -> " + e.getMessage());
+            CommonStore.callbacks.printError("[okhttpRespToburpResp]response.body() -> " + e.getMessage());
         }
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(ok_protocol + " " + ok_code + " " + ok_message).append("\r\n");

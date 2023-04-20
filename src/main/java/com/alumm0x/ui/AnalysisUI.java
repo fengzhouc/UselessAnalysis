@@ -78,9 +78,10 @@ public class AnalysisUI {
         type.addItem("");
         type.addItem("Url");
         type.addItem("Status");
+        type.addItem("Domain");
         type.addItem("Params");
-        type.addItem("Request");
-        type.addItem("Response");
+        type.addItem("ReqHeader");
+        type.addItem("RespHeader");
         // tag的多选框
         tags = new MultiComboBox(CommonStore.ALL_TAGS);
         // method的多选框
@@ -317,28 +318,38 @@ public class AnalysisUI {
                                     }
                                     break;
                                 case "Params":
-                                    // 这里需要准确，所以需要解析完全的参数
-                                    for (Object value : BurpReqRespTools.getQueryMap(entity.getRequestResponse()).values()) {
-                                        if (value.toString().equals(search.getText())) {
-                                            hit = true;
-                                        }
+                                    // 检查查询参数
+                                    if (Objects.requireNonNull(BurpReqRespTools.getQuery(entity.getRequestResponse())).contains(search.getText())) {
+                                        hit = true;
                                     }
+                                    // 检查请求体参数
                                     if (new String(BurpReqRespTools.getReqBody(entity.getRequestResponse())).contains(search.getText())) {
                                         hit = true;
                                     }
                                     break;
-                                case "Request":
-                                    if (new String(BurpReqRespTools.getReqBody(entity.getRequestResponse())).contains(search.getText())) {
-                                        hit = true;
+                                case "ReqHeader":
+                                    for (String iterable_element : Objects.requireNonNull(BurpReqRespTools.getReqHeaders(entity.getRequestResponse()))) {
+                                        if (iterable_element.contains(search.getText())) {
+                                            hit = true;
+                                            break;
+                                        }
                                     }
                                     break;
-                                case "Response":
-                                        if (new String(BurpReqRespTools.getRespBody(entity.getRequestResponse())).contains(search.getText())) {
+                                case "RespHeader":
+                                    for (String iterable_element : Objects.requireNonNull(BurpReqRespTools.getRespHeaders(entity.getRequestResponse()))) {
+                                        if (iterable_element.contains(search.getText())) {
                                             hit = true;
+                                            break;
                                         }
+                                    }
                                     break;
                                 case "Status":
                                     if (BurpReqRespTools.getStatus(entity.getRequestResponse()) == Short.parseShort(search.getText())) {
+                                        hit = true;
+                                    }
+                                    break;
+                                case "Domain":
+                                    if (Objects.requireNonNull(BurpReqRespTools.getHttpService(entity.getRequestResponse())).getHost().contains(search.getText())) {
                                         hit = true;
                                     }
                                     break;

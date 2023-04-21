@@ -19,8 +19,14 @@ public class HeaderTools {
 
     //认证的请求头
     public static boolean isAuth(String headerName){
-
         return CommonStore.auth_header.contains(headerName.toLowerCase(Locale.ROOT));
+    }
+
+    //排出标准和可能的自定义认证的请求头
+    public static boolean noAuth(String headerName){
+        // 是rfc的头部，然后排出rfc的认证头部，这样剩下的就是非认证头部了
+        return CommonStore.rfc_reqheader.contains(headerName.toLowerCase(Locale.ROOT)) && 
+                !CommonStore.auth_header.contains(headerName.toLowerCase(Locale.ROOT));
     }
 
     //websocket的请求头

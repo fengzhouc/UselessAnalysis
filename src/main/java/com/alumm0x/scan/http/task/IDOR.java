@@ -41,7 +41,7 @@ public class IDOR extends TaskImpl {
         for (String header : BurpReqRespTools.getReqHeaders(entity.getRequestResponse())) {
             //删除cookie/authorization等可能的会话凭证头部
             String key = header.split(":")[0];
-            if (HeaderTools.inNormal(key.toLowerCase(Locale.ROOT))) {
+            if (HeaderTools.noAuth(key.toLowerCase(Locale.ROOT))) {
                 new_headers.add(header);
             }
         }

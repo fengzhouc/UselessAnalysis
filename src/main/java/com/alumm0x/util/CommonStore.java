@@ -33,6 +33,17 @@ public class CommonStore {
     public static boolean ON_OFF = false;
     public static List<String> CUSTOMIZE_SUFFIX = new ArrayList<>(); //允许的后缀
     public static List<String> TARGET_SCOPE = new ArrayList<>(); //允许的target,用于过滤TREE展示的数据
+    public static List<String> REDIRECT_SCOPE = new ArrayList<>(); //重定向的参数
+    static {
+        REDIRECT_SCOPE.add("redirect");
+        REDIRECT_SCOPE.add("redirect_url");
+        REDIRECT_SCOPE.add("redirect_uri");
+        REDIRECT_SCOPE.add("callback");
+        REDIRECT_SCOPE.add("url");
+        REDIRECT_SCOPE.add("goto");
+        REDIRECT_SCOPE.add("callbackIframeUrl");
+        REDIRECT_SCOPE.add("service");
+    }
 
     public static IMessageEditor requestViewer;
     public static IMessageEditor responseViewer;
@@ -112,11 +123,11 @@ public class CommonStore {
         rfc_reqheader.add("accept-language");
         rfc_reqheader.add("accept-encoding");
         rfc_reqheader.add("accept-charset");
-//        rfc_reqheader.add("authorization");
-//        rfc_reqheader.add("cookie");
-//        rfc_reqheader.add("proxy-authenticate");
-//        rfc_reqheader.add("proxy-authorization");
-//        rfc_reqheader.add("www-authenticate");
+       rfc_reqheader.add("authorization");
+       rfc_reqheader.add("cookie");
+       rfc_reqheader.add("proxy-authenticate");
+       rfc_reqheader.add("proxy-authorization");
+       rfc_reqheader.add("www-authenticate");
         rfc_reqheader.add("cache-control");
         rfc_reqheader.add("connection");
         rfc_reqheader.add("accept-ch");

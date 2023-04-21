@@ -252,7 +252,7 @@ public class HttpListener implements IHttpListener, IMessageEditorController {
                 // 向该节点添加子节点
                 addNode(t, empty);
                 // 因为存在重定向，所以可能存在重定向漏洞，先打个tag(重定向方式：location/meta标签/js控制)
-                ((UselessTreeNodeEntity)t.getUserObject()).addTag("redirect");
+                ((UselessTreeNodeEntity)t.getUserObject()).addTag("redirect-30x");
             }
         }
     }

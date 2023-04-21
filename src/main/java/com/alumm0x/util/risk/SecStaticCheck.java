@@ -127,14 +127,7 @@ public class SecStaticCheck {
         Map<String, Object> querys = BurpReqRespTools.getQueryMap(requestResponse);
         //2.请求的url中含redirect敏感参数
         for (String query : querys.keySet()) {
-            if (query.contains("redirect")
-                    || query.contains("redirect_url")
-                    || query.contains("redirect_uri")
-                    || query.contains("callback")
-                    || query.contains("url")
-                    || query.contains("goto")
-                    || query.contains("callbackIframeUrl")
-            ) {
+            if (CommonStore.REDIRECT_SCOPE.contains(query)) {
                 Object value = querys.get(query);
                 List<StaticCheckResult> results = new ArrayList<>();
                 StaticCheckResult result = new StaticCheckResult();

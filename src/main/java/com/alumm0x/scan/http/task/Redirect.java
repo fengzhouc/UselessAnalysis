@@ -45,19 +45,12 @@ public class Redirect extends TaskImpl  {
             List<String> payloads = new ArrayList<>();
             Map<String, Object> qm = BurpReqRespTools.getQueryMap(entity.getRequestResponse());
             for (String paramname : qm.keySet()) {
-                switch (paramname) { // 下面匹配上都执行，就保留最后一个有处理逻辑即可
-                    case "redirect":
-                    case "redirect_url":
-                    case "redirect_uri":
-                    case "callback":
-                    case "url":
-                    case "goto":
-                    case "callbackIframeUrl":
-                        if (isBypass) {
-                            payloads.addAll(getBypassPayload(paramname,qm.get(paramname).toString(), querystring));
-                        } else {
-                            payloads.addAll(getPayload(paramname,qm.get(paramname).toString(), querystring));
-                        }
+                if (CommonStore.REDIRECT_SCOPE.contains(paramname)) {
+                    if (isBypass) {
+                        payloads.addAll(getBypassPayload(paramname,qm.get(paramname).toString(), querystring));
+                    } else {
+                        payloads.addAll(getPayload(paramname,qm.get(paramname).toString(), querystring));
+                    }
                 }
             }
             for (String payload_query : payloads) {

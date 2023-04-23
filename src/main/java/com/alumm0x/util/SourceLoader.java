@@ -19,7 +19,11 @@ public class SourceLoader {
         assert inStream != null;
         try(Scanner scanner = new Scanner(inStream)){
             while (scanner.hasNextLine()){
-                payloads.add(scanner.nextLine());
+                String line = scanner.nextLine();
+                // 排除掉#开头的注释
+                if (!line.startsWith("#")) {
+                    payloads.add(line);
+                }
             }
         }
         return payloads;

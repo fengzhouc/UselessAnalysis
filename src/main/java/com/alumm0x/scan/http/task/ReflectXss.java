@@ -6,6 +6,7 @@ import com.alumm0x.scan.http.task.impl.TaskImpl;
 import com.alumm0x.tree.UselessTreeNodeEntity;
 import com.alumm0x.util.BurpReqRespTools;
 import com.alumm0x.util.CommonStore;
+import com.alumm0x.util.SourceLoader;
 import com.alumm0x.util.param.ParamHandlerImpl;
 import com.alumm0x.util.param.ParamKeyValue;
 import com.alumm0x.util.param.form.FormTools;
@@ -39,27 +40,31 @@ public class ReflectXss extends TaskImpl {
             for (Map.Entry<String, StaticCheckResult> entry :
                             entity.secs.entrySet()) {
                 if (entry.getKey().startsWith("反射型XSS")) {
-                    FormTools tools = new FormTools();
-                    tools.formHandler(BurpReqRespTools.getQueryMap(entity.getRequestResponse()), new ParamHandlerImpl() {
-                        @Override
-                        public List<ParamKeyValue> handler(Object key, Object value) {
-                            List<ParamKeyValue> paramKeyValues = new ArrayList<>();
-                                if (entry.getValue().risk_param.equals(key)) {
-                                    paramKeyValues.add(new ParamKeyValue(key, "<script src='xss'>"));
-                                } else {
-                                    paramKeyValues.add(new ParamKeyValue(key, value));
-                                }
-                            return paramKeyValues;
-                        }
-                    });
-                    //新的请求包
-                    CommonStore.okHttpRequester.send(BurpReqRespTools.getUrlWithOutQuery(entity.getRequestResponse()),
-                            BurpReqRespTools.getMethod(entity.getRequestResponse()),
-                            BurpReqRespTools.getReqHeaders(entity.getRequestResponse()),
-                            tools.toString(),
-                            BurpReqRespTools.getReqBody(entity.getRequestResponse()),
-                            BurpReqRespTools.getContentType(entity.getRequestResponse()),
-                            new ReflectXssCallback(this));
+                    // 加载payload的模版
+                    List<String> payloads = SourceLoader.loadSources("/payloads/ReflectXss.bbm");
+                    for (String paylaod : payloads) {
+                        FormTools tools = new FormTools();
+                        tools.formHandler(BurpReqRespTools.getQueryMap(entity.getRequestResponse()), new ParamHandlerImpl() {
+                            @Override
+                            public List<ParamKeyValue> handler(Object key, Object value) {
+                                List<ParamKeyValue> paramKeyValues = new ArrayList<>();
+                                    if (entry.getValue().risk_param.equals(key)) {
+                                        paramKeyValues.add(new ParamKeyValue(key, paylaod));
+                                    } else {
+                                        paramKeyValues.add(new ParamKeyValue(key, value));
+                                    }
+                                return paramKeyValues;
+                            }
+                        });
+                        //新的请求包
+                        CommonStore.okHttpRequester.send(BurpReqRespTools.getUrlWithOutQuery(entity.getRequestResponse()),
+                                BurpReqRespTools.getMethod(entity.getRequestResponse()),
+                                BurpReqRespTools.getReqHeaders(entity.getRequestResponse()),
+                                tools.toString(),
+                                BurpReqRespTools.getReqBody(entity.getRequestResponse()),
+                                BurpReqRespTools.getContentType(entity.getRequestResponse()),
+                                new ReflectXssCallback(this, paylaod));
+                    }
                 }
             }
         } else {
@@ -73,11 +78,14 @@ class ReflectXssCallback implements Callback {
     UselessTreeNodeEntity entity;
     LogEntry logEntry;
     TaskImpl task;
+    String payload;
 
-    public ReflectXssCallback(TaskImpl task){
+    public ReflectXssCallback(TaskImpl task, String payload){
         this.task = task;
         this.entity = ((ReflectXss)task).entity;
         this.logEntry = task.logAddToScanLogger(entity.getCurrent(), "ReflectXss");
+        this.logEntry.Comments = payload;
+        this.payload = payload;
     }
     @Override
     public void onFailure(@NotNull Call call, @NotNull IOException e) {
@@ -92,7 +100,7 @@ class ReflectXssCallback implements Callback {
         logEntry.Status = (short) response.code();
         if (response.isSuccessful()) {
             //检查验证数据是否原样在响应中出现
-            if (new String(BurpReqRespTools.getRespBody(requestResponse)).contains("<script src='xss'>")) {
+            if (new String(BurpReqRespTools.getRespBody(requestResponse)).contains(this.payload)) {
                 logEntry.hasVuln();
             } else {
                 // 更新本次验证的结果

@@ -36,32 +36,32 @@ public class ReflectXss extends TaskImpl {
     public void run() {
         String querystring = BurpReqRespTools.getQuery(entity.getRequestResponse());
         if (querystring != null) {
-            FormTools tools = new FormTools();
-            tools.formHandler(BurpReqRespTools.getQueryMap(entity.getRequestResponse()), new ParamHandlerImpl() {
-                @Override
-                public List<ParamKeyValue> handler(Object key, Object value) {
-                    List<ParamKeyValue> paramKeyValues = new ArrayList<>();
-                    for (Map.Entry<String, StaticCheckResult> entry :
+            for (Map.Entry<String, StaticCheckResult> entry :
                             entity.secs.entrySet()) {
-                        if (entry.getKey().contains("反射型XSS")) {
-                            if (entry.getValue().risk_param.equals(key)) {
-                                paramKeyValues.add(new ParamKeyValue(key, "<script src='xss'>"));
-                            }
-                        } else {
-                            paramKeyValues.add(new ParamKeyValue(key, value));
+                if (entry.getKey().startsWith("反射型XSS")) {
+                    FormTools tools = new FormTools();
+                    tools.formHandler(BurpReqRespTools.getQueryMap(entity.getRequestResponse()), new ParamHandlerImpl() {
+                        @Override
+                        public List<ParamKeyValue> handler(Object key, Object value) {
+                            List<ParamKeyValue> paramKeyValues = new ArrayList<>();
+                                if (entry.getValue().risk_param.equals(key)) {
+                                    paramKeyValues.add(new ParamKeyValue(key, "<script src='xss'>"));
+                                } else {
+                                    paramKeyValues.add(new ParamKeyValue(key, value));
+                                }
+                            return paramKeyValues;
                         }
-                    }
-                    return paramKeyValues;
+                    });
+                    //新的请求包
+                    CommonStore.okHttpRequester.send(BurpReqRespTools.getUrlWithOutQuery(entity.getRequestResponse()),
+                            BurpReqRespTools.getMethod(entity.getRequestResponse()),
+                            BurpReqRespTools.getReqHeaders(entity.getRequestResponse()),
+                            tools.toString(),
+                            BurpReqRespTools.getReqBody(entity.getRequestResponse()),
+                            BurpReqRespTools.getContentType(entity.getRequestResponse()),
+                            new ReflectXssCallback(this));
                 }
-            });
-            //新的请求包
-            CommonStore.okHttpRequester.send(BurpReqRespTools.getUrlWithOutQuery(entity.getRequestResponse()),
-                    BurpReqRespTools.getMethod(entity.getRequestResponse()),
-                    BurpReqRespTools.getReqHeaders(entity.getRequestResponse()),
-                    tools.toString(),
-                    BurpReqRespTools.getReqBody(entity.getRequestResponse()),
-                    BurpReqRespTools.getContentType(entity.getRequestResponse()),
-                    new ReflectXssCallback(this));
+            }
         } else {
             CommonStore.callbacks.printError("[ReflectXss] 不满足前置条件1: 必须要有查询参数\n" +
                     "##url: " + BurpReqRespTools.getUrl(entity.getRequestResponse()));

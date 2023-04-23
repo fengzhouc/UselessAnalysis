@@ -580,19 +580,22 @@ public class SecStaticCheck {
      * @param requestResponse burp请求响应
      */
     public static List<StaticCheckResult> checkReflectXss(IHttpRequestResponse requestResponse) {
-        if (BurpReqRespTools.getContentType(requestResponse).contains("html")
-                &&BurpReqRespTools.getContentType(requestResponse).contains("javascript") // 有些模版js可能会有，后缀为js的不太会
-                && BurpReqRespTools.getRespBody(requestResponse).length > 0) {
+        // 获取相应的content-type
+        String resp_ct = hasHdeader(BurpReqRespTools.getRespHeaders(requestResponse), "content-type");
+        if (resp_ct != null 
+            && (resp_ct.contains("html") 
+                || resp_ct.contains("javascript")) // 有些模版js可能会有，后缀为js的不太会
+            && BurpReqRespTools.getRespBody(requestResponse).length > 0) {
             List<StaticCheckResult> results = new ArrayList<>();
             String respbody = new String(BurpReqRespTools.getRespBody(requestResponse));
-            // 检查叉查询参数是否有在响应中
+            // 检查查询参数是否有在响应中
             if (BurpReqRespTools.getQuery(requestResponse) != null) {
                 for (Map.Entry<String, Object> entry :
                         BurpReqRespTools.getQueryMap(requestResponse).entrySet()) {
                     // TODO 这种方式误报比较多，有待提升
                     if (respbody.contains((String) entry.getValue())) {
                         StaticCheckResult result = new StaticCheckResult();
-                        result.desc = "反射型XSS";
+                        result.desc = "反射型XSS-" + entry.getKey();
                         result.risk_param = entry.getKey();
                         result.fix = "根据数据输出的位置进行输出编码。可用业内成熟框架: esapi";
                         results.add(result);

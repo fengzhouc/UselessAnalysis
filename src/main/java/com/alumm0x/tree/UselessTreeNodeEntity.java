@@ -257,6 +257,11 @@ public class UselessTreeNodeEntity {
         if (this.current.contains("download")) {
             addTag("download");
         }
+        // 下载特有的响应头
+        String cd = SecStaticCheck.hasHdeader(BurpReqRespTools.getRespHeaders(requestResponse), "Content-Disposition");
+        if (cd != null && cd.contains("attachment")) {
+            addTag("download");
+        }
     }
 
     /**

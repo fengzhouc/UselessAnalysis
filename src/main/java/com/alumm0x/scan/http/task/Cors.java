@@ -102,6 +102,7 @@ class CorsCallback implements Callback {
             // 响应体与原来相同，则存在问题
             if (Arrays.equals(BurpReqRespTools.getRespBody(requestResponse),BurpReqRespTools.getRespBody(entity.getRequestResponse()))) {
                 logEntry.hasVuln();
+                entity.color = "red";
             } else {
                 logEntry.onResponse();
             }

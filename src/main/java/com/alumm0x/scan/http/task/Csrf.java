@@ -91,6 +91,7 @@ class CsrfCallback implements Callback {
             if (BurpReqRespTools.getStatus(entity.getRequestResponse()) == BurpReqRespTools.getStatus(requestResponse)
                     && Arrays.equals(BurpReqRespTools.getRespBody(entity.getRequestResponse()), BurpReqRespTools.getRespBody(requestResponse))) {
                 logEntry.hasVuln();
+                entity.color = "red";
             } else {
                 logEntry.onResponse();
             }

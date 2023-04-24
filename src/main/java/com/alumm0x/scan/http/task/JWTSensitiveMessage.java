@@ -71,6 +71,8 @@ public class JWTSensitiveMessage extends TaskImpl {
         // 检查结束后查看是否存在漏洞，不存在则修改状态为Done
         if (!logEntry.isVuln()) {
             logEntry.onResponse();
+        } else {
+            entity.color = "red";
         }
     }
 

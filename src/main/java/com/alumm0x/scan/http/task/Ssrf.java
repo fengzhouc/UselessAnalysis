@@ -125,10 +125,12 @@ class SsrfCallback implements Callback {
             // 检查响应中是否存在flag
             if (new String(BurpReqRespTools.getRespBody(entity.getRequestResponse())).contains("evil6666.com")) {
                 logEntry.hasVuln();
+                entity.color = "red";
                 logEntry.Comments = "in Resp.";
                 tryDnslog();
             } else if (response.isSuccessful()) {
                 logEntry.hasVuln();
+                entity.color = "red";
                 logEntry.Comments = "并没有在响应中呈现，需要在使用dnslog的url确认是否会发起请求";
                 tryDnslog();
             } else {

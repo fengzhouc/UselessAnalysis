@@ -104,6 +104,7 @@ class UploadSecureCallback implements Callback {
         logEntry.Status = (short) response.code();
         if (response.isSuccessful()){
             logEntry.hasVuln();
+            entity.color = "red";
         } else {
             logEntry.onResponse();
         }

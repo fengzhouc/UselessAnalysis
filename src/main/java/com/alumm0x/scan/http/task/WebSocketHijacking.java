@@ -99,6 +99,7 @@ class WebSocketHijackingCallback implements Callback {
         logEntry.Status = (short) response.code();
         if (BurpReqRespTools.getStatus(requestResponse) == 101){
             logEntry.hasVuln();
+            entity.color = "red";
         } else {
             logEntry.onResponse();
         }

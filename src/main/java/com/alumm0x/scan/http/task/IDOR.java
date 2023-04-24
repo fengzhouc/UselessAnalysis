@@ -79,12 +79,11 @@ class IDORCallback implements Callback {
         logEntry.Status = (short) response.code();
         if (response.isSuccessful()){
             // 响应体与原来相同，则存在问题
-            if (Arrays.equals(BurpReqRespTools.getRespBody(requestResponse),BurpReqRespTools.getRespBody(entity.getRequestResponse()))) {
-                logEntry.hasVuln();
-            } else {
-                logEntry.hasVuln();
+            if (!Arrays.equals(BurpReqRespTools.getRespBody(requestResponse),BurpReqRespTools.getRespBody(entity.getRequestResponse()))) {
                 logEntry.Comments = "响应内容不同,但状态码200,请肉眼确认下,有一种场景:返回的内容太大了,burp整个响应会是'This message is too large to display'";
             }
+            logEntry.hasVuln();
+            entity.color = "red";
         } else {
             logEntry.onResponse();
         }

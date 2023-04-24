@@ -102,6 +102,7 @@ class ReflectXssCallback implements Callback {
             //检查验证数据是否原样在响应中出现
             if (new String(BurpReqRespTools.getRespBody(requestResponse)).contains(this.payload)) {
                 logEntry.hasVuln();
+                entity.color = "red";
             } else {
                 // 更新本次验证的结果
                 logEntry.onResponse();

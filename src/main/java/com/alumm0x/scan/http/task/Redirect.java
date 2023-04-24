@@ -162,6 +162,7 @@ class RedirectCallback implements Callback {
             String location = response.headers().get("Location");
             if (location != null && location.contains("evil.com")) {
                 logEntry.hasVuln();
+                entity.color = "red";
             } else {
                 logEntry.onResponse();
                 // 尝试bypass，bypass=false才会进行绕过测试
@@ -173,6 +174,7 @@ class RedirectCallback implements Callback {
             }
         } else if (new String(BurpReqRespTools.getRespBody(requestResponse)).contains("evil.com")) { //检查响应体中，有些是页面加载后重定向
             logEntry.hasVuln();
+            entity.color = "red";
             logEntry.Comments += "Redirect and inResp";
         } else {
             // 更新本次验证的结果

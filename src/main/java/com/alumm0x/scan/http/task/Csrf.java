@@ -40,30 +40,23 @@ public class Csrf extends TaskImpl {
          * */
         //cors会利用浏览器的cookie自动发送机制，如果不是使用cookie做会话管理就没这个问题了
         if (SecStaticCheck.hasHdeader(BurpReqRespTools.getReqHeaders(entity.getRequestResponse()), "Cookie") != null){
-            //要包含centen-type,且为form表单，这里就会吧get排除掉了
-            String ct = SecStaticCheck.hasHdeader(BurpReqRespTools.getReqHeaders(entity.getRequestResponse()), "Content-Type");
-            if (ct != null && ct.contains("application/x-www-form-urlencoded")){
-                List<String> new_headers = new ArrayList<>();
-                //新请求修改origin
-                for (String header : BurpReqRespTools.getReqHeaders(entity.getRequestResponse())) {
-                    // 剔除掉csrf头部
-                    if (HeaderTools.inNormal(header.split(":")[0])) {
-                        if (!header.toLowerCase(Locale.ROOT).contains("Origin".toLowerCase(Locale.ROOT))) {
-                            new_headers.add(header);
-                        }
+            List<String> new_headers = new ArrayList<>();
+            //新请求修改origin
+            for (String header : BurpReqRespTools.getReqHeaders(entity.getRequestResponse())) {
+                // 剔除掉csrf头部
+                if (HeaderTools.inNormal(header.split(":")[0])) {
+                    if (!header.toLowerCase(Locale.ROOT).contains("Origin".toLowerCase(Locale.ROOT))) {
+                        new_headers.add(header);
                     }
                 }
-               CommonStore.okHttpRequester.send(BurpReqRespTools.getUrlWithOutQuery(entity.getRequestResponse()),
-                       BurpReqRespTools.getMethod(entity.getRequestResponse()),
-                       new_headers,
-                       BurpReqRespTools.getQuery(entity.getRequestResponse()),
-                       BurpReqRespTools.getReqBody(entity.getRequestResponse()),
-                       BurpReqRespTools.getContentType(entity.getRequestResponse()),
-                       new CsrfCallback(this));
-            }else{
-                CommonStore.callbacks.printError("[Csrf] 不满足前置条件2: ContentType必须要是'application/json'\n" +
-                        "##url: "+ BurpReqRespTools.getUrl(entity.getRequestResponse()));
             }
+            CommonStore.okHttpRequester.send(BurpReqRespTools.getUrlWithOutQuery(entity.getRequestResponse()),
+                    BurpReqRespTools.getMethod(entity.getRequestResponse()),
+                    new_headers,
+                    BurpReqRespTools.getQuery(entity.getRequestResponse()),
+                    BurpReqRespTools.getReqBody(entity.getRequestResponse()),
+                    BurpReqRespTools.getContentType(entity.getRequestResponse()),
+                    new CsrfCallback(this));
         }else{
             CommonStore.callbacks.printError("[Csrf] 不满足前置条件1: 必须要有'Cookie'\n" +
                     "##url: "+ BurpReqRespTools.getUrl(entity.getRequestResponse()));

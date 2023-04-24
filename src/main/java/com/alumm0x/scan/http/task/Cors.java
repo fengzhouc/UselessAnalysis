@@ -54,11 +54,18 @@ public class Cors extends TaskImpl {
             header.NEW_HEADER.add("Origin: http://evil.com");
         }
         //新的请求包
+        // CommonStore.okHttpRequester.send(BurpReqRespTools.getUrlWithOutQuery(entity.getRequestResponse()),
+        //         BurpReqRespTools.getMethod(entity.getRequestResponse()),
+        //         header.NEW_HEADER,
+        //         BurpReqRespTools.getQuery(entity.getRequestResponse()),
+        //         BurpReqRespTools.getReqBody(entity.getRequestResponse()),
+        //         BurpReqRespTools.getContentType(entity.getRequestResponse()),
+        //         new CorsCallback(this));
         CommonStore.okHttpRequester.send(BurpReqRespTools.getUrlWithOutQuery(entity.getRequestResponse()),
-                BurpReqRespTools.getMethod(entity.getRequestResponse()),
+                "OPTIONS",
                 header.NEW_HEADER,
-                BurpReqRespTools.getQuery(entity.getRequestResponse()),
-                BurpReqRespTools.getReqBody(entity.getRequestResponse()),
+                null,
+                new byte[]{},
                 BurpReqRespTools.getContentType(entity.getRequestResponse()),
                 new CorsCallback(this));
     }

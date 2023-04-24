@@ -56,8 +56,6 @@ public class OkHttpRequester {
             case "GET":
                 get(url, headerList, callback);
                 break;
-            case  "OPTIONS": //options不发包检测
-                break;
             case  "HEAD": //head不发包检测
                 break;
             default:

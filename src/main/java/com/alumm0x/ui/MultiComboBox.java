@@ -177,8 +177,12 @@ public class MultiComboBox extends JComponent implements ActionListener {
                     JCheckBox temp = new JCheckBox(v);
                     checkBoxList.add(temp);
                     checkboxPane.add(temp);
-                    // 根据复选框梳理更新样式，保持尺寸符合内容
-                    checkboxPane.setLayout(new GridLayout(checkBoxList.size(), 1, 3, 3));
+                    // 根据复选框梳理更新样式，保持尺寸符合内容,最大行数15，超过则增加列数
+                    if (checkBoxList.size() > 15){
+                        checkboxPane.setLayout(new GridLayout(Math.round(checkBoxList.size() / Math.round(checkBoxList.size() / 15) + 1) + 1, Math.round(checkBoxList.size() / 15) + 1, 3, 3));
+                    } else {
+                        checkboxPane.setLayout(new GridLayout(checkBoxList.size(), 1, 3, 3));
+                    }
                 }
                 this.updateUI();
             }

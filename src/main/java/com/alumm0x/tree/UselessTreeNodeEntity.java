@@ -369,11 +369,11 @@ public class UselessTreeNodeEntity {
                             this.location = "[GET] " + URI.create(BurpReqRespTools.getHttpService(this.requestResponse).getProtocol() + ":" + locationV).normalize();
                         } else {
                             // 不规范的url，如//path，补充域名端口
-                            this.location = "[GET] " + URI.create(BurpReqRespTools.getHttpService(this.requestResponse).getProtocol() + "://" + BurpReqRespTools.getHttpService(this.requestResponse).getHost() + ":" + BurpReqRespTools.getHttpService(this.requestResponse).getPort() + "/" + locationV).normalize().toString().replace(":443", "").replace(":80", "");
+                            this.location = "[GET] " + URI.create(BurpReqRespTools.getHttpService(this.requestResponse).getProtocol() + "://" + BurpReqRespTools.getHttpService(this.requestResponse).getHost() + ":" + BurpReqRespTools.getHttpService(this.requestResponse).getPort() + "/" + locationV).normalize().toString().replace(":443/", "/").replace(":80/", "/");
                         }
                     } else {
                         // 使用URI.normalize归一化处理，处理多余的/
-                        this.location = "[GET] " + URI.create(BurpReqRespTools.getHttpService(this.requestResponse).getProtocol() + "://" + BurpReqRespTools.getHttpService(this.requestResponse).getHost() + ":" + BurpReqRespTools.getHttpService(this.requestResponse).getPort() + "/" + locationV).normalize().toString().replace(":443", "").replace(":80", "");
+                        this.location = "[GET] " + URI.create(BurpReqRespTools.getHttpService(this.requestResponse).getProtocol() + "://" + BurpReqRespTools.getHttpService(this.requestResponse).getHost() + ":" + BurpReqRespTools.getHttpService(this.requestResponse).getPort() + "/" + locationV).normalize().toString().replace(":443/", "/").replace(":80/", "/");
                     }
                 } else {
                     this.location = "[GET] " + locationV;

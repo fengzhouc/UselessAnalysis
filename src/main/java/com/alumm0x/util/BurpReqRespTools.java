@@ -275,7 +275,7 @@ public class BurpReqRespTools {
     public static String getUrl(IHttpRequestResponse requestResponse){
         if (requestResponse != null) {
             IRequestInfo requestInfo = CommonStore.helpers.analyzeRequest(requestResponse);
-            return requestInfo.getUrl().toString().replace(":443", "").replace(":80", "");
+            return requestInfo.getUrl().toString().replace(":443/", "/").replace(":80/", "/");
         }
         return "";
     }
@@ -288,7 +288,7 @@ public class BurpReqRespTools {
     public static String getUrlWithOutQuery(IHttpRequestResponse requestResponse){
         if (requestResponse != null) {
             IRequestInfo requestInfo = CommonStore.helpers.analyzeRequest(requestResponse);
-            return requestInfo.getUrl().toString().replace(":443", "").replace(":80", "").split("\\?", 2)[0];
+            return requestInfo.getUrl().toString().replace(":443/", "/").replace(":80/", "/").split("\\?", 2)[0];
         }
         return "";
     }

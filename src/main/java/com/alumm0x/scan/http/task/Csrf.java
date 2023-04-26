@@ -79,6 +79,8 @@ class CsrfCallback implements Callback {
     public void onFailure(@NotNull Call call, @NotNull IOException e) {
         logEntry.onFailure();
         CommonStore.logModel.update();
+        CommonStore.callbacks.printError("[CsrfCallback]" + e.getMessage());
+        logEntry.Comments = e.getMessage();
     }
 
     @Override

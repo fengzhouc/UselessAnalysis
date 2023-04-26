@@ -232,6 +232,8 @@ class BeanParamInjectCallback implements Callback {
     public void onFailure(@NotNull Call call, @NotNull IOException e) {
         logEntry.onFailure();
         CommonStore.logModel.update();
+        CommonStore.callbacks.printError("[BeanParamInjectCallback]" + e.getMessage());
+        logEntry.Comments = e.getMessage();
     }
 
     @Override
@@ -244,6 +246,7 @@ class BeanParamInjectCallback implements Callback {
             // 检查响应中是否存在flag
             if (new String(BurpReqRespTools.getRespBody(requestResponse)).contains("beanInject")) {
                 logEntry.hasVuln();
+                entity.color = "red";
             }
         }else { //啥情况会不成功，做了些数据校验的时候，比如这个字段只允许String，我改成int，可能就会报错，那报错就可能就是用了bean
             logEntry.onResponse();

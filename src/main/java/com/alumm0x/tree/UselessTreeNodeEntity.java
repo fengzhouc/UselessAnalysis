@@ -397,7 +397,7 @@ public class UselessTreeNodeEntity {
     public void addTag(String tag) {
         SettingUI.notInsideAdd(this.tabs,tag);
         // 再添加到全局的tags中
-        SettingUI.notInsideAdd(CommonStore.ALL_TAGS,tag);
+        SettingUI.notInsideAdd(CommonStore.VIEW_TAGS,tag);
     }
 
     /**

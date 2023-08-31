@@ -22,7 +22,7 @@ import java.util.Objects;
 public class AnalysisUI {
 
     public static JTextField add_tab; //添加的标签
-    public static MultiComboBox tags; //搜索条件中的标签选择
+    public static MultiComboBoxToViewTag tags; //搜索条件中的标签选择
     public static MultiComboBox methods; //搜索条件中的method选择
     public static MultiComboBox colors; //搜索条件中的method选择
     public static JComboBox<String> type; //搜索类型
@@ -83,12 +83,12 @@ public class AnalysisUI {
         type.addItem("ReqHeader");
         type.addItem("RespHeader");
         // tag的多选框
-        tags = new MultiComboBox(CommonStore.ALL_TAGS);
+        tags = new MultiComboBoxToViewTag();
         // method的多选框
         String[] methodArr = new String[]{"GET","POST","DELETE","PUT","PATCH","OPTIONS","HEAD","TRACE"};
         methods = new MultiComboBox(Arrays.asList(methodArr));
         // color的多选框
-        String[] colorArr = new String[]{"red","magenta","yellow","green",""};
+        String[] colorArr = new String[]{"red","magenta","yellow","green"};
         colors = new MultiComboBox(Arrays.asList(colorArr));
         // 组装工具区
         SettingUI.makeJpanel(tools,on);
@@ -139,7 +139,7 @@ public class AnalysisUI {
             public void actionPerformed(ActionEvent e) {
                 String value = add_tab.getText();
                 SettingUI.notInsideAdd(CommonStore.entity.tabs, value); //无重复再添加
-                SettingUI.notInsideAdd(CommonStore.ALL_TAGS, value); //无重复再添加
+                SettingUI.notInsideAdd(CommonStore.VIEW_TAGS, value); //无重复再添加
                 // JList更新数据必须通过setModel，重新设置数据
                 CommonStore.list.setModel(new AbstractListModel<String>() {
                     public int getSize() {

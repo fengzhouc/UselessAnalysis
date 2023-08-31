@@ -49,6 +49,9 @@ public class ScanEngine {
            case "ReflectXss":
                 new ReflectXss(entity).run();
                 break;
+            case "SessionKey":
+                new SessionKey(entity).run();
+                break;
             default:
                 CommonStore.callbacks.printError("do not has this tash: " + poc);
         }

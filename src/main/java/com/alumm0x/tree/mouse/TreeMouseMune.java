@@ -58,7 +58,7 @@ public class TreeMouseMune {
                 CommonStore.TREE.updateUI();
             }
         });
-        // 扫描动作-动态扫描
+        // TODO: 扫描动作-动态扫描 持续添加
         JMenu scan = new JMenu("Scan");
         JMenu scan_search = new JMenu("Scan search");
         addMenuItem("IDOR", entity,scan);
@@ -87,6 +87,8 @@ public class TreeMouseMune {
         addMenuItemBySearch("JsonpCors", scan_search);
         addMenuItem("ReflectXss", entity,scan);
         addMenuItemBySearch("ReflectXss", scan_search);
+        addMenuItem("SessionKey", entity,scan);
+        addMenuItemBySearch("SessionKey", scan_search);
 
         // 展开tree
         JMenu expand = new JMenu("Expand branch");
@@ -146,7 +148,7 @@ public class TreeMouseMune {
                 if (opt == JOptionPane.YES_OPTION) {
                     //确认继续操作
                     CommonStore.ROOTNODE.removeAllChildren(); //删除所有节点
-                    CommonStore.ALL_TAGS.clear(); //清空标签
+                    // CommonStore.VIEW_TAGS.clear(); //清空标签
                     AnalysisUI.tags.removeCheckBoxList(); //清空标签多选框控件
                     CommonStore.TREE.updateUI();
                 }

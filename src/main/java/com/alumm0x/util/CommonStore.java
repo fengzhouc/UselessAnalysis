@@ -29,7 +29,7 @@ public class CommonStore {
     public static JTree TREE = null;
     public static DefaultMutableTreeNode ROOTNODE = null; //根节点
     public static TreeModel TREEMODEL = null;
-    public static List<String> ALL_TAGS = new ArrayList<>(); //所有的标签
+    public static List<String> VIEW_TAGS = new ArrayList<>(); //所有的标签
     public static boolean ON_OFF = false;
     public static List<String> CUSTOMIZE_SUFFIX = new ArrayList<>(); //允许的后缀
     public static List<String> TARGET_SCOPE = new ArrayList<>(); //允许的target,用于过滤TREE展示的数据
@@ -81,7 +81,7 @@ public class CommonStore {
     // pocs detail
     public static final List<PocEntry> pocs = new ArrayList<>();
     public static JTable pocsTable; //视图table对象
-    // 设置poc的解读数据
+    // TODO: 设置poc的解读数据,持续添加
     static {
         pocs.add(new PocEntry(IDOR.name,IDOR.comments));
         pocs.add(new PocEntry(Redirect.name, Redirect.comments));
@@ -98,6 +98,7 @@ public class CommonStore {
         pocs.add(new PocEntry(JsonpCors.name,JsonpCors.comments));
         pocs.add(new PocEntry(Cors.name,Cors.comments));
         pocs.add(new PocEntry(ReflectXss.name,ReflectXss.comments));
+        pocs.add(new PocEntry(SessionKey.name,SessionKey.comments));
     }
 
     // 单例http发包器

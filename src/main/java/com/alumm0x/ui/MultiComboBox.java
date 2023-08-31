@@ -84,8 +84,8 @@ public class MultiComboBox extends JComponent implements ActionListener {
     public void actionPerformed(ActionEvent arg0) {
         // TODO Auto-generated method stub
         if (!popup.isVisible()) {
-            popup.show(this, 0, getHeight());
             popup.refreshCheckboxPane();
+            popup.show(this, 0, getHeight());
         }
     }
 

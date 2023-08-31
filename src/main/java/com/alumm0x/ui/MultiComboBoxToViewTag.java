@@ -10,11 +10,18 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.Objects;
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicArrowButton;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 
+import com.alumm0x.tree.UselessTreeNodeEntity;
+import com.alumm0x.util.BurpReqRespTools;
 import com.alumm0x.util.CommonStore;
 
 
@@ -84,8 +91,8 @@ public class MultiComboBoxToViewTag extends JComponent implements ActionListener
     public void actionPerformed(ActionEvent arg0) {
         // TODO Auto-generated method stub
         if (!popup.isVisible()) {
-            popup.show(this, 0, getHeight());
             popup.refreshCheckboxPane();
+            popup.show(this, 0, getHeight());
         }
     }
 
@@ -104,6 +111,7 @@ public class MultiComboBoxToViewTag extends JComponent implements ActionListener
         private JButton commitButton;
         private JButton cancelButton;
         public JPanel checkboxPane; // 标签复选框的面板
+        private JCheckBox allselect;
 
         public MultiPopup() {
             super();
@@ -134,7 +142,7 @@ public class MultiComboBoxToViewTag extends JComponent implements ActionListener
             checkboxPane = new JPanel();
             checkboxPane.setLayout(new GridLayout(checkBoxList.size(), 1, 3, 3));
             this.setLayout(new BorderLayout());
-            JCheckBox allselect = new JCheckBox("全选");
+            allselect = new JCheckBox("全选");
             allselect.addItemListener(new ItemListener() {
                 public void itemStateChanged(ItemEvent e) {
                     if (checkBoxList.get(0).isSelected()) {
@@ -153,21 +161,29 @@ public class MultiComboBoxToViewTag extends JComponent implements ActionListener
                 }
             });
             checkBoxList.add(allselect);
-            for (JCheckBox box : checkBoxList) {
-                checkboxPane.add(box);
-            }
+            checkboxPane.add(allselect);
         }
 
         /**
          * 动态更新checkboxPane，因为tag实时变化的
          */
         public void refreshCheckboxPane() {
+            // 先清空原来的checkBoxList
+            checkBoxList.clear();
+            checkboxPane.removeAll();
+            checkBoxList.add(allselect); // 添加全选按钮
+            checkboxPane.add(allselect); // 添加全选按钮
+            // 清空CommonStore.VIEW_TAGS;
+            CommonStore.VIEW_TAGS.clear();
+            // 遍历tree树，将显示的node的标签
+            initViewTags(new TreePath(CommonStore.ROOTNODE));
             // 检查显示的标签是否为0
             if (CommonStore.VIEW_TAGS.size() == 0) {
                 // 为0则设置pane大小为初始化状态
                 checkboxPane.setLayout(new GridLayout(checkBoxList.size(), 1, 3, 3));
                 this.updateUI(); //更新UI
             } else {
+                // 重新根据CommonStore.VIEW_TAGS构建checkBoxList
                 for (String v : CommonStore.VIEW_TAGS) {
                     // 已有的复选框中没有的才添加
                     boolean in = false;
@@ -189,6 +205,26 @@ public class MultiComboBoxToViewTag extends JComponent implements ActionListener
                         }
                     }
                     this.updateUI();
+                }
+            }
+        }
+
+        // 初始化CommonStore.VIEW_TAGS，通过便利tree，将显示的节点的tag添加进去
+        private void initViewTags(TreePath parent){
+            TreeNode node = (TreeNode) parent.getLastPathComponent();
+            if (node.getChildCount() > 0) {
+                for (Enumeration e = node.children(); e.hasMoreElements();) {
+                    DefaultMutableTreeNode n = (DefaultMutableTreeNode) e.nextElement(); // 获取父节点的子节点
+                    UselessTreeNodeEntity entity = ((UselessTreeNodeEntity)n.getUserObject()); // 修改isVisible
+                    // 为了可以继续上次的搜索结果在进行搜索，这里限制了仅搜索isVisible=true的节点
+                    if (entity.isVisible()) {
+                        // 将显示的节点的标签添加到CommonStore.VIEW_TAGS，这样实现动态变化的标签列表
+                        for (String tag : entity.tabs) {
+                            SettingUI.notInsideAdd(CommonStore.VIEW_TAGS,tag);
+                        } 
+                    }
+                    TreePath path = parent.pathByAddingChild(n); // 父节点path拼接子节点
+                    initViewTags(path); // 递归子节点，进行查询
                 }
             }
         }

@@ -139,7 +139,6 @@ public class AnalysisUI {
             public void actionPerformed(ActionEvent e) {
                 String value = add_tab.getText();
                 SettingUI.notInsideAdd(CommonStore.entity.tabs, value); //无重复再添加
-                SettingUI.notInsideAdd(CommonStore.VIEW_TAGS, value); //无重复再添加
                 // JList更新数据必须通过setModel，重新设置数据
                 CommonStore.list.setModel(new AbstractListModel<String>() {
                     public int getSize() {

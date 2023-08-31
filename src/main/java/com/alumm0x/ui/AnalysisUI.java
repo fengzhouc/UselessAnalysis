@@ -138,22 +138,22 @@ public class AnalysisUI {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String value = add_tab.getText();
-                SettingUI.notInsideAdd(CommonStore.entity.tabs, value); //无重复再添加
-                // JList更新数据必须通过setModel，重新设置数据
-                CommonStore.list.setModel(new AbstractListModel<String>() {
-                    public int getSize() {
-                        return CommonStore.entity.tabs.size();
-                    }
-                    public String getElementAt(int i) {
-                        return CommonStore.entity.tabs.get(i);
-                    }
-                });
-                add_tab.setText("");
+                if (!"".equalsIgnoreCase(value)){
+                    SettingUI.notInsideAdd(CommonStore.entity.tabs, value); //无重复再添加
+                    // JList更新数据必须通过setModel，重新设置数据
+                    CommonStore.list.setModel(new AbstractListModel<String>() {
+                        public int getSize() {
+                            return CommonStore.entity.tabs.size();
+                        }
+                        public String getElementAt(int i) {
+                            return CommonStore.entity.tabs.get(i);
+                        }
+                    });
+                }
             }
         });
         add_tab = new JTextField(); //输入框，自定义后缀
         add_tab.setColumns(10);
-        add_tab.setText("");
         JButton romove = new JButton("Remove");
         romove.addActionListener(new ActionListener() {
             @Override

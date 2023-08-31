@@ -51,17 +51,19 @@ public class SettingUI {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String value = SettingUI.add_suffix.getText();
-                SettingUI.notInsideAdd(CommonStore.CUSTOMIZE_SUFFIX, value); //无重复再添加
-                // JList更新数据必须通过setModel，重新设置数据
-                list.setModel(new AbstractListModel<String>() {
-                    public int getSize() {
-                        return CommonStore.CUSTOMIZE_SUFFIX.size();
-                    }
-                    public String getElementAt(int i) {
-                        return CommonStore.CUSTOMIZE_SUFFIX.get(i);
-                    }
-                });
-                SettingUI.add_suffix.setText("");
+                if (!"".equalsIgnoreCase(value)) {
+                    SettingUI.notInsideAdd(CommonStore.CUSTOMIZE_SUFFIX, value); //无重复再添加
+                    // JList更新数据必须通过setModel，重新设置数据
+                    list.setModel(new AbstractListModel<String>() {
+                        public int getSize() {
+                            return CommonStore.CUSTOMIZE_SUFFIX.size();
+                        }
+                        public String getElementAt(int i) {
+                            return CommonStore.CUSTOMIZE_SUFFIX.get(i);
+                        }
+                    });
+                    SettingUI.add_suffix.setText("");
+                }
             }
         });
         add_suffix = new JTextField(); //输入框，自定义后缀
@@ -140,20 +142,22 @@ public class SettingUI {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String value = SettingUI.add_scope.getText();
-                SettingUI.notInsideAdd(CommonStore.TARGET_SCOPE, value); //无重复再添加
-                // JList更新数据必须通过setModel，重新设置数据
-                scope_list.setModel(new AbstractListModel<String>() {
-                    public int getSize() {
-                        return CommonStore.TARGET_SCOPE.size();
-                    }
-                    public String getElementAt(int i) {
-                        return CommonStore.TARGET_SCOPE.get(i);
-                    }
-                });
-                // 添加单个黑名单，需要将这个节点下的所有的设为false
-                AnalysisUI.isVisibleAllNodes(new TreePath(CommonStore.ROOTNODE), false);
-                CommonStore.TREE.updateUI();
-                SettingUI.add_scope.setText("");
+                if (!"".equalsIgnoreCase(value)) {
+                    SettingUI.notInsideAdd(CommonStore.TARGET_SCOPE, value); //无重复再添加
+                    // JList更新数据必须通过setModel，重新设置数据
+                    scope_list.setModel(new AbstractListModel<String>() {
+                        public int getSize() {
+                            return CommonStore.TARGET_SCOPE.size();
+                        }
+                        public String getElementAt(int i) {
+                            return CommonStore.TARGET_SCOPE.get(i);
+                        }
+                    });
+                    // 添加单个黑名单，需要将这个节点下的所有的设为false
+                    AnalysisUI.isVisibleAllNodes(new TreePath(CommonStore.ROOTNODE), false);
+                    CommonStore.TREE.updateUI();
+                    SettingUI.add_scope.setText("");
+                }
             }
         });
         add_scope = new JTextField(); //输入框，自定义后缀
@@ -229,17 +233,19 @@ public class SettingUI {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String value = SettingUI.add_redirect.getText();
-                SettingUI.notInsideAdd(CommonStore.REDIRECT_SCOPE, value); //无重复再添加
-                // JList更新数据必须通过setModel，重新设置数据
-                redirect_list.setModel(new AbstractListModel<String>() {
-                    public int getSize() {
-                        return CommonStore.REDIRECT_SCOPE.size();
-                    }
-                    public String getElementAt(int i) {
-                        return CommonStore.REDIRECT_SCOPE.get(i);
-                    }
-                });
-                SettingUI.add_redirect.setText("");
+                if (!"".equalsIgnoreCase(value)) {
+                    SettingUI.notInsideAdd(CommonStore.REDIRECT_SCOPE, value); //无重复再添加
+                    // JList更新数据必须通过setModel，重新设置数据
+                    redirect_list.setModel(new AbstractListModel<String>() {
+                        public int getSize() {
+                            return CommonStore.REDIRECT_SCOPE.size();
+                        }
+                        public String getElementAt(int i) {
+                            return CommonStore.REDIRECT_SCOPE.get(i);
+                        }
+                    });
+                    SettingUI.add_redirect.setText("");
+                }
             }
         });
         add_redirect = new JTextField(); //输入框，自定义后缀

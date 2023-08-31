@@ -6,6 +6,7 @@ import okhttp3.*;
 import java.io.IOException;
 import java.util.List;
 
+
 public class OkHttpRequester {
 
     //单例模式
@@ -16,6 +17,8 @@ public class OkHttpRequester {
         this.client = new OkHttpClient.Builder()
                 .followRedirects(false) //不跳转
                 .followSslRedirects(false) //不跳转
+                .sslSocketFactory(SSLSocketClient.getSSLSocketFactory(), SSLSocketClient.getX509TrustManager()) // 忽略https证书
+                .hostnameVerifier(SSLSocketClient.getHostnameVerifier()) // 忽略https证书
                 .build();
     }
 
@@ -56,7 +59,8 @@ public class OkHttpRequester {
             case "GET":
                 get(url, headerList, callback);
                 break;
-            case  "HEAD": //head不发包检测
+            case  "HEAD": //不发包检测
+            case  "OPTIONS":
                 break;
             default:
                 defSend(url, method, headerList, bodyParam, contentType, callback);

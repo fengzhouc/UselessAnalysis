@@ -104,16 +104,19 @@ public class SecStaticCheck {
         List<String> headers = BurpReqRespTools.getRespHeaders(requestResponse);
         String server = hasHdeader(headers, "Server");
         if (server != null) {
-            // 获取Server的值，并以空格分割，一般版本都是/分隔的
-            String[] sv = server.trim().split(":")[1].trim().split("/");
-            if (sv.length >= 2) {
-                List<StaticCheckResult> results = new ArrayList<>();
-                StaticCheckResult result = new StaticCheckResult();
-                result.desc = "泄漏中间件版本";
-                result.risk_param = server;
-                result.fix = "建议隐藏Server的版本";
-                results.add(result);
-                return results;
+            // fix: 遇到Server乱返回空的，这里判断下避免越界
+            if (server.trim().split(":").length > 1) {
+                // 获取Server的值，并以空格分割，一般版本都是/分隔的
+                String[] sv = server.trim().split(":")[1].trim().split("/");
+                if (sv.length >= 2) {
+                    List<StaticCheckResult> results = new ArrayList<>();
+                    StaticCheckResult result = new StaticCheckResult();
+                    result.desc = "泄漏中间件版本";
+                    result.risk_param = server;
+                    result.fix = "建议隐藏Server的版本";
+                    results.add(result);
+                    return results;
+                }
             }
         }
         return null;

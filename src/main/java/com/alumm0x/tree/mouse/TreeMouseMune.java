@@ -1,7 +1,7 @@
 package com.alumm0x.tree.mouse;
 
 import com.alumm0x.listeners.HttpListener;
-import com.alumm0x.scan.http.ScanEngine;
+import com.alumm0x.scan.ScanEngine;
 import com.alumm0x.tree.UselessTreeNodeEntity;
 import com.alumm0x.ui.AnalysisUI;
 import com.alumm0x.ui.SettingUI;

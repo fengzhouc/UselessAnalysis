@@ -402,7 +402,7 @@ public class UselessTreeNodeEntity {
      * 添加检查结果到安全风险模型中，以便展示
      * @param results List<StaticCheckResult>
      */
-    private void addMap(List<StaticCheckResult> results) {
+    public void addMap(List<StaticCheckResult> results) {      
         if (results != null) {
             for (StaticCheckResult result : results) {
                 // 直接put，已经存在的key会直接覆盖

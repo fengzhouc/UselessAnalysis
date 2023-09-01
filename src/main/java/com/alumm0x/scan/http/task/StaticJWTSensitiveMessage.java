@@ -1,8 +1,7 @@
 package com.alumm0x.scan.http.task;
 
 import burp.IParameter;
-import com.alumm0x.scan.LogEntry;
-import com.alumm0x.scan.http.task.impl.TaskImpl;
+import com.alumm0x.scan.http.task.impl.StaticTaskImpl;
 import com.alumm0x.tree.UselessTreeNodeEntity;
 import com.alumm0x.util.BurpReqRespTools;
 import com.alumm0x.util.CommonStore;
@@ -14,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class JWTSensitiveMessage extends TaskImpl {
+public class StaticJWTSensitiveMessage extends StaticTaskImpl {
 
     public static String name = "JWTSensitiveMessage";
     public static String comments = "JWT敏感信息检测。是否在JWT中传输敏感信息，这里主要检测账号密码/token。";
@@ -22,27 +21,23 @@ public class JWTSensitiveMessage extends TaskImpl {
 
     public UselessTreeNodeEntity entity;
 
-    public JWTSensitiveMessage(UselessTreeNodeEntity entity) {
+    public StaticJWTSensitiveMessage(UselessTreeNodeEntity entity) {
         this.entity = entity;
     }
     @Override
     public void run() {
-        LogEntry logEntry = logAddToScanLogger(entity.getCurrent(), "JWTSensitiveMessage");
-        logEntry.requestResponse = entity.getRequestResponse();
         // 检查请求的参数，使用burp解析的，包含如下:查询参数/cookie/form参数
         for (IParameter parameter : CommonStore.helpers.analyzeRequest(entity.getRequestResponse()).getParameters()) {
             byte[] decode = CommonStore.helpers.base64Decode(parameter.getValue());
             if (new String(decode).contains("\"alg\"") && isSensitiveKey(new String(decode))) {
-                logEntry.hasVuln();
-                logEntry.Comments = new String(decode);
+                entity.addTag(this.getClass().getSimpleName());
             }
         }
         // 检查请求头
         for (Object value : BurpReqRespTools.getReqHeadersToMap(entity.getRequestResponse()).values()) {
             byte[] decode = CommonStore.helpers.base64Decode(value.toString());
             if (new String(decode).contains("\"alg\"") && isSensitiveKey(new String(decode))) {
-                logEntry.hasVuln();
-                logEntry.Comments = new String(decode);
+                entity.addTag(this.getClass().getSimpleName());
             }
         }
         // 检查json数据
@@ -57,8 +52,7 @@ public class JWTSensitiveMessage extends TaskImpl {
                         List<ParamKeyValue> paramKeyValues = new ArrayList<>();
                         byte[] decode = CommonStore.helpers.base64Decode(value.toString());
                         if (new String(decode).contains("\"alg\"") && isSensitiveKey(new String(decode))) {
-                            logEntry.hasVuln();
-                            logEntry.Comments = new String(decode);
+                            entity.addTag(this.getClass().getSimpleName());
                         }
                         paramKeyValues.add(new ParamKeyValue(key, value));
                         return paramKeyValues;
@@ -67,12 +61,6 @@ public class JWTSensitiveMessage extends TaskImpl {
             } catch (Exception e) {
                 CommonStore.callbacks.printError(e.getMessage());
             }
-        }
-        // 检查结束后查看是否存在漏洞，不存在则修改状态为Done
-        if (!logEntry.isVuln()) {
-            logEntry.onResponse();
-        } else {
-            entity.color = "red";
         }
     }
 

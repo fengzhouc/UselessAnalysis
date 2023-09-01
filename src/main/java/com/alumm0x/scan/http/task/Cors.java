@@ -6,10 +6,10 @@ import com.alumm0x.scan.http.task.impl.TaskImpl;
 import com.alumm0x.tree.UselessTreeNodeEntity;
 import com.alumm0x.util.BurpReqRespTools;
 import com.alumm0x.util.CommonStore;
+import com.alumm0x.util.ToolsUtil;
 import com.alumm0x.util.param.ParamHandlerImpl;
 import com.alumm0x.util.param.ParamKeyValue;
 import com.alumm0x.util.param.header.HeaderTools;
-import com.alumm0x.util.risk.SecStaticCheck;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
@@ -50,7 +50,7 @@ public class Cors extends TaskImpl {
             }
         });
         // 检查是否存在origin,不存在就添加一个
-        if (SecStaticCheck.hasHdeader(header.NEW_HEADER, "Origin") == null) {
+        if (ToolsUtil.hasHdeader(header.NEW_HEADER, "Origin") == null) {
             header.NEW_HEADER.add("Origin: http://evil.com");
         }
         //新的请求包
@@ -95,8 +95,8 @@ class CorsCallback implements Callback {
         logEntry.requestResponse = CommonStore.callbacks.saveBuffersToTempFiles(requestResponse);
         logEntry.Status = (short) response.code();
         // 这两个头必须要存在，不存在浏览器默认不允许跨域
-        String origin = SecStaticCheck.hasHdeader(BurpReqRespTools.getRespHeaders(requestResponse), "Access-Control-Allow-Origin");
-        String credentials = SecStaticCheck.hasHdeader(BurpReqRespTools.getRespHeaders(requestResponse), "Access-Control-Allow-Credentials");
+        String origin = ToolsUtil.hasHdeader(BurpReqRespTools.getRespHeaders(requestResponse), "Access-Control-Allow-Origin");
+        String credentials = ToolsUtil.hasHdeader(BurpReqRespTools.getRespHeaders(requestResponse), "Access-Control-Allow-Credentials");
         if (response.isSuccessful() &&
                 origin != null && origin.contains("http://evil.com") &&
                 credentials != null && origin.contains("true")

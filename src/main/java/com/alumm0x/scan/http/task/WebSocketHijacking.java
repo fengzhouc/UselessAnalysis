@@ -7,7 +7,7 @@ import com.alumm0x.scan.http.task.impl.TaskImpl;
 import com.alumm0x.tree.UselessTreeNodeEntity;
 import com.alumm0x.util.BurpReqRespTools;
 import com.alumm0x.util.CommonStore;
-import com.alumm0x.util.risk.SecStaticCheck;
+import com.alumm0x.util.ToolsUtil;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
@@ -38,12 +38,12 @@ public class WebSocketHijacking extends TaskImpl {
          *   2.修改/添加请求头Origin为http://evil.com，看是否能连接成功
          * */
         //利用浏览器的cookie自动发送机制，如果不是使用cookie做会话管理就没这个问题了
-        if (SecStaticCheck.hasHdeader(BurpReqRespTools.getReqHeaders(entity.getRequestResponse()), "Cookie") != null){
+        if (ToolsUtil.hasHdeader(BurpReqRespTools.getReqHeaders(entity.getRequestResponse()), "Cookie") != null){
             /*
              * websocket请求跨域连接
              * 修改origin
              */
-            if (SecStaticCheck.hasHdeader(BurpReqRespTools.getReqHeaders(entity.getRequestResponse()), "Sec-WebSocket-Key") != null){
+            if (ToolsUtil.hasHdeader(BurpReqRespTools.getReqHeaders(entity.getRequestResponse()), "Sec-WebSocket-Key") != null){
                 List<String> new_headers = new ArrayList<>();
                 String evilOrigin = "http://evil.com";
                 //新请求修改origin

@@ -1,12 +1,12 @@
 package com.alumm0x.tree;
 
 import burp.*;
+
+import com.alumm0x.scan.StaticScanEngine;
+import com.alumm0x.scan.risk.StaticCheckResult;
 import com.alumm0x.ui.SettingUI;
 import com.alumm0x.util.BurpReqRespTools;
 import com.alumm0x.util.CommonStore;
-import com.alumm0x.util.SourceLoader;
-import com.alumm0x.util.risk.SecStaticCheck;
-import com.alumm0x.util.risk.StaticCheckResult;
 
 import java.net.URI;
 import java.util.*;
@@ -61,206 +61,17 @@ public class UselessTreeNodeEntity {
         if (requestResponse != null) {
             // 会话凭证信息 cookie/token/jwt
             parserHeaders();
-            //解析出banner
-            parserBanner();
-            // 筛出可能存在使用反序列化的请求
-            parserSerialization();
             // 检查请求的类型，资源请求或业务请求(主要是跟外部有交互的)
             parserContentType();
-            // 识别login/logout，打上标签
-            parserLoginAndOut();
-            // 识别文件上传请求，打上标签
-            parserUpload();
-            // 识别文件下载请求，打上标签
-            parserDownload();
-            // 是否websocket
-            if (SecStaticCheck.isWebsocket(requestResponse)){
-                addTag("websocket");
-            }
-            // 是否使用jwt
-            if (SecStaticCheck.isJWT(requestResponse)){
-                addTag("JWT");
-            }
             // 静态安全风险分析,仅分析存在交互的请求
-            if (!color.equals("") && !color.equalsIgnoreCase("green")) {
-                parserRisks();
-                // 存在可能的分析则改为粉色
-                if (secs.size() > 0) {
-                    color = "magenta";
-                }
-            }
-        }
-    }
-
-    /**
-     * 从请求中识别指纹，存入标签区
-     */
-    private void parserBanner() {
-        IRequestInfo requestInfo = BurpReqRespTools.getRequestInfo(requestResponse);
-        // Server指纹
-        String server = SecStaticCheck.hasHdeader(BurpReqRespTools.getReqHeaders(requestResponse), "Server");
-        if (server != null) {
-            addTag(server);
-        }
-        // 匹配url，收集一份url
-        String path = requestInfo.getUrl().getPath();
-        List<String> banners = SourceLoader.loadSources("/banner/banners_url.oh");
-        for (String banner : banners) {
-            String[] kv = banner.split(",");
-            if (kv[0].endsWith(path)) {
-                addTag(kv[1]);
-            }
-        }
-        // 匹配响应中的关键字
-        List<String> banners_body = SourceLoader.loadSources("/banner/banners_body.oh");
-        for (String banner : banners_body) {
-            String[] kv = banner.split(",");
-            // TODO 怎么查找
-            if (kv[0].equalsIgnoreCase("")) {
-                addTag(kv[1]);
-            }
-        }
-        // 检测shiro的指纹
-        String setCookie = SecStaticCheck.hasHdeader(BurpReqRespTools.getRespHeaders(requestResponse), "Set-Cookie");
-        if (setCookie != null && setCookie.contains("rememberMe=")) {
-            addTag("shiro");
-        }
-    }
-
-    /**
-     * 静态分析请求的安全风险
-     */
-    private void parserRisks() {
-        // 安全风险分析
-        // -安全响应头配置（太多了，基本都有，低危先忽略吧）
-//        addMap(checkSecHeader(respHeaders));
-        // -中间件版本
-        addMap(SecStaticCheck.checkServer(requestResponse));
-        // -重定向
-        List<StaticCheckResult> rs = SecStaticCheck.checkRedirect(requestResponse);
-        if (rs != null && rs.size() > 0){
-            addTag("redirect");
-            addMap(rs);
-        }
-        // -ssrf（请求和响应中是否有url的数据）
-        List<StaticCheckResult> ssrf = SecStaticCheck.checkSsrf(requestResponse);
-        if (ssrf != null && ssrf.size() > 0){
-            addTag("ssrf");
-            addMap(ssrf);
-        }
-        // -请求数据是json/xml的，根据tabs判断，列出需要验证的list
-        addMap(SecStaticCheck.checkSerialization(tabs));
-        // -csrf防护
-        List<StaticCheckResult> csrf = SecStaticCheck.checkCsrf(requestResponse, reqHeaders_custom);
-        if (csrf != null && csrf.size() > 0){
-            addTag("csrf");
-            addMap(csrf);
-        }
-        // -jsoncsrf防护
-        List<StaticCheckResult> jsrf = SecStaticCheck.checkJsonCsrf(tabs, requestResponse);
-        if (jsrf != null && jsrf.size() > 0){
-            addTag("jsonCsrf");
-            addMap(jsrf);
-        }
-        // -响应中的敏感信息
-        List<StaticCheckResult> sens = SecStaticCheck.checkSensitiveInfo(requestResponse);
-        if (sens != null && sens.size() > 0){
-            addTag("可能存在敏感信息");
-            addMap(sens);
-        }
-        // -CORS配置
-        List<StaticCheckResult> cors = SecStaticCheck.checkCors(requestResponse);
-        if (cors != null && cors.size() > 0){
-            // cors仅在ajax请求有限制，form无法限制，所以如果是form就不提示cors了
-            if (!tabs.contains("csrf")) {
-                addTag("cors");
-                addMap(cors);
-            }
-        }
-        // 反射型xss的静态检测
-        List<StaticCheckResult> xss = SecStaticCheck.checkReflectXss(requestResponse);
-        if (xss != null && xss.size() > 0){
-            addTag("reflectXss");
-            addMap(xss);
-        }
-        // 登录相关请求追加安全要求提示验证
-        addMap(SecStaticCheck.checkLoginAndout(tabs));
-        // 文件上传相关请求追加安全要求提示验证
-        addMap(SecStaticCheck.checkUpload(tabs));
-        // -响应中的堆栈异常信息
-        List<StaticCheckResult> err = SecStaticCheck.checkStraceError(requestResponse);
-        if (err != null && err.size() > 0){
-            addTag("可能存在堆栈异常");
-            addMap(err);
-        }
-        // 检测请求参数中是否包含手机号或邮箱，可能存在轰炸风险
-        List<StaticCheckResult> hong = SecStaticCheck.checkPhoneEmail(requestResponse);
-        if (hong != null && hong.size() > 0){
-            addTag("可能存在短信/邮箱轰炸");
-            addMap(hong);
-        }
-        // -设计不合理的，如logout使用get
-        List<StaticCheckResult> unsafe = SecStaticCheck.checkUnsfeDesignLoginout(tabs, requestResponse);
-        if (unsafe != null && unsafe.size() > 0){
-            addTag("可能的不安全设计");
-            addMap(unsafe);
-        }
-        // 检测jsonp
-        if (SecStaticCheck.isJsonp(requestResponse)){
-            addTag("jsonp");
-        }
-        // -设计不合理的，如contenttype不符合数据
-        List<StaticCheckResult> unsafe_ct = SecStaticCheck.checkUnsfeDesignContentType(tabs, requestResponse);
-        if (unsafe_ct != null && unsafe_ct.size() > 0){
-            addTag("可能的不安全设计");
-            addMap(unsafe_ct);
-        }
-    }
-
-
-    /**
-     * 识别登录跟登出的请求
-     * 1.识别url特征，如login/logout
-     * 2.识别响应头Set-Cookie，一般是登录登出的时候会有这类操作，当然排除不使用cookie作会话凭证的
-     */
-    private void parserLoginAndOut() {
-        //1.识别url特征，如login/logout
-        String url = BurpReqRespTools.getUrl(requestResponse);
-        if (url.contains("login") || url.contains("logout")) {
-            addTag("login/out");
-        }
-        //2.识别响应头Set-Cookie，一般是登录登出的时候会有这类操作，当然排除不使用cookie作会话凭证的
-        String setCookie = SecStaticCheck.hasHdeader(BurpReqRespTools.getRespHeaders(requestResponse), "Set-Cookie");
-        if (setCookie != null) {
-            addTag("login/out");
-        }
-    }
-
-    /**
-     * 识别文件上传的请求
-     * 1.识别content-type
-     */
-    private void parserUpload() {
-        //识别请求头的contentype，文件上传的是multipart/
-        String mul = SecStaticCheck.hasHdeader(BurpReqRespTools.getRespHeaders(requestResponse), "Content-Type");
-        if (mul != null && mul.equalsIgnoreCase("multipart/")) {
-            addTag("upload");
-        }
-    }
-
-    /**
-     * 识别文件下载的请求
-     * 1.识别content-type
-     */
-    private void parserDownload() {
-        //识别是否有特征download
-        if (this.current.contains("download")) {
-            addTag("download");
-        }
-        // 下载特有的响应头
-        String cd = SecStaticCheck.hasHdeader(BurpReqRespTools.getRespHeaders(requestResponse), "Content-Disposition");
-        if (cd != null && cd.contains("attachment")) {
-            addTag("download");
+            // if (!color.equals("") && !color.equalsIgnoreCase("green")) {
+            //     parserRisks();
+            //     // 存在可能的分析则改为粉色
+            //     if (secs.size() > 0) {
+            //         color = "magenta";
+            //     }
+            // }
+            StaticScanEngine.StaticCheck(this);
         }
     }
 
@@ -283,9 +94,6 @@ public class UselessTreeNodeEntity {
                         credentials.put(entry.getKey(), entry.getValue().toString());
                     }
             }
-        }
-        if (credentials.size() != 0) {
-            addTag("auth");
         }
 
         for (Map.Entry<String, String> entry : BurpReqRespTools.getRespHeadersToMap(requestResponse).entrySet()) {
@@ -314,26 +122,6 @@ public class UselessTreeNodeEntity {
             // 不过这样判断容易错，头部比较少有参数，一般是认证凭证，不过还是不放过吧
             if (reqHeaders_custom.size() != 0) {
                 color = "yellow";
-            }
-        }
-    }
-
-    /**
-     * 分析可能存在反序列化的请求
-     */
-    private void parserSerialization() {
-        //看请求的contenttype，常规业务请求的返回数据类型json/xml，对应contenttype
-        // json/xml可能存在反序列化，需要重点关注
-        // 所以打个标签，后续好验证
-        if (BurpReqRespTools.getReqBody(requestResponse).length > 0) {
-            // 检查请求体的内容
-            if (new String(BurpReqRespTools.getReqBody(requestResponse)).startsWith("{") 
-            || new String(BurpReqRespTools.getReqBody(requestResponse)).startsWith("[")) {
-                addTag("json");
-            }
-            String ct = BurpReqRespTools.getContentType(requestResponse);
-            if (ct != null && ct.contains("xml")) {
-                addTag("xml");
             }
         }
     }

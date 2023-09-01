@@ -1,4 +1,4 @@
-package com.alumm0x.util.risk.baseline.impl;
+package com.alumm0x.scan.risk.baseline.impl;
 
 /**
  * 基线库的父类

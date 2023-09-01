@@ -1,10 +1,13 @@
 package com.alumm0x.scan.http.task.impl;
 
 import com.alumm0x.scan.LogEntry;
+import com.alumm0x.scan.risk.StaticCheckResult;
 import com.alumm0x.tree.UselessTreeNodeEntity;
 import com.alumm0x.util.CommonStore;
-import com.alumm0x.util.risk.StaticCheckResult;
 
+/**
+ * 动态检测任务的父类，也就是需要重放请求的
+ */
 public abstract class TaskImpl {
 
     public abstract void run();

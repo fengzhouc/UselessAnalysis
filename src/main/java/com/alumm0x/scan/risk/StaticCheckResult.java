@@ -1,4 +1,4 @@
-package com.alumm0x.util.risk;
+package com.alumm0x.scan.risk;
 
 /**
  * 检查结果的对象

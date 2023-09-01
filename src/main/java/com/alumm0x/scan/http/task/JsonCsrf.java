@@ -7,7 +7,7 @@ import com.alumm0x.scan.http.task.impl.TaskImpl;
 import com.alumm0x.tree.UselessTreeNodeEntity;
 import com.alumm0x.util.BurpReqRespTools;
 import com.alumm0x.util.CommonStore;
-import com.alumm0x.util.risk.SecStaticCheck;
+import com.alumm0x.util.ToolsUtil;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
@@ -41,7 +41,7 @@ public class JsonCsrf extends TaskImpl {
          * */
 
         //csrf会利用浏览器的cookie自动发送机制，如果不是使用cookie做会话管理就没这个问题了
-        if (SecStaticCheck.hasHdeader(BurpReqRespTools.getReqHeaders(entity.getRequestResponse()), "Cookie") != null) {
+        if (ToolsUtil.hasHdeader(BurpReqRespTools.getReqHeaders(entity.getRequestResponse()), "Cookie") != null) {
             /*
              * 1、请求体需要是json数据
              */

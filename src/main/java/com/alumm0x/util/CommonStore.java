@@ -6,10 +6,14 @@ import burp.IHttpRequestResponse;
 import burp.IMessageEditor;
 import com.alumm0x.scan.LogEntry;
 import com.alumm0x.scan.PocEntry;
+import com.alumm0x.scan.ScanEngine;
 import com.alumm0x.scan.ScanLoggerTable;
 import com.alumm0x.scan.ScanLoggerTableModel;
+import com.alumm0x.scan.StaticScanEngine;
 import com.alumm0x.scan.http.OkHttpRequester;
 import com.alumm0x.scan.http.task.*;
+import com.alumm0x.scan.http.task.impl.StaticTaskImpl;
+import com.alumm0x.scan.http.task.impl.TaskImpl;
 import com.alumm0x.tree.UselessTreeNodeEntity;
 import com.alumm0x.ui.FoldTableComponent;
 import com.alumm0x.ui.tablemodel.MyTableModel;
@@ -81,24 +85,22 @@ public class CommonStore {
     // pocs detail
     public static final List<PocEntry> pocs = new ArrayList<>();
     public static JTable pocsTable; //视图table对象
-    // TODO: 设置poc的解读数据,持续添加
+    // 设置poc的解读数据
     static {
-        pocs.add(new PocEntry(IDOR.name,IDOR.comments));
-        pocs.add(new PocEntry(Redirect.name, Redirect.comments));
-        pocs.add(new PocEntry(Csrf.name,Csrf.comments));
-        pocs.add(new PocEntry(JsonCsrf.name,JsonCsrf.comments));
-        pocs.add(new PocEntry(BeanParamInject.name,BeanParamInject.comments));
-        pocs.add(new PocEntry(BypassAuth.name,BypassAuth.comments));
-        pocs.add(new PocEntry(WebSocketHijacking.name,WebSocketHijacking.comments));
-        pocs.add(new PocEntry(Ssrf.name,Ssrf.comments));
-        pocs.add(new PocEntry(UploadSecure.name,UploadSecure.comments));
-        pocs.add(new PocEntry(JWTSensitiveMessage.name,JWTSensitiveMessage.comments));
-        pocs.add(new PocEntry(JWTWithOutSign.name,JWTWithOutSign.comments));
-        pocs.add(new PocEntry(JWTSignNone.name,JWTSignNone.comments));
-        pocs.add(new PocEntry(JsonpCors.name,JsonpCors.comments));
-        pocs.add(new PocEntry(Cors.name,Cors.comments));
-        pocs.add(new PocEntry(ReflectXss.name,ReflectXss.comments));
-        pocs.add(new PocEntry(SessionKey.name,SessionKey.comments));
+        for (Class<? extends StaticTaskImpl> task : StaticScanEngine.tasks) {
+            try{
+                pocs.add(new PocEntry(task.getSimpleName(),(String)task.getDeclaredField("comments").get(null)));
+            } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+                callbacks.printError(e.getMessage());
+            }
+        }
+        for (Class<? extends TaskImpl> task : ScanEngine.tasks) {
+            try{
+                pocs.add(new PocEntry(task.getSimpleName(),(String)task.getDeclaredField("comments").get(null)));
+            } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+                callbacks.printError(e.getMessage());
+            }
+        }
     }
 
     // 单例http发包器

@@ -3,6 +3,7 @@ package com.alumm0x.scan.http.task;
 import burp.IHttpRequestResponse;
 import com.alumm0x.scan.LogEntry;
 import com.alumm0x.scan.http.task.impl.TaskImpl;
+import com.alumm0x.scan.risk.StaticCheckResult;
 import com.alumm0x.tree.UselessTreeNodeEntity;
 import com.alumm0x.util.BurpReqRespTools;
 import com.alumm0x.util.CommonStore;
@@ -10,7 +11,7 @@ import com.alumm0x.util.SourceLoader;
 import com.alumm0x.util.param.ParamHandlerImpl;
 import com.alumm0x.util.param.ParamKeyValue;
 import com.alumm0x.util.param.form.FormTools;
-import com.alumm0x.util.risk.StaticCheckResult;
+
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;

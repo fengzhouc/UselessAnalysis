@@ -1,8 +1,9 @@
 package com.alumm0x.ui.tablemodel;
 
-import com.alumm0x.util.risk.StaticCheckResult;
-
 import javax.swing.table.AbstractTableModel;
+
+import com.alumm0x.scan.risk.StaticCheckResult;
+
 import java.util.HashMap;
 import java.util.Map;
 

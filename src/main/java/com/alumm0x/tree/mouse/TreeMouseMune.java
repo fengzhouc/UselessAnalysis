@@ -2,11 +2,15 @@ package com.alumm0x.tree.mouse;
 
 import com.alumm0x.listeners.HttpListener;
 import com.alumm0x.scan.ScanEngine;
+import com.alumm0x.scan.StaticScanEngine;
+import com.alumm0x.scan.http.task.impl.StaticTaskImpl;
+import com.alumm0x.scan.http.task.impl.TaskImpl;
 import com.alumm0x.tree.UselessTreeNodeEntity;
 import com.alumm0x.ui.AnalysisUI;
 import com.alumm0x.ui.SettingUI;
 import com.alumm0x.util.CommonStore;
 import com.alumm0x.util.SourceLoader;
+import com.alumm0x.util.ToolsUtil;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -15,7 +19,11 @@ import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class TreeMouseMune {
 
@@ -26,6 +34,7 @@ public class TreeMouseMune {
         JPopupMenu menu = new JPopupMenu ();
         // 路径标题，有长度限制，太长了就中间...
         DefaultMutableTreeNode note = (DefaultMutableTreeNode) path.getLastPathComponent();
+        // 当前选中节点的entity
         UselessTreeNodeEntity entity = (UselessTreeNodeEntity) note.getUserObject();
         String nodename = note.toString();
         if (nodename.length() > 50) {
@@ -42,7 +51,7 @@ public class TreeMouseMune {
             public void actionPerformed(ActionEvent e) {
                 // 获取第二层path，也就是domain那层，root下面的那层
                 DefaultMutableTreeNode root2 = (DefaultMutableTreeNode)path.getPathComponent(1);
-                SettingUI.notInsideAdd(CommonStore.TARGET_SCOPE, root2.toString()); //无重复再添加
+                ToolsUtil.notInsideAdd(CommonStore.TARGET_SCOPE, root2.toString()); //无重复再添加
                 // JList更新数据必须通过setModel，重新设置数据
                 SettingUI.scope_list.setModel(new AbstractListModel<String>() {
                     public int getSize() {
@@ -58,37 +67,85 @@ public class TreeMouseMune {
                 CommonStore.TREE.updateUI();
             }
         });
-        // TODO: 扫描动作-动态扫描 持续添加
+        // 扫描动作-动态扫描
         JMenu scan = new JMenu("Scan");
+        JMenu scan_static = new JMenu("StaticCheck");
+        scan.add(scan_static);
         JMenu scan_search = new JMenu("Scan search");
-        addMenuItem("IDOR", entity,scan);
-        addMenuItemBySearch("IDOR", scan_search);
-        addMenuItem("Redirect", entity,scan);
-        addMenuItemBySearch("Redirect", scan_search);
-        addMenuItem("Csrf", entity,scan);
-        addMenuItemBySearch("Csrf", scan_search);
-        addMenuItem("JsonCsrf", entity,scan);
-        addMenuItemBySearch("JsonCsrf", scan_search);
-        addMenuItem("BeanParamInject", entity,scan);
-        addMenuItemBySearch("BeanParamInject", scan_search);
-        addMenuItem("BypassAuth", entity,scan);
-        addMenuItemBySearch("BypassAuth", scan_search);
-        addMenuItem("WebSocketHijacking", entity,scan);
-        addMenuItemBySearch("WebSocketHijacking", scan_search);
-        addMenuItem("Ssrf", entity,scan);
-        addMenuItemBySearch("Ssrf", scan_search);
-        addMenuItem("Upload", entity,scan);
-        addMenuItemBySearch("Upload", scan_search);
-        addMenuItem("JWT", entity,scan);
-        addMenuItemBySearch("JWT", scan_search);
-        addMenuItem("Cors", entity,scan);
-        addMenuItemBySearch("Cors", scan_search);
-        addMenuItem("JsonpCors", entity,scan);
-        addMenuItemBySearch("JsonpCors", scan_search);
-        addMenuItem("ReflectXss", entity,scan);
-        addMenuItemBySearch("ReflectXss", scan_search);
-        addMenuItem("SessionKey", entity,scan);
-        addMenuItemBySearch("SessionKey", scan_search);
+        JMenu scan_search_static = new JMenu("StaticCheck");
+        scan_search.add(scan_search_static);
+        // 添加TaskImpl子类的菜单，也就是主动扫描任务
+        for (Class<? extends TaskImpl> task : ScanEngine.tasks) {
+            try{
+                addMenuItem(task.getSimpleName(), new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        // 点击后添加扫描任务
+                        String pocvalue = ((JMenuItem) e.getSource()).getText();
+                        if (entity.getRequestResponse() != null) {
+                            // 添加扫描任务的逻辑，因为需要根据验证结果修改entity的color跟pocs
+                            ScanEngine.addScan(pocvalue, entity);
+                        }
+                    }
+                },scan);
+                addMenuItemBySearch(task.getSimpleName(), new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        // 点击后添加扫描任务,会将当前搜索的结果加入扫描
+                        String pocvalue = ((JMenuItem)e.getSource()).getText();
+                        addScanFormSearch(new TreePath(CommonStore.ROOTNODE), pocvalue);
+                    }
+                }, scan_search);
+            } catch (SecurityException | IllegalArgumentException e) {
+                CommonStore.callbacks.printError(e.getMessage());
+            }
+        }
+        // 添加执行所有静态检查的菜单
+        addMenuItem("ALL", new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // 点击后添加扫描任务
+                String pocvalue = ((JMenuItem) e.getSource()).getText();
+                if (entity.getRequestResponse() != null) {
+                    // 添加扫描任务的逻辑，因为需要根据验证结果修改entity的color跟pocs
+                    StaticScanEngine.addScan(pocvalue, entity);
+                }
+            }
+        },scan_static);
+        addMenuItemBySearch("ALL", new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // 点击后添加扫描任务,会将当前搜索的结果加入扫描
+                String pocvalue = ((JMenuItem)e.getSource()).getText();
+                addStaticScanFormSearch(new TreePath(CommonStore.ROOTNODE), pocvalue);
+            }
+        }, scan_search_static);
+        // 添加StaticTaskImpl子类的菜单，也就是静态检查的触发菜单
+        for (Class<? extends StaticTaskImpl> task : StaticScanEngine.tasks) {
+            try{
+                addMenuItem(task.getSimpleName(), new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        // 点击后添加扫描任务
+                        String pocvalue = ((JMenuItem) e.getSource()).getText();
+                        if (entity.getRequestResponse() != null) {
+                            // 添加扫描任务的逻辑，因为需要根据验证结果修改entity的color跟pocs
+                            StaticScanEngine.addScan(pocvalue, entity);
+                        }
+                    }
+                },scan_static);
+                addMenuItemBySearch(task.getSimpleName(), new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        // 点击后添加扫描任务,会将当前搜索的结果加入扫描
+                        String pocvalue = ((JMenuItem)e.getSource()).getText();
+                        addStaticScanFormSearch(new TreePath(CommonStore.ROOTNODE), pocvalue);
+                    }
+                }, scan_search_static);
+            } catch (SecurityException | IllegalArgumentException e) {
+                CommonStore.callbacks.printError(e.getMessage());
+            }
+        }
 
         // 展开tree
         JMenu expand = new JMenu("Expand branch");
@@ -157,8 +214,19 @@ public class TreeMouseMune {
         delete.add(delete_select);
         delete.add(delete_all);
         // 网站分析的一些东西
-        JMenu analysis = new JMenu("analysis");
-        JMenuItem relation = new JMenuItem("relation"); // 1.分析这个网站业务的交互域名
+        JMenu analysis = new JMenu("Analysis");
+        JMenuItem relation = new JMenuItem("Relation"); // 1.分析这个网站业务的交互域名
+        relation.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                java.util.List<Object> relations = new ArrayList<>();
+                // 分析交互
+                analysisForRelationByHost(path, entity, relations);
+                // 弹窗显示
+                JOptionPane.showMessageDialog(relation, creatTreeString(relations, 0));
+            }
+            
+        });
         analysis.add(relation);
 
         // 布局各组件
@@ -182,20 +250,10 @@ public class TreeMouseMune {
     /**
      * 添加漏洞菜单,将选中的请求发送到任务列表
      */
-    private static void addMenuItem(String name, UselessTreeNodeEntity entity,JMenu... menus) {
+    private static void addMenuItem(String name, ActionListener actionListener,JMenu... menus) {
         for (JMenu m : menus) {
             JMenuItem poc = new JMenuItem(name);
-            poc.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    // 点击后添加扫描任务
-                    String pocvalue = ((JMenuItem) e.getSource()).getText();
-                    if (entity.getRequestResponse() != null) {
-                        // 添加扫描任务的逻辑，因为需要根据验证结果修改entity的color跟pocs
-                        ScanEngine.addScan(pocvalue, entity);
-                    }
-                }
-            });
+            poc.addActionListener(actionListener);
             m.add(poc);
         }
     }
@@ -203,17 +261,10 @@ public class TreeMouseMune {
     /**
      * 添加漏洞菜单,将搜索结果的所有请求发送到任务列表
      */
-    private static void addMenuItemBySearch(String name,JMenu... menus) {
+    private static void addMenuItemBySearch(String name, ActionListener actionListener,JMenu... menus) {
         for (JMenu m : menus) {
             JMenuItem poc = new JMenuItem(name);
-            poc.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    // 点击后添加扫描任务,会将当前搜索的结果加入扫描
-                    String pocvalue = ((JMenuItem)e.getSource()).getText();
-                    addScanFormSearch(new TreePath(CommonStore.ROOTNODE), pocvalue);
-                }
-            });
+            poc.addActionListener(actionListener);
             m.add(poc);
         }
     }
@@ -239,5 +290,89 @@ public class TreeMouseMune {
                 addScanFormSearch(path,poc); // 递归子节点，进行查询
             }
         }
+    }
+
+    /**
+     * 遍历搜索结果，以添加所有结果到静态扫描
+     */
+    private static void addStaticScanFormSearch(TreePath parent, String poc){
+        TreeNode node = (TreeNode) parent.getLastPathComponent();
+        if (node.getChildCount() > 0) {
+            for (Enumeration e = node.children(); e.hasMoreElements();) {
+                DefaultMutableTreeNode n = (DefaultMutableTreeNode) e.nextElement(); // 获取父节点的子节点
+                UselessTreeNodeEntity entity = ((UselessTreeNodeEntity)n.getUserObject()); // 修改isVisible
+                // 并限制不搜索第二层node，也就是domain那层，那层是没有数据的，纯粹为了归类请求
+                if (entity.isVisible() && entity.getCurrent().startsWith("[")) {
+                    // 只有有请求的才会被添加
+                    if (entity.getRequestResponse() != null) {
+                        // 添加扫描任务的逻辑,需要传入的数entity，因为需要根据验证结果修改entity的color跟pocs
+                        StaticScanEngine.addScan(poc, entity);
+                    }
+                }
+                TreePath path = parent.pathByAddingChild(n); // 父节点path拼接子节点
+                addStaticScanFormSearch(path,poc); // 递归子节点，进行查询
+            }
+        }
+    }
+
+    /**
+     * 分析所选节点及其子节点的所有交互host
+     * @param parant 当前所选节点，也即是getMune(TreePath path)的入参
+     * @param entity 当前节点的存储的UselessTreeNodeEntity对象
+     * @param relations 存储所有交互站点的list
+     */
+    private static void analysisForRelationByHost(TreePath parent, UselessTreeNodeEntity entity, java.util.List<Object> relations){
+        TreeNode node = (TreeNode) parent.getLastPathComponent();
+        // 正则获取域名
+        String regex = "http[s]?://(.*?)[/&\"]+?\\w*?"; //分组获取域名
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(entity.getCurrent());
+        String host = null; // 获取的主机
+        if (matcher.find()){//没匹配到则不进行后续验证
+            host = matcher.group(1);
+        }
+        // 看是否有子节点，有则遍历
+        if (node.getChildCount() > 0) {
+            // 存在子节点则不需要考虑是否有添加过，有子节点的就必须添加
+            relations.add(Objects.requireNonNull(host)); // 添加host
+            // 遍历子节点
+            java.util.List<Object> childs = new ArrayList<>();
+            for (Enumeration e = node.children(); e.hasMoreElements();) {
+                DefaultMutableTreeNode n = (DefaultMutableTreeNode) e.nextElement(); // 获取父节点的子节点
+                UselessTreeNodeEntity entity1 = ((UselessTreeNodeEntity)n.getUserObject());
+                TreePath path = parent.pathByAddingChild(n); // 父节点path拼接子节点
+                analysisForRelationByHost(path, entity1, childs); // 递归子节点，进行查询
+            }
+            // 子节点遍历完了就添加进去
+            relations.add(childs);
+        } else {
+            // 没有子节点的就不重复添加
+            ToolsUtil.notInsideAdd(relations, Objects.requireNonNull(host));
+        }
+    }
+
+    /**
+     * 将list按层级构造出树的文本
+     * @param list 数据集合
+     * @param deep 当前的层级
+     * @return 返回树结构的文本
+     */
+    private static String creatTreeString(java.util.List<Object> list, int deep) {
+        StringBuffer stringBuffer = new StringBuffer();
+        for (Object object : list) {
+            // 先尝试转换list
+            java.util.List<Object> l = ToolsUtil.castList(object, Object.class);
+            if (l != null) {
+                stringBuffer.append(creatTreeString(l, deep + 1));
+            } else {
+                StringBuilder sb = new StringBuilder();
+                sb.append("|");
+                for (int i = 0; i < deep; i++) {
+                    sb.append("--");
+                }
+                stringBuffer.append(sb.toString() + "| @" + (String)object + "\n");
+            }
+        }
+        return stringBuffer.toString();
     }
 }

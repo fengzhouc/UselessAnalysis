@@ -4,6 +4,7 @@ import burp.*;
 import com.alumm0x.tree.MyTreeCellRenderer;
 import com.alumm0x.tree.UselessTreeNodeEntity;
 import com.alumm0x.tree.mouse.TreeMouseMune;
+import com.alumm0x.ui.RisksUI;
 import com.alumm0x.ui.SettingUI;
 import com.alumm0x.util.BurpReqRespTools;
 import com.alumm0x.util.CommonStore;
@@ -46,6 +47,12 @@ public class HttpListener implements IHttpListener, IMessageEditorController {
             CommonStore.TREE.addTreeSelectionListener(new TreeSelectionListener() {
                 @Override
                 public void valueChanged(TreeSelectionEvent e) {
+                    // 选中前还原RisksUI状态，删除tab、清空数据
+                    if (RisksUI.riskViewPane.getTabCount() > 0) {
+                        RisksUI.riskViewPane.remove(0);
+                        RisksUI.risksViewer.setMessage(null, false); // 清空信息
+                    }
+                    // 处理选中节点的信息初始化
                     DefaultMutableTreeNode n = (DefaultMutableTreeNode) e.getNewLeadSelectionPath().getLastPathComponent();
                     CommonStore.entity = (UselessTreeNodeEntity) n.getUserObject();
                     // JList更新数据必须通过setModel，重新设置数据
@@ -74,11 +81,7 @@ public class HttpListener implements IHttpListener, IMessageEditorController {
                     CommonStore.SESSION_TABLEMODEL.setMessages(CommonStore.entity.credentials);
                     CommonStore.foldTableComponent_session.updateButtonName(); //更新按钮的文字，增加数据条数
                     //4.可能的安全风险
-                    CommonStore.SEC_TABLEMODEL.setMessages(CommonStore.entity.secs);
-                    CommonStore.foldTableComponent_sec.updateButtonName(); //更新按钮的文字，增加数据条数
-                    //6.poc验证结果
-                    CommonStore.POC_TABLEMODEL.setMessages(CommonStore.entity.pocs);
-                    CommonStore.foldTableComponent_poc.updateButtonName(); //更新按钮的文字，增加数据条数
+                    CommonStore.RISKS_TABLEMODEL.setMessages(CommonStore.entity.risks);
 
                 }
             });

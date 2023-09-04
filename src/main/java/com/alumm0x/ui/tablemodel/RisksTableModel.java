@@ -1,16 +1,19 @@
 package com.alumm0x.ui.tablemodel;
 
 import javax.swing.table.AbstractTableModel;
+
+import com.alumm0x.scan.risk.StaticCheckResult;
+
 import java.util.HashMap;
 import java.util.Map;
 
-public class ParansTableModel extends AbstractTableModel {
+public class RisksTableModel extends AbstractTableModel {
 
-    protected Map<String, String> messages  = new HashMap<>(); //默认空数据
+    public Map<String, StaticCheckResult> messages  = new HashMap<>(); //默认空数据
 
-    public ParansTableModel() {}
+    public  RisksTableModel() {}
 
-    public void setMessages(Map<String, String> datas) {
+    public void setMessages(Map<String, StaticCheckResult> datas) {
         this.messages = datas;
         fireTableDataChanged();
     }
@@ -43,11 +46,11 @@ public class ParansTableModel extends AbstractTableModel {
     {
         switch (columnIndex) {
             case 0:
-                return "TYPE";
+                return "Desc";
             case 1:
-                return "NAME";
-            case 3:
-                return "VALUE";
+                return "HitInfo";
+            case 2:
+                return "FixSuggestion";
             default:
                 return ""; //这里返回按钮
         }
@@ -62,15 +65,15 @@ public class ParansTableModel extends AbstractTableModel {
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         int index = 0;
-        for (String key : this.messages.keySet()) {
+        for (StaticCheckResult key : this.messages.values()) {
             if (index == rowIndex) {
                 switch (columnIndex) {
                     case 0:
-                        return key;
+                        return key.desc;
                     case 1:
-                        return this.messages.get(key);
+                        return key.risk_param;
                     default:
-                        return ""; //这里返回按钮，点击进入当前行的详细展示UI
+                        return key.fix;
                 }
             }
             ++index;

@@ -3,6 +3,8 @@ package com.alumm0x.ui;
 import com.alumm0x.util.CommonStore;
 import com.alumm0x.util.SourceLoader;
 
+import burp.IMessageEditor;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -12,6 +14,7 @@ import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.nio.charset.StandardCharsets;
 
 /**
  * 封装一个按钮折叠table的组件，因为会创建多个，封装好复用
@@ -27,6 +30,9 @@ public class FoldTableComponent {
     protected String name;
     ImageIcon right = new ImageIcon(new ImageIcon(SourceLoader.loadSourceToUrl("right.png")).getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH));
     ImageIcon down = new ImageIcon(new ImageIcon(SourceLoader.loadSourceToUrl("down.png")).getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH));
+
+    private JTabbedPane infoViewPane;
+    private IMessageEditor infoViewer; // 展示选中行的完整信息
 
     public FoldTableComponent(String name, TableModel tableModel) {
         this.name = name;
@@ -54,7 +60,7 @@ public class FoldTableComponent {
             }
         });
         // 初始化表格
-        this.table = new JTable(tableModel);
+        this.table = new FoldTableComponentTable(tableModel);
         this.table.setPreferredSize(new Dimension(330, this.table.getTableHeader().getHeight() + this.table.getRowHeight()));
         this.table.getTableHeader().setReorderingAllowed(false); //不允许拖动表头来挑战列
         this.table.getTableHeader().setBackground(Color.LIGHT_GRAY); //设置表头底色
@@ -81,7 +87,21 @@ public class FoldTableComponent {
         tscrollPane = new JScrollPane(this.table); //滚动条
         tscrollPane.setPreferredSize(new Dimension(335, this.table.getTableHeader().getHeight() + this.table.getRowHeight()));
         tscrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED); // 垂直方向滚动
-        SettingUI.makeJpanel(this.foldPanl, tscrollPane);
+
+        //上下分割界面
+        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT); //上下分割
+        splitPane.setDividerLocation(0.3); //设置分隔条的位置为 JSplitPane 大小的一个百分比,70%->0.7,貌似没啥用
+        splitPane.setResizeWeight(0.3);
+
+        // 下面板，risk的内容展示面板
+        infoViewPane = new JTabbedPane();
+        infoViewer = CommonStore.callbacks.createMessageEditor(null, false);
+
+        // 组装
+        splitPane.setLeftComponent(tscrollPane);
+        splitPane.setRightComponent(infoViewPane);
+
+        SettingUI.makeJpanel(this.foldPanl, splitPane);
         // 组装总ui
         SettingUI.makeJpanel(this.root, this.button);
         SettingUI.makeJpanel(this.root, this.foldPanl);
@@ -115,6 +135,11 @@ public class FoldTableComponent {
             button.setIcon(down);
         } else {
             button.setIcon(right);
+            // 折叠后就删除tab、清空数据
+            if (infoViewPane.getTabCount() > 0) {
+                infoViewPane.remove(0);
+                infoViewer.setMessage(null, false); // 清空信息
+            }
         }
     }
     /**
@@ -125,10 +150,6 @@ public class FoldTableComponent {
         if (!name.equals(CommonStore.foldTableComponent_query.name) && CommonStore.foldTableComponent_query.expand) {
             CommonStore.foldTableComponent_query.expand();
             CommonStore.foldTableComponent_query.foldPanl.updateUI();
-        }
-        if (!name.equals(CommonStore.foldTableComponent_sec.name) && CommonStore.foldTableComponent_sec.expand) {
-            CommonStore.foldTableComponent_sec.expand();
-            CommonStore.foldTableComponent_sec.foldPanl.updateUI();
         }
         if (!name.equals(CommonStore.foldTableComponent_session.name) && CommonStore.foldTableComponent_session.expand) {
             CommonStore.foldTableComponent_session.expand();
@@ -142,9 +163,35 @@ public class FoldTableComponent {
             CommonStore.foldTableComponent_reqheader.expand();
             CommonStore.foldTableComponent_reqheader.foldPanl.updateUI();
         }
-        if (!name.equals(CommonStore.foldTableComponent_poc.name) && CommonStore.foldTableComponent_poc.expand) {
-            CommonStore.foldTableComponent_poc.expand();
-            CommonStore.foldTableComponent_poc.foldPanl.updateUI();
-        }
+    }
+
+    /**
+     * 拓展JTable，选中即展示详细完整内容
+     */
+    private class FoldTableComponentTable extends JTable {
+
+        public FoldTableComponentTable(TableModel tableModel)
+            {
+                super(tableModel);
+            }
+
+            @Override
+            public void changeSelection(int row, int col, boolean toggle, boolean extend)
+            {
+                StringBuffer stringBuffer = new StringBuffer();
+                stringBuffer.append("Name: ").append(this.getValueAt(row, 0)).append("\r\n");
+                stringBuffer.append("Value: ").append(this.getValueAt(row, 1)).append("\r\n");
+                infoViewer.setMessage(stringBuffer.toString().getBytes(StandardCharsets.UTF_8), false);
+                // 选中后才显示具体内容
+                infoViewPane.addTab("Info", infoViewer.getComponent());
+                // UI的更新需要新线程
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        foldPanl.updateUI();
+                    }
+                });
+
+                super.changeSelection(row, col, toggle, extend);
+            }
     }
 }

@@ -39,7 +39,7 @@ public class ReflectXss extends TaskImpl {
         String querystring = BurpReqRespTools.getQuery(entity.getRequestResponse());
         if (querystring != null) {
             for (Map.Entry<String, StaticCheckResult> entry :
-                            entity.secs.entrySet()) {
+                            entity.risks.entrySet()) {
                 if (entry.getKey().startsWith("反射型XSS")) {
                     // 加载payload的模版
                     List<String> payloads = SourceLoader.loadSources("/payloads/ReflectXss.bbm");

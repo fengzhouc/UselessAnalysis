@@ -107,10 +107,12 @@ public class AnalysisUI {
         splitPane.setLeftComponent(scrollPane);
         // 2.下面板，请求响应的面板
         JTabbedPane tabs = new JTabbedPane();
+        // 初始化MessageEditor
         CommonStore.requestViewer = CommonStore.callbacks.createMessageEditor(httpListener, false);
         CommonStore.responseViewer = CommonStore.callbacks.createMessageEditor(httpListener, false);
         tabs.addTab("Request", CommonStore.requestViewer.getComponent());
         tabs.addTab("Response", CommonStore.responseViewer.getComponent());
+        tabs.addTab("Risks", RisksUI.getUI());
         splitPane.setRightComponent(tabs);
 
         //左右分割界面
@@ -130,7 +132,7 @@ public class AnalysisUI {
             }
         });
         JScrollPane default_scrollPane = new JScrollPane(CommonStore.list);
-        default_scrollPane.setPreferredSize(new Dimension(350, 100));
+        default_scrollPane.setPreferredSize(new Dimension(350, 200));
         default_scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
         // 1.1 添加/删除/清空等的按钮
@@ -216,16 +218,10 @@ public class AnalysisUI {
         JPanel t3 = CommonStore.foldTableComponent_respheader.getUI();
         CommonStore.foldTableComponent_session = new FoldTableComponent("Session Credentials", CommonStore.SESSION_TABLEMODEL);
         JPanel t4 = CommonStore.foldTableComponent_session.getUI();
-        CommonStore.foldTableComponent_sec = new FoldTableComponent("Possible Security Risks", CommonStore.SEC_TABLEMODEL);
-        JPanel t5 = CommonStore.foldTableComponent_sec.getUI();
-        CommonStore.foldTableComponent_poc = new FoldTableComponent("Poc Hunter", CommonStore.POC_TABLEMODEL);
-        JPanel t6 = CommonStore.foldTableComponent_poc.getUI();
         SettingUI.makeJpanel(message, t1);
         SettingUI.makeJpanel(message, t2);
         SettingUI.makeJpanel(message, t3);
         SettingUI.makeJpanel(message, t4);
-        SettingUI.makeJpanel(message, t5);
-        SettingUI.makeJpanel(message, t6);
 
 
         //2.右侧总ui

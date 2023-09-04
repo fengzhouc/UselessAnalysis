@@ -42,9 +42,7 @@ public class UselessTreeNodeEntity {
     // 存放会话凭证信息
     public Map<String, Object> credentials = new HashMap<>(); //默认空数据
     // 存放可能的安全风险
-    public Map<String, StaticCheckResult> secs = new HashMap<>(); //默认空数据
-    // 存放poc验证成功的
-    public Map<String, StaticCheckResult> pocs = new HashMap<>(); //默认空数据
+    public Map<String, StaticCheckResult> risks = new HashMap<>(); //默认空数据
 
 
     public UselessTreeNodeEntity() {
@@ -194,7 +192,7 @@ public class UselessTreeNodeEntity {
         if (results != null) {
             for (StaticCheckResult result : results) {
                 // 直接put，已经存在的key会直接覆盖
-                secs.put(result.desc, result);
+                risks.put(result.desc, result);
             }
         }
     }

@@ -16,7 +16,7 @@ import com.alumm0x.scan.http.task.impl.TaskImpl;
 import com.alumm0x.tree.UselessTreeNodeEntity;
 import com.alumm0x.ui.FoldTableComponent;
 import com.alumm0x.ui.tablemodel.MyTableModel;
-import com.alumm0x.ui.tablemodel.SecTableModel;
+import com.alumm0x.ui.tablemodel.RisksTableModel;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -68,11 +68,7 @@ public class CommonStore {
     public static FoldTableComponent foldTableComponent_session; // 可能的会话凭证的展示ui组件，用于刷新分类text数据
     public static MyTableModel SESSION_TABLEMODEL = new MyTableModel(); //可能的会话凭证的model，用于刷新数据
     //5.可能的安全风险
-    public static FoldTableComponent foldTableComponent_sec; // 可能的安全风险的展示ui组件，用于刷新分类text数据
-    public static SecTableModel SEC_TABLEMODEL = new SecTableModel(); //可能的安全风险的model，用于刷新数据
-    //5.可能的安全风险
-    public static FoldTableComponent foldTableComponent_poc; // 验证poc结果的展示ui组件，用于刷新分类text数据
-    public static SecTableModel POC_TABLEMODEL = new SecTableModel(); //验证poc结果的model，用于刷新数据
+    public static RisksTableModel RISKS_TABLEMODEL = new RisksTableModel(); //可能的安全风险的model，用于刷新数据
 
     // scanlogger
     public static final List<LogEntry> log = new ArrayList<>();

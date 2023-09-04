@@ -217,7 +217,7 @@ public class MultiComboBoxToViewTag extends JComponent implements ActionListener
         private void initViewTags(TreePath parent){
             TreeNode node = (TreeNode) parent.getLastPathComponent();
             if (node.getChildCount() > 0) {
-                for (Enumeration e = node.children(); e.hasMoreElements();) {
+                for (Enumeration<?> e = node.children(); e.hasMoreElements();) {
                     DefaultMutableTreeNode n = (DefaultMutableTreeNode) e.nextElement(); // 获取父节点的子节点
                     UselessTreeNodeEntity entity = ((UselessTreeNodeEntity)n.getUserObject()); // 修改isVisible
                     // 为了可以继续上次的搜索结果在进行搜索，这里限制了仅搜索isVisible=true的节点

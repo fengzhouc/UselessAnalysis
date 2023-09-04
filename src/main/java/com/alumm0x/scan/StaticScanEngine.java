@@ -8,7 +8,6 @@ import java.util.Set;
 import org.reflections.Reflections;
 
 import com.alumm0x.scan.http.task.impl.StaticTaskImpl;
-import com.alumm0x.scan.http.task.impl.TaskImpl;
 import com.alumm0x.tree.UselessTreeNodeEntity;
 import com.alumm0x.util.CommonStore;
 

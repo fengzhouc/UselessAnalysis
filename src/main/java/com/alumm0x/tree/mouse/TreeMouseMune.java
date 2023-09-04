@@ -275,7 +275,7 @@ public class TreeMouseMune {
     private static void addScanFormSearch(TreePath parent, String poc){
         TreeNode node = (TreeNode) parent.getLastPathComponent();
         if (node.getChildCount() > 0) {
-            for (Enumeration e = node.children(); e.hasMoreElements();) {
+            for (Enumeration<?> e = node.children(); e.hasMoreElements();) {
                 DefaultMutableTreeNode n = (DefaultMutableTreeNode) e.nextElement(); // 获取父节点的子节点
                 UselessTreeNodeEntity entity = ((UselessTreeNodeEntity)n.getUserObject()); // 修改isVisible
                 // 并限制不搜索第二层node，也就是domain那层，那层是没有数据的，纯粹为了归类请求
@@ -298,7 +298,7 @@ public class TreeMouseMune {
     private static void addStaticScanFormSearch(TreePath parent, String poc){
         TreeNode node = (TreeNode) parent.getLastPathComponent();
         if (node.getChildCount() > 0) {
-            for (Enumeration e = node.children(); e.hasMoreElements();) {
+            for (Enumeration<?> e = node.children(); e.hasMoreElements();) {
                 DefaultMutableTreeNode n = (DefaultMutableTreeNode) e.nextElement(); // 获取父节点的子节点
                 UselessTreeNodeEntity entity = ((UselessTreeNodeEntity)n.getUserObject()); // 修改isVisible
                 // 并限制不搜索第二层node，也就是domain那层，那层是没有数据的，纯粹为了归类请求
@@ -337,7 +337,7 @@ public class TreeMouseMune {
             relations.add(Objects.requireNonNull(host)); // 添加host
             // 遍历子节点
             java.util.List<Object> childs = new ArrayList<>();
-            for (Enumeration e = node.children(); e.hasMoreElements();) {
+            for (Enumeration<?> e = node.children(); e.hasMoreElements();) {
                 DefaultMutableTreeNode n = (DefaultMutableTreeNode) e.nextElement(); // 获取父节点的子节点
                 UselessTreeNodeEntity entity1 = ((UselessTreeNodeEntity)n.getUserObject());
                 TreePath path = parent.pathByAddingChild(n); // 父节点path拼接子节点

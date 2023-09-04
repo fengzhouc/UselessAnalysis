@@ -265,7 +265,7 @@ public class HttpListener implements IHttpListener, IMessageEditorController {
     public static void expandAllNodes(TreePath parent, boolean expand) {
         TreeNode node = (TreeNode) parent.getLastPathComponent();
         if (node.getChildCount() > 0) {
-            for (Enumeration e = node.children(); e.hasMoreElements();) {
+            for (Enumeration<?> e = node.children(); e.hasMoreElements();) {
                 TreeNode n = (TreeNode) e.nextElement(); // 获取父节点的子节点
                 TreePath path = parent.pathByAddingChild(n); // 父节点path拼接子节点
                 expandAllNodes(path, expand); // 递归子节点，设置展开
@@ -336,7 +336,7 @@ public class HttpListener implements IHttpListener, IMessageEditorController {
                 // 添加前检查rootNode的子节点中是否已存在了，存在就不添加了
                 DefaultMutableTreeNode in = null;
                 // 仅遍历根节点下的子节点，不需要递归子节点的子节点
-                for (Enumeration e = CommonStore.ROOTNODE.children(); e.hasMoreElements(); ) {
+                for (Enumeration<?> e = CommonStore.ROOTNODE.children(); e.hasMoreElements(); ) {
                     // 获取当前节点保存的对象
                     DefaultMutableTreeNode n = (DefaultMutableTreeNode)e.nextElement();
                     UselessTreeNodeEntity et = (UselessTreeNodeEntity) n.getUserObject();
@@ -374,7 +374,7 @@ public class HttpListener implements IHttpListener, IMessageEditorController {
         //           当前只是比较了current，如果存在多个相同current的节点，就只是返回第一个，但仅比较一个属性是无法准确定到位节点的，怎么处理？？
         // 当前节点是否有子节点
         if (node.getChildCount() > 0) {
-            for (Enumeration e = node.children(); e.hasMoreElements(); ) {
+            for (Enumeration<?> e = node.children(); e.hasMoreElements(); ) {
                 // 获取当前节点保存的对象
                 DefaultMutableTreeNode n = (DefaultMutableTreeNode)e.nextElement();
                 UselessTreeNodeEntity et = (UselessTreeNodeEntity) n.getUserObject();
@@ -402,7 +402,7 @@ public class HttpListener implements IHttpListener, IMessageEditorController {
     public static DefaultMutableTreeNode findNodeByCurrent(DefaultMutableTreeNode node, UselessTreeNodeEntity entity) {
         // 当前节点是否有子节点
         if (node.getChildCount() > 0) {
-            for (Enumeration e = node.children(); e.hasMoreElements(); ) {
+            for (Enumeration<?> e = node.children(); e.hasMoreElements(); ) {
                 // 获取当前节点保存的对象
                 DefaultMutableTreeNode n = (DefaultMutableTreeNode)e.nextElement();
                 UselessTreeNodeEntity et = (UselessTreeNodeEntity) n.getUserObject();
@@ -430,7 +430,7 @@ public class HttpListener implements IHttpListener, IMessageEditorController {
     public static DefaultMutableTreeNode findNodeIn(DefaultMutableTreeNode node, UselessTreeNodeEntity entity) {
         // 当前节点是否有子节点
         if (node.getChildCount() > 0) {
-            for (Enumeration e = node.children(); e.hasMoreElements(); ) {
+            for (Enumeration<?> e = node.children(); e.hasMoreElements(); ) {
                 // 获取当前节点保存的对象
                 DefaultMutableTreeNode n = (DefaultMutableTreeNode)e.nextElement();
                 UselessTreeNodeEntity et = (UselessTreeNodeEntity) n.getUserObject();

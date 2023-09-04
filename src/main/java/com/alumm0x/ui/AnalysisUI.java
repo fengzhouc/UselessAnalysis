@@ -254,7 +254,7 @@ public class AnalysisUI {
     public static void isVisibleAllNodes(TreePath parent, boolean isVisible) {
         TreeNode node = (TreeNode) parent.getLastPathComponent();
         if (node.getChildCount() > 0) {
-            for (Enumeration e = node.children(); e.hasMoreElements();) {
+            for (Enumeration<?> e = node.children(); e.hasMoreElements();) {
                 DefaultMutableTreeNode n = (DefaultMutableTreeNode) e.nextElement(); // 获取父节点的子节点
                 UselessTreeNodeEntity entity = (UselessTreeNodeEntity)n.getUserObject();
                 // 仅检查domain那个节点，在黑名单，则不修改，只有不在黑名单中，才可以释放，这样保证黑名单最优先的逻辑
@@ -274,7 +274,7 @@ public class AnalysisUI {
     public static void search(TreePath parent){
         TreeNode node = (TreeNode) parent.getLastPathComponent();
         if (node.getChildCount() > 0) {
-            for (Enumeration e = node.children(); e.hasMoreElements();) {
+            for (Enumeration<?> e = node.children(); e.hasMoreElements();) {
                 DefaultMutableTreeNode n = (DefaultMutableTreeNode) e.nextElement(); // 获取父节点的子节点
                 UselessTreeNodeEntity entity = ((UselessTreeNodeEntity)n.getUserObject()); // 修改isVisible
                 // 为了可以继续上次的搜索结果在进行搜索，这里限制了仅搜索isVisible=true的节点

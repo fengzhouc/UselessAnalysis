@@ -82,7 +82,6 @@ public class MultiComboBox extends JComponent implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent arg0) {
-        // TODO Auto-generated method stub
         if (!popup.isVisible()) {
             popup.refreshCheckboxPane();
             popup.show(this, 0, getHeight());
@@ -226,11 +225,8 @@ public class MultiComboBox extends JComponent implements ActionListener {
             return selectedValues;
         }
 
-
-
         @Override
-        public void actionPerformed(ActionEvent arg0) {
-            // TODO Auto-generated method stub
+        public void actionPerformed(ActionEvent arg0) {            // 
             Object source = arg0.getSource();
             if (source instanceof JButton) {
                 JButton button = (JButton) source;

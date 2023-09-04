@@ -11,7 +11,6 @@ import com.alumm0x.scan.ScanLoggerTable;
 import com.alumm0x.scan.ScanLoggerTableModel;
 import com.alumm0x.scan.StaticScanEngine;
 import com.alumm0x.scan.http.OkHttpRequester;
-import com.alumm0x.scan.http.task.*;
 import com.alumm0x.scan.http.task.impl.StaticTaskImpl;
 import com.alumm0x.scan.http.task.impl.TaskImpl;
 import com.alumm0x.tree.UselessTreeNodeEntity;

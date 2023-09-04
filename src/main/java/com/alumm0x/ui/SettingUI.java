@@ -2,6 +2,7 @@ package com.alumm0x.ui;
 
 import com.alumm0x.tree.UselessTreeNodeEntity;
 import com.alumm0x.util.CommonStore;
+import com.alumm0x.util.ToolsUtil;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -52,7 +53,7 @@ public class SettingUI {
             public void actionPerformed(ActionEvent e) {
                 String value = SettingUI.add_suffix.getText();
                 if (!"".equalsIgnoreCase(value)) {
-                    SettingUI.notInsideAdd(CommonStore.CUSTOMIZE_SUFFIX, value); //无重复再添加
+                    ToolsUtil.notInsideAdd(CommonStore.CUSTOMIZE_SUFFIX, value); //无重复再添加
                     // JList更新数据必须通过setModel，重新设置数据
                     list.setModel(new AbstractListModel<String>() {
                         public int getSize() {
@@ -143,7 +144,7 @@ public class SettingUI {
             public void actionPerformed(ActionEvent e) {
                 String value = SettingUI.add_scope.getText();
                 if (!"".equalsIgnoreCase(value)) {
-                    SettingUI.notInsideAdd(CommonStore.TARGET_SCOPE, value); //无重复再添加
+                    ToolsUtil.notInsideAdd(CommonStore.TARGET_SCOPE, value); //无重复再添加
                     // JList更新数据必须通过setModel，重新设置数据
                     scope_list.setModel(new AbstractListModel<String>() {
                         public int getSize() {
@@ -234,7 +235,7 @@ public class SettingUI {
             public void actionPerformed(ActionEvent e) {
                 String value = SettingUI.add_redirect.getText();
                 if (!"".equalsIgnoreCase(value)) {
-                    SettingUI.notInsideAdd(CommonStore.REDIRECT_SCOPE, value); //无重复再添加
+                    ToolsUtil.notInsideAdd(CommonStore.REDIRECT_SCOPE, value); //无重复再添加
                     // JList更新数据必须通过setModel，重新设置数据
                     redirect_list.setModel(new AbstractListModel<String>() {
                         public int getSize() {
@@ -293,17 +294,6 @@ public class SettingUI {
         makeJpanel(contentPane, options);
 
         return contentPane;
-    }
-
-    /**
-     * 检查是否存在，不存在再添加
-     * @param list 待添加数据的集合
-     * @param add 添加的数据
-     */
-    public static void notInsideAdd(List<String> list, String add){
-        if (!list.contains(add)){
-            list.add(add);
-        }
     }
 
     /**

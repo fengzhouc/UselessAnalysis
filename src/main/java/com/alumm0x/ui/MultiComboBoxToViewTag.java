@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.Objects;
+
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicArrowButton;
@@ -21,8 +21,8 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 import com.alumm0x.tree.UselessTreeNodeEntity;
-import com.alumm0x.util.BurpReqRespTools;
 import com.alumm0x.util.CommonStore;
+import com.alumm0x.util.ToolsUtil;
 
 
 /**
@@ -224,7 +224,7 @@ public class MultiComboBoxToViewTag extends JComponent implements ActionListener
                     if (entity.isVisible()) {
                         // 将显示的节点的标签添加到CommonStore.VIEW_TAGS，这样实现动态变化的标签列表
                         for (String tag : entity.tabs) {
-                            SettingUI.notInsideAdd(CommonStore.VIEW_TAGS,tag);
+                            ToolsUtil.notInsideAdd(CommonStore.VIEW_TAGS,tag);
                         } 
                     }
                     TreePath path = parent.pathByAddingChild(n); // 父节点path拼接子节点
@@ -275,7 +275,6 @@ public class MultiComboBoxToViewTag extends JComponent implements ActionListener
 
         @Override
         public void actionPerformed(ActionEvent arg0) {
-            // TODO Auto-generated method stub
             Object source = arg0.getSource();
             if (source instanceof JButton) {
                 JButton button = (JButton) source;

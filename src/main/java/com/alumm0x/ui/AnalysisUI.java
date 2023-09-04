@@ -4,6 +4,7 @@ import com.alumm0x.listeners.HttpListener;
 import com.alumm0x.tree.UselessTreeNodeEntity;
 import com.alumm0x.util.BurpReqRespTools;
 import com.alumm0x.util.CommonStore;
+import com.alumm0x.util.ToolsUtil;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -139,7 +140,7 @@ public class AnalysisUI {
             public void actionPerformed(ActionEvent e) {
                 String value = add_tab.getText();
                 if (!"".equalsIgnoreCase(value)){
-                    SettingUI.notInsideAdd(CommonStore.entity.tabs, value); //无重复再添加
+                    ToolsUtil.notInsideAdd(CommonStore.entity.tabs, value); //无重复再添加
                     // JList更新数据必须通过setModel，重新设置数据
                     CommonStore.list.setModel(new AbstractListModel<String>() {
                         public int getSize() {

@@ -4,9 +4,9 @@ import burp.*;
 
 import com.alumm0x.scan.StaticScanEngine;
 import com.alumm0x.scan.risk.StaticCheckResult;
-import com.alumm0x.ui.SettingUI;
 import com.alumm0x.util.BurpReqRespTools;
 import com.alumm0x.util.CommonStore;
+import com.alumm0x.util.ToolsUtil;
 
 import java.net.URI;
 import java.util.*;
@@ -183,7 +183,7 @@ public class UselessTreeNodeEntity {
      * @param tag
      */
     public void addTag(String tag) {
-        SettingUI.notInsideAdd(this.tabs,tag);
+        ToolsUtil.notInsideAdd(this.tabs,tag);
     }
 
     /**

@@ -8,6 +8,7 @@ import com.alumm0x.scan.risk.StaticCheckResult;
 import com.alumm0x.tree.UselessTreeNodeEntity;
 import com.alumm0x.util.BurpReqRespTools;
 import com.alumm0x.util.ToolsUtil;
+import com.alumm0x.util.param.json.JsonTools;
 
 import burp.IHttpRequestResponse;
 
@@ -27,7 +28,7 @@ public class StaticJsonCsrf extends StaticTaskImpl {
     @Override
     public void run() {
         // -jsoncsrf防护
-        List<StaticCheckResult> jsrf = checkJsonCsrf(entity.tabs, entity.getRequestResponse());
+        List<StaticCheckResult> jsrf = checkJsonCsrf(entity.getRequestResponse());
         if (jsrf != null && jsrf.size() > 0){
             entity.addTag(this.getClass().getSimpleName());
             entity.addMap(jsrf);
@@ -44,10 +45,10 @@ public class StaticJsonCsrf extends StaticTaskImpl {
      * 2.使用cookie
      * 3.后端没有限制content-type（这个是需要后续验证，满足上面三条就报问题了）
      */
-    public static List<StaticCheckResult> checkJsonCsrf(List<String> tabs, IHttpRequestResponse requestResponse) {
+    public static List<StaticCheckResult> checkJsonCsrf(IHttpRequestResponse requestResponse) {
         List<String> reqHeaders = BurpReqRespTools.getReqHeaders(requestResponse);
         byte[] reqBody = BurpReqRespTools.getReqBody(requestResponse);
-        if (tabs.contains("json") && ToolsUtil.hasHdeader(reqHeaders, "Cookie") != null && reqBody.length > 0) {
+        if ((JsonTools.isJsonObj(new String(BurpReqRespTools.getReqBody(requestResponse))) || JsonTools.isJsonArr(new String(BurpReqRespTools.getReqBody(requestResponse)))) && ToolsUtil.hasHdeader(reqHeaders, "Cookie") != null && reqBody.length > 0) {
                 List<StaticCheckResult> results = new ArrayList<>();
                 StaticCheckResult result = new StaticCheckResult();
                 result.desc = "JsonCsrf风险";

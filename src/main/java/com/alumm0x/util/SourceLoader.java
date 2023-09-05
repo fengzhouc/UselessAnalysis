@@ -22,7 +22,7 @@ public class SourceLoader {
                 String line = scanner.nextLine();
                 // 排除掉#开头的注释
                 if (!line.startsWith("#")) {
-                    payloads.add(line);
+                    payloads.add(line.trim());
                 }
             }
         }

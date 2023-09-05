@@ -7,6 +7,7 @@ import com.alumm0x.scan.http.task.impl.StaticTaskImpl;
 import com.alumm0x.scan.risk.StaticCheckResult;
 import com.alumm0x.tree.UselessTreeNodeEntity;
 import com.alumm0x.util.BurpReqRespTools;
+import com.alumm0x.util.ToolsUtil;
 
 import burp.IHttpRequestResponse;
 
@@ -26,7 +27,7 @@ public class StaticUnsfeDesignLoginout extends StaticTaskImpl {
     @Override
     public void run() {
         // -设计不合理的，如logout使用get
-        List<StaticCheckResult> unsafe = checkUnsfeDesignLoginout(entity.tabs, entity.getRequestResponse());
+        List<StaticCheckResult> unsafe = checkUnsfeDesignLoginout(entity.getRequestResponse());
         if (unsafe != null && unsafe.size() > 0){
             entity.addTag(this.getClass().getSimpleName());
             entity.addMap(unsafe);
@@ -38,22 +39,29 @@ public class StaticUnsfeDesignLoginout extends StaticTaskImpl {
      * @param tabs 标签列表
      * @param requestResponse burp请求响应
      */
-    public List<StaticCheckResult> checkUnsfeDesignLoginout(List<String> tabs, IHttpRequestResponse requestResponse) {
-        if (tabs.contains("login/out")) {
+    public List<StaticCheckResult> checkUnsfeDesignLoginout(IHttpRequestResponse requestResponse) {
+        if (StaticLoginOutApi.isLoginOutApi(requestResponse)) {
+            List<StaticCheckResult> results = new ArrayList<>();
+            // 登录登出使用GET请求,排除掉响应是html的，这个一般是登录页面
             if (BurpReqRespTools.getMethod(requestResponse).equalsIgnoreCase("GET")) {
-                if (BurpReqRespTools.getQuery(requestResponse) != null && (
+                    StaticCheckResult result = new StaticCheckResult();
+                    result.desc = "不安全设计-login/out使用GET方法";
+                    result.risk_param = "";
+                    result.fix = "登录登出禁止使用GET请求方式,自行判断是否是页面,而非请求";
+                    results.add(result);
+            }
+            // url中传递账号密码
+            if (BurpReqRespTools.getQuery(requestResponse) != null && (
                         BurpReqRespTools.getQuery(requestResponse).contains("username")
                         || BurpReqRespTools.getQuery(requestResponse).contains("password")
                 )) {
-                    List<StaticCheckResult> results = new ArrayList<>();
-                    StaticCheckResult result = new StaticCheckResult();
-                    result.desc = "不安全设计-login/out使用GET方法";
-                    result.risk_param = "登录登出不允许使用GET请求方式";
-                    result.fix = "";
-                    results.add(result);
-                    return results;
-                }
+                StaticCheckResult result = new StaticCheckResult();
+                result.desc = "不安全设计-login/out使用query传递账号密码";
+                result.risk_param = "";
+                result.fix = "账号密码等敏感信息禁止url中传递";
+                results.add(result);
             }
+            return results;
         }
         return null;
     }

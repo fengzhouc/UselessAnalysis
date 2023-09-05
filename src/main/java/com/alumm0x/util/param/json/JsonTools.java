@@ -3,6 +3,9 @@ package com.alumm0x.util.param.json;
 import com.alumm0x.util.CommonStore;
 import com.alumm0x.util.param.ParamHandlerImpl;
 import com.alumm0x.util.param.ParamKeyValue;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.*;
@@ -129,5 +132,33 @@ public class JsonTools {
 
     public String toString() {
         return this.NEW_JSON.toString();
+    }
+
+        /**
+     * 判断是否json对象
+     * @param data 带检测的数据
+     * @return
+     */
+    public static boolean isJsonObj(String data) {
+        try {
+            new JSONObject(data);
+            return true;
+        } catch (JSONException exception) {
+            return false;
+        }
+    }
+
+    /**
+     * 判断是否json数组
+     * @param data 带检测的数据
+     * @return
+     */
+    public static boolean isJsonArr(String data) {
+        try {
+            new JSONArray(data);
+            return true;
+        } catch (JSONException exception) {
+            return false;
+        }
     }
 }

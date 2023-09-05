@@ -1,5 +1,6 @@
 package com.alumm0x.ui;
 
+import com.alumm0x.listeners.HttpListener;
 import com.alumm0x.ui.tablemodel.RisksTable;
 import com.alumm0x.util.CommonStore;
 
@@ -54,7 +55,7 @@ public class RisksUI {
 
         // 下面板，risk的内容展示面板
         riskViewPane = new JTabbedPane();
-        risksViewer = CommonStore.callbacks.createMessageEditor(null, false);
+        risksViewer = CommonStore.callbacks.createMessageEditor((HttpListener) CommonStore.callbacks.getHttpListeners().stream().filter(ls -> ls instanceof HttpListener).findFirst().get(), false);
         riskViewPane.addTab("Risk", risksViewer.getComponent());
 
         // 组装

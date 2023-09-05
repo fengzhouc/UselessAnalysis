@@ -1,5 +1,6 @@
 package com.alumm0x.ui;
 
+import com.alumm0x.listeners.HttpListener;
 import com.alumm0x.util.CommonStore;
 import com.alumm0x.util.SourceLoader;
 
@@ -101,7 +102,7 @@ public class FoldTableComponent {
         // 下面板，risk的内容展示面板
         infoViewPane = new JTabbedPane();
         // infoViewPane.setPreferredSize(new Dimension(335, 200));
-        infoViewer = CommonStore.callbacks.createMessageEditor(null, false);
+        infoViewer = CommonStore.callbacks.createMessageEditor((HttpListener) CommonStore.callbacks.getHttpListeners().stream().filter(ls -> ls instanceof HttpListener).findFirst().get(), false);
         infoViewPane.add("Detail", infoViewer.getComponent());
 
         // 组装

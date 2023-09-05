@@ -7,6 +7,7 @@ import com.alumm0x.scan.http.task.impl.StaticTaskImpl;
 import com.alumm0x.scan.risk.StaticCheckResult;
 import com.alumm0x.tree.UselessTreeNodeEntity;
 import com.alumm0x.util.BurpReqRespTools;
+import com.alumm0x.util.param.json.JsonTools;
 
 import burp.IHttpRequestResponse;
 
@@ -26,7 +27,7 @@ public class StaticUnsfeDesignContentType extends StaticTaskImpl {
     @Override
     public void run() {
         // -设计不合理的，如contenttype不符合数据
-        List<StaticCheckResult> unsafe_ct = checkUnsfeDesignContentType(entity.tabs, entity.getRequestResponse());
+        List<StaticCheckResult> unsafe_ct = checkUnsfeDesignContentType(entity.getRequestResponse());
         if (unsafe_ct != null && unsafe_ct.size() > 0){
             entity.addTag(this.getClass().getSimpleName());
             entity.addMap(unsafe_ct);
@@ -38,8 +39,8 @@ public class StaticUnsfeDesignContentType extends StaticTaskImpl {
      * @param tabs 标签列表
      * @param requestResponse burp请求响应
      */
-    public static List<StaticCheckResult> checkUnsfeDesignContentType(List<String> tabs, IHttpRequestResponse requestResponse) {
-        if (tabs.contains("json")) {
+    public static List<StaticCheckResult> checkUnsfeDesignContentType(IHttpRequestResponse requestResponse) {
+        if (JsonTools.isJsonObj(new String(BurpReqRespTools.getReqBody(requestResponse))) || JsonTools.isJsonArr(new String(BurpReqRespTools.getReqBody(requestResponse)))) {
             if (!BurpReqRespTools.getContentType(requestResponse).contains("json")) {
                 List<StaticCheckResult> results = new ArrayList<>();
                 StaticCheckResult result = new StaticCheckResult();

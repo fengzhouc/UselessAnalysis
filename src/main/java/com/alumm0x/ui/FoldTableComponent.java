@@ -123,7 +123,7 @@ public class FoldTableComponent {
      * 还有就是根据表格行数调整滚动条的高度
      */
     public void updateButtonName() {
-        // this.table.setPreferredSize(new Dimension(335, this.table.getTableHeader().getHeight() + this.table.getRowHeight() * this.table.getRowCount()));
+        this.table.setPreferredSize(new Dimension(335, this.table.getTableHeader().getHeight() + this.table.getRowHeight() * this.table.getRowCount()));
         // if (0 < this.table.getRowCount() && this.table.getRowCount() < 5){
         //     tscrollPane.setPreferredSize(new Dimension(335, this.table.getTableHeader().getHeight() + this.table.getRowHeight()  * (this.table.getRowCount() + 1)));
         // }else if (this.table.getRowCount() >= 5){

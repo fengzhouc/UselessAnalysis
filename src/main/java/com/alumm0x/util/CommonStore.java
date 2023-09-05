@@ -115,171 +115,18 @@ public class CommonStore {
         ct.add("application/x-www-form-urlencoded ");
     }
     //2.常规的请求头部,保存标准规范的头部名称，用来过滤出自定义的头部
-    public static List<String> rfc_reqheader = new ArrayList<>();
-    static {
-        rfc_reqheader.add("accept");
-        rfc_reqheader.add("accept-language");
-        rfc_reqheader.add("accept-encoding");
-        rfc_reqheader.add("accept-charset");
-       rfc_reqheader.add("authorization");
-       rfc_reqheader.add("cookie");
-       rfc_reqheader.add("proxy-authenticate");
-       rfc_reqheader.add("proxy-authorization");
-       rfc_reqheader.add("www-authenticate");
-        rfc_reqheader.add("cache-control");
-        rfc_reqheader.add("connection");
-        rfc_reqheader.add("accept-ch");
-        rfc_reqheader.add("accept-patch");
-        rfc_reqheader.add("accept-post");
-        rfc_reqheader.add("accept-ranges");
-        rfc_reqheader.add("access-control-allow-credentials");
-        rfc_reqheader.add("access-control-allow-headers");
-        rfc_reqheader.add("access-control-allow-methods");
-        rfc_reqheader.add("access-control-allow-origin");
-        rfc_reqheader.add("access-control-expose-headers");
-        rfc_reqheader.add("access-control-max-age");
-        rfc_reqheader.add("access-control-request-headers");
-        rfc_reqheader.add("access-control-request-method");
-        rfc_reqheader.add("age");
-        rfc_reqheader.add("allow");
-        rfc_reqheader.add("cache-control");
-        rfc_reqheader.add("clear-site-data");
-        rfc_reqheader.add("content-disposition");
-        rfc_reqheader.add("content-language");
-        rfc_reqheader.add("content-length");
-        rfc_reqheader.add("content-location");
-        rfc_reqheader.add("content-range");
-        rfc_reqheader.add("content-security-policy");
-        rfc_reqheader.add("content-security-policy-report-only");
-        rfc_reqheader.add("content-type");
-        rfc_reqheader.add("cross-origin-embedder-policy");
-        rfc_reqheader.add("cross-origin-opener-policy");
-        rfc_reqheader.add("cross-origin-resource-policy");
-        rfc_reqheader.add("date");
-        rfc_reqheader.add("device-memory");
-        rfc_reqheader.add("digest");
-        rfc_reqheader.add("downlink");
-        rfc_reqheader.add("early-data");
-        rfc_reqheader.add("ect");
-        rfc_reqheader.add("etag");
-        rfc_reqheader.add("expect");
-        rfc_reqheader.add("expect-ct");
-        rfc_reqheader.add("expires");
-        rfc_reqheader.add("forwarded");
-        rfc_reqheader.add("from");
-        rfc_reqheader.add("host");
-        rfc_reqheader.add("if-match");
-        rfc_reqheader.add("if-modified-since");
-        rfc_reqheader.add("if-none-match");
-        rfc_reqheader.add("if-range");
-        rfc_reqheader.add("if-unmodified-since");
-        rfc_reqheader.add("keep-alive");
-        rfc_reqheader.add("last-modified");
-        rfc_reqheader.add("link");
-        rfc_reqheader.add("location");
-        rfc_reqheader.add("max-forwards");
-        rfc_reqheader.add("nel");
-        rfc_reqheader.add("origin");
-        rfc_reqheader.add("permissions-policy");
-        rfc_reqheader.add("range");
-        rfc_reqheader.add("referer");
-        rfc_reqheader.add("referrer-policy");
-        rfc_reqheader.add("retry-after");
-        rfc_reqheader.add("rtt");
-        rfc_reqheader.add("save-data");
-        rfc_reqheader.add("sec-ch-prefers-reduced-motion");
-        rfc_reqheader.add("sec-ch-ua");
-        rfc_reqheader.add("sec-ch-ua-arch");
-        rfc_reqheader.add("sec-ch-ua-bitness");
-        rfc_reqheader.add("sec-ch-ua-full-version-list");
-        rfc_reqheader.add("sec-ch-ua-mobile");
-        rfc_reqheader.add("sec-ch-ua-model");
-        rfc_reqheader.add("sec-ch-ua-platform");
-        rfc_reqheader.add("sec-ch-ua-platform-version");
-        rfc_reqheader.add("sec-fetch-dest");
-        rfc_reqheader.add("sec-fetch-mode");
-        rfc_reqheader.add("sec-fetch-site");
-        rfc_reqheader.add("sec-fetch-user");
-        rfc_reqheader.add("sec-gpc");
-        rfc_reqheader.add("sec-websocket-accept");
-        rfc_reqheader.add("server");
-        rfc_reqheader.add("server-timing");
-        rfc_reqheader.add("service-worker-navigation-preload");
-        rfc_reqheader.add("set-cookie");
-        rfc_reqheader.add("sourcemap");
-        rfc_reqheader.add("te");
-        rfc_reqheader.add("timing-allow-origin");
-        rfc_reqheader.add("trailer");
-        rfc_reqheader.add("transfer-encoding");
-        rfc_reqheader.add("upgrade");
-        rfc_reqheader.add("upgrade-insecure-requests");
-        rfc_reqheader.add("user-agent");
-        rfc_reqheader.add("vary");
-        rfc_reqheader.add("via");
-        rfc_reqheader.add("want-digest");
-        rfc_reqheader.add("x-content-security-policy");
-        rfc_reqheader.add("x-content-type-options");
-        rfc_reqheader.add("x-frame-options");
-        rfc_reqheader.add("x-xss-protection");
-        rfc_reqheader.add("http-strict-transport-security");
-        rfc_reqheader.add("x-requested-with");
-
-        rfc_reqheader.add("pragma");
-    }
+    public static List<String> rfc_reqheader = SourceLoader.loadSources("/rfc/rfc_reqheaders.bbm");
+    
     //2.常规的响应头部,保存标准规范的头部名称，用来过滤出自定义的头部
-    public static List<String> rfc_respheader = new ArrayList<>();
-    static {
-        rfc_respheader.add("accept-ch");
-        rfc_respheader.add("accept-patch");
-        rfc_respheader.add("accept-post");
-        rfc_respheader.add("accept-ranges");
-        rfc_respheader.add("access-control-allow-credentials");
-        rfc_respheader.add("access-control-allow-headers");
-        rfc_respheader.add("access-control-allow-methods");
-        rfc_respheader.add("access-control-allow-origin");
-        rfc_respheader.add("access-control-expose-headers");
-        rfc_respheader.add("access-control-max-age");
-        rfc_respheader.add("access-control-request-headers");
-        rfc_respheader.add("access-control-request-method");
-        rfc_respheader.add("age");
-        rfc_respheader.add("allow");
-        rfc_respheader.add("cache-control");
-        rfc_respheader.add("clear-site-data");
-        rfc_respheader.add("content-disposition");
-        rfc_respheader.add("content-Language");
-    }
+    public static List<String> rfc_respheader = SourceLoader.loadSources("/rfc/rfc_respheaders.bbm");
 
     // 关于认证的请求头
-    public static List<String> auth_header = new ArrayList<>();
-    static {
-        auth_header.add("authorization"); //定义应该用于访问资源的身份验证方法。
-        auth_header.add("www-authenticate"); //包含用于向服务器验证用户代理身份的凭据。
-        auth_header.add("proxy-authorization"); //包含用于使用代理服务器验证用户代理的凭据。
-        auth_header.add("proxy-authenticate"); //定义应用于访问代理服务器后面资源的身份验证方法。
-        auth_header.add("cookie"); //常规cookie
-    }
+    public static List<String> auth_header = SourceLoader.loadSources("/rfc/rfc_authheaders.bbm");
 
     // 关于websocket的请求头
-    public static List<String> ws_reqheader = new ArrayList<>();
-    static {
-        ws_reqheader.add("sec-websocket-key");
-        ws_reqheader.add("sec-websocket-version");
-        ws_reqheader.add("sec-websocket-accept");
-        ws_reqheader.add("sec-websocket-protocol");
-        ws_reqheader.add("sec-websocket-extensions");
-        ws_reqheader.add("upgrade");
-    }
+    public static List<String> ws_reqheader = SourceLoader.loadSources("/rfc/rfc_wsheaders.bbm");
 
     // 关于cors的响应头
-    public static List<String> cors_respheader = new ArrayList<>();
-    static {
-        cors_respheader.add("access-control-allow-origin");
-        cors_respheader.add("access-control-allow-headers");
-        cors_respheader.add("access-control-allow-methods");
-        cors_respheader.add("access-control-allow-credentials");
-        cors_respheader.add("access-control-expose-headers");
-        cors_respheader.add("access-control-max-age");
-    }
-
+    public static List<String> cors_respheader = SourceLoader.loadSources("/rfc/rfc_corsheaders.bbm");
 
 }

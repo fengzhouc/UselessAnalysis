@@ -33,6 +33,7 @@ content-range
 content-security-policy
 content-security-policy-report-only
 content-type
+content-encoding
 cross-origin-embedder-policy
 cross-origin-opener-policy
 cross-origin-resource-policy

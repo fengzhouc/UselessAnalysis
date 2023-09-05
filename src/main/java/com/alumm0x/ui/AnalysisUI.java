@@ -132,7 +132,7 @@ public class AnalysisUI {
             }
         });
         JScrollPane default_scrollPane = new JScrollPane(CommonStore.list);
-        default_scrollPane.setPreferredSize(new Dimension(350, 200));
+        default_scrollPane.setPreferredSize(new Dimension(350, 150));
         default_scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
         // 1.1 添加/删除/清空等的按钮

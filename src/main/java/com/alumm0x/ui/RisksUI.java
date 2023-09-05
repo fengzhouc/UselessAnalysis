@@ -16,7 +16,8 @@ import java.awt.*;
 public class RisksUI {
 
     public static IMessageEditor risksViewer; // 显示选中的risk的内容，用于复制
-    public static JTabbedPane riskViewPane; // 
+    public static JTabbedPane riskViewPane; // 显示内容的Pane
+    public static JSplitPane splitPane; // 用于选中行后才添加riskViewPane
 
     public static Component getUI() {
         JPanel contentPane = new JPanel();
@@ -47,17 +48,17 @@ public class RisksUI {
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
         //上下分割界面
-        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT); //上下分割
+        splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT); //上下分割
         splitPane.setDividerLocation(0.3); //设置分隔条的位置为 JSplitPane 大小的一个百分比,70%->0.7,貌似没啥用
-        splitPane.setResizeWeight(0.3);
+        // splitPane.setResizeWeight(0.3);
 
         // 下面板，risk的内容展示面板
         riskViewPane = new JTabbedPane();
         risksViewer = CommonStore.callbacks.createMessageEditor(null, false);
+        riskViewPane.addTab("Risk", risksViewer.getComponent());
 
         // 组装
         splitPane.setLeftComponent(scrollPane);
-        splitPane.setRightComponent(riskViewPane);
 
 
         // 组装完整UI

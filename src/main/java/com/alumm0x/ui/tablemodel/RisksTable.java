@@ -24,13 +24,13 @@ public class RisksTable extends JTable {
             stringBuffer.append("FixSuggestion: ").append(this.getValueAt(row, 2)).append("\r\n");
             RisksUI.risksViewer.setMessage(stringBuffer.toString().getBytes(StandardCharsets.UTF_8), false);
             // 选中才展示
-            RisksUI.riskViewPane.addTab("Risk", RisksUI.risksViewer.getComponent());
+            RisksUI.splitPane.setRightComponent(RisksUI.riskViewPane);
             // UI的更新需要新线程
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        RisksUI.riskViewPane.updateUI();
-                    }
-                });
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    RisksUI.splitPane.updateUI();
+                }
+            });
 
             super.changeSelection(row, col, toggle, extend);
         }

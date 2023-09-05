@@ -48,10 +48,10 @@ public class HttpListener implements IHttpListener, IMessageEditorController {
                 @Override
                 public void valueChanged(TreeSelectionEvent e) {
                     // 选中前还原RisksUI状态，删除tab、清空数据
-                    if (RisksUI.riskViewPane.getTabCount() > 0) {
-                        RisksUI.riskViewPane.remove(0);
-                        RisksUI.risksViewer.setMessage(null, false); // 清空信息
+                    if (RisksUI.splitPane.getRightComponent() != null) {
+                        RisksUI.splitPane.remove(RisksUI.riskViewPane);
                     }
+                    RisksUI.risksViewer.setMessage("".getBytes(StandardCharsets.UTF_8), false); // 清空信息
                     // 处理选中节点的信息初始化
                     DefaultMutableTreeNode n = (DefaultMutableTreeNode) e.getNewLeadSelectionPath().getLastPathComponent();
                     CommonStore.entity = (UselessTreeNodeEntity) n.getUserObject();

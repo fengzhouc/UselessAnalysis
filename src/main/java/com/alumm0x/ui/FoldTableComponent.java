@@ -33,6 +33,7 @@ public class FoldTableComponent {
 
     private JTabbedPane infoViewPane;
     private IMessageEditor infoViewer; // 展示选中行的完整信息
+    private JSplitPane splitPane;
 
     public FoldTableComponent(String name, TableModel tableModel) {
         this.name = name;
@@ -85,21 +86,26 @@ public class FoldTableComponent {
         this.foldPanl.setLayout(new FlowLayout(FlowLayout.LEFT));
         this.foldPanl.setVisible(expand); //默认不展开
         tscrollPane = new JScrollPane(this.table); //滚动条
-        tscrollPane.setPreferredSize(new Dimension(335, this.table.getTableHeader().getHeight() + this.table.getRowHeight()));
+        // tscrollPane.setPreferredSize(new Dimension(335, this.table.getTableHeader().getHeight() + this.table.getRowHeight()));
+        // tscrollPane.setPreferredSize(new Dimension(335, 100));
         tscrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED); // 垂直方向滚动
 
         //上下分割界面
-        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT); //上下分割
+        splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT); //上下分割
+        // splitPane.setEnabled(false); // 禁止滚动
         splitPane.setDividerLocation(0.3); //设置分隔条的位置为 JSplitPane 大小的一个百分比,70%->0.7,貌似没啥用
         splitPane.setResizeWeight(0.3);
+        splitPane.setPreferredSize(new Dimension(335, 300)); // 限制整个splitPane的大小，这样在添加一侧组件的时候会填满，再添加另一侧后即可按0.3进行分割
 
         // 下面板，risk的内容展示面板
         infoViewPane = new JTabbedPane();
+        // infoViewPane.setPreferredSize(new Dimension(335, 200));
         infoViewer = CommonStore.callbacks.createMessageEditor(null, false);
+        infoViewPane.add("Detail", infoViewer.getComponent());
 
         // 组装
         splitPane.setLeftComponent(tscrollPane);
-        splitPane.setRightComponent(infoViewPane);
+        // splitPane.setRightComponent(infoViewPane); 
 
         SettingUI.makeJpanel(this.foldPanl, splitPane);
         // 组装总ui
@@ -116,13 +122,19 @@ public class FoldTableComponent {
      * 还有就是根据表格行数调整滚动条的高度
      */
     public void updateButtonName() {
-        this.table.setPreferredSize(new Dimension(335, this.table.getTableHeader().getHeight() + this.table.getRowHeight() * this.table.getRowCount()));
-        if (0 < this.table.getRowCount() && this.table.getRowCount() < 5){
-            tscrollPane.setPreferredSize(new Dimension(335, this.table.getTableHeader().getHeight() + this.table.getRowHeight()  * (this.table.getRowCount() + 1)));
-        }else if (this.table.getRowCount() >= 5){
-            tscrollPane.setPreferredSize(new Dimension(335, this.table.getTableHeader().getHeight() + this.table.getRowHeight()  * 5));
-        }
+        // this.table.setPreferredSize(new Dimension(335, this.table.getTableHeader().getHeight() + this.table.getRowHeight() * this.table.getRowCount()));
+        // if (0 < this.table.getRowCount() && this.table.getRowCount() < 5){
+        //     tscrollPane.setPreferredSize(new Dimension(335, this.table.getTableHeader().getHeight() + this.table.getRowHeight()  * (this.table.getRowCount() + 1)));
+        // }else if (this.table.getRowCount() >= 5){
+        //     tscrollPane.setPreferredSize(new Dimension(335, this.table.getTableHeader().getHeight() + this.table.getRowHeight()  * 5));
+        // }
         this.button.setText(this.button.getText().split(" \\(")[0] + " (" + this.table.getRowCount() + ")");
+        // 清空数据，为什么在这里执行，因为tree切换选中节点的时候都会调用这个方法
+        infoViewer.setMessage("".getBytes(StandardCharsets.UTF_8), false); // 清空信息
+        // 折叠后就删除tab
+        if (splitPane.getRightComponent() != null) {
+            splitPane.remove(infoViewPane);
+        }
     }
 
     /**
@@ -135,11 +147,6 @@ public class FoldTableComponent {
             button.setIcon(down);
         } else {
             button.setIcon(right);
-            // 折叠后就删除tab、清空数据
-            if (infoViewPane.getTabCount() > 0) {
-                infoViewPane.remove(0);
-                infoViewer.setMessage(null, false); // 清空信息
-            }
         }
     }
     /**
@@ -183,11 +190,13 @@ public class FoldTableComponent {
                 stringBuffer.append("Value: ").append(this.getValueAt(row, 1)).append("\r\n");
                 infoViewer.setMessage(stringBuffer.toString().getBytes(StandardCharsets.UTF_8), false);
                 // 选中后才显示具体内容
-                infoViewPane.addTab("Info", infoViewer.getComponent());
+                // infoViewPane.add("Detail", infoViewer.getComponent());
+                splitPane.setRightComponent(infoViewPane); 
                 // UI的更新需要新线程
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        foldPanl.updateUI();
+                        // infoViewPane.updateUI();
+                        splitPane.updateUI();
                     }
                 });
 

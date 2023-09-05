@@ -16,3 +16,12 @@ cache-control
 clear-site-data
 content-disposition
 content-Language
+x-powered-by
+p3p
+strict-transport-security
+http-strict-transport-security
+x-xss-protection
+x-frame-options
+x-content-type-options
+content-type-options
+alt-svc

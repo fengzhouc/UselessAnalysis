@@ -28,6 +28,8 @@ public class AnalysisUI {
     public static MultiComboBox colors; //搜索条件中的method选择
     public static JComboBox<String> type; //搜索类型
     public static JTextField search; //搜索的值
+    public static JSplitPane splitPane; //tree及请求响应展示分隔板，用于动态增加请求响应展示，选中node才添加
+    public static JTabbedPane tabs; // 响应面板
 
     public static Component getUI(){
         JPanel contentPane = new JPanel();
@@ -96,7 +98,7 @@ public class AnalysisUI {
         SettingUI.makeJpanel(tools,new JLabel("Search:"),search,search_go,search_clear,new JLabel("#Scope:"), type,new JLabel("#Tags:"),tags,new JLabel("#Methods:"),methods,new JLabel("#Colors:"),colors);
 
         //上下分割界面
-        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT); //上下分割
+        splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT); //上下分割
         splitPane.setDividerLocation(0.3); //设置分隔条的位置为 JSplitPane 大小的一个百分比,70%->0.7,貌似没啥用
         splitPane.setResizeWeight(0.3);
         // 1.上面板，Jtree
@@ -106,14 +108,14 @@ public class AnalysisUI {
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         splitPane.setLeftComponent(scrollPane);
         // 2.下面板，请求响应的面板
-        JTabbedPane tabs = new JTabbedPane();
+        tabs = new JTabbedPane();
         // 初始化MessageEditor
         CommonStore.requestViewer = CommonStore.callbacks.createMessageEditor(httpListener, false);
         CommonStore.responseViewer = CommonStore.callbacks.createMessageEditor(httpListener, false);
         tabs.addTab("Request", CommonStore.requestViewer.getComponent());
         tabs.addTab("Response", CommonStore.responseViewer.getComponent());
         tabs.addTab("Risks", RisksUI.getUI());
-        splitPane.setRightComponent(tabs);
+        // splitPane.setRightComponent(tabs); // 不立刻添加，选中后在添加
 
         //左右分割界面
         JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT); //左右分割

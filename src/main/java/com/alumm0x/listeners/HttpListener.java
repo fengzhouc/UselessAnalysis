@@ -4,6 +4,7 @@ import burp.*;
 import com.alumm0x.tree.MyTreeCellRenderer;
 import com.alumm0x.tree.UselessTreeNodeEntity;
 import com.alumm0x.tree.mouse.TreeMouseMune;
+import com.alumm0x.ui.AnalysisUI;
 import com.alumm0x.ui.RisksUI;
 import com.alumm0x.ui.SettingUI;
 import com.alumm0x.util.BurpReqRespTools;
@@ -60,9 +61,23 @@ public class HttpListener implements IHttpListener, IMessageEditorController {
                             return CommonStore.entity.tabs.get(i);
                         }
                     });
-                    // 设置选中行的请求及响应信息
-                    CommonStore.requestViewer.setMessage(CommonStore.entity.getRequestResponse().getRequest(), true);
-                    CommonStore.responseViewer.setMessage(CommonStore.entity.getRequestResponse().getResponse(), false);
+                    // 设置选中行的请求及响应信息，有内容才添加
+                    if (CommonStore.entity.getRequestResponse() != null) {
+                        CommonStore.requestViewer.setMessage(CommonStore.entity.getRequestResponse().getRequest(), true);
+                        CommonStore.responseViewer.setMessage(CommonStore.entity.getRequestResponse().getResponse(), false);
+                        // 并添加pane
+                        if (AnalysisUI.splitPane.getRightComponent() == null) {
+                            AnalysisUI.splitPane.setRightComponent(AnalysisUI.tabs);
+                        }
+                    } else {
+                        // 清空数据
+                        CommonStore.requestViewer.setMessage("".getBytes(StandardCharsets.UTF_8), true);
+                        CommonStore.responseViewer.setMessage("".getBytes(StandardCharsets.UTF_8), true);
+                        // 并且删除pane
+                        if (AnalysisUI.splitPane.getRightComponent() != null) {
+                            AnalysisUI.splitPane.remove(AnalysisUI.tabs);
+                        }
+                    }
                     CommonStore.currentlyDisplayedItem = CommonStore.entity.getRequestResponse();
                     // 设置选中行的数据展示
                     //1.查询参数数据刷新

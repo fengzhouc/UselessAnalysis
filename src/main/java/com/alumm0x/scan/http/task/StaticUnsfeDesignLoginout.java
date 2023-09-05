@@ -47,7 +47,7 @@ public class StaticUnsfeDesignLoginout extends StaticTaskImpl {
                     StaticCheckResult result = new StaticCheckResult();
                     result.desc = "不安全设计-login/out使用GET方法";
                     result.risk_param = "";
-                    result.fix = "登录登出禁止使用GET请求方式,自行判断是否是页面,而非请求";
+                    result.fix = "登录登出禁止使用GET请求方式,自行判断是否是页面,而非接口请求";
                     results.add(result);
             }
             // url中传递账号密码

@@ -25,6 +25,7 @@ public class StaticServerBanner extends StaticTaskImpl {
     @Override
     public void run() {
         IRequestInfo requestInfo = BurpReqRespTools.getRequestInfo(entity.getRequestResponse());
+        byte[] responseBody = BurpReqRespTools.getRespBody(entity.getRequestResponse());
         // Server指纹
         String server = ToolsUtil.hasHdeader(BurpReqRespTools.getReqHeaders(entity.getRequestResponse()), "Server");
         if (server != null) {
@@ -43,8 +44,8 @@ public class StaticServerBanner extends StaticTaskImpl {
         List<String> banners_body = SourceLoader.loadSources("/banner/banners_body.oh");
         for (String banner : banners_body) {
             String[] kv = banner.split(",");
-            // TODO 怎么查找
-            if (kv[0].equalsIgnoreCase("")) {
+            // 判断响应体中是否包含banner关键字
+            if (new String(responseBody).equalsIgnoreCase(kv[0])) {
                 entity.addTag(kv[1]);
             }
         }

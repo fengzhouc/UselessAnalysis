@@ -34,6 +34,7 @@ content-security-policy
 content-security-policy-report-only
 content-type
 content-encoding
+content-md5
 cross-origin-embedder-policy
 cross-origin-opener-policy
 cross-origin-resource-policy

@@ -99,8 +99,8 @@ public class AnalysisUI {
 
         //上下分割界面
         splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT); //上下分割
-        splitPane.setDividerLocation(0.3); //设置分隔条的位置为 JSplitPane 大小的一个百分比,70%->0.7,貌似没啥用
-        splitPane.setResizeWeight(0.3);
+        splitPane.setDividerLocation(0.7); //设置分隔条的位置为 JSplitPane 大小的一个百分比,70%->0.7,貌似没啥用
+        splitPane.setResizeWeight(0.7);
         // 1.上面板，Jtree
         HttpListener httpListener = (HttpListener) CommonStore.callbacks.getHttpListeners().stream().filter(ls -> ls instanceof HttpListener).findFirst().get();
         JScrollPane scrollPane = new JScrollPane(CommonStore.TREE); //滚动条

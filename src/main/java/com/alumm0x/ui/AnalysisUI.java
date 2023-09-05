@@ -119,8 +119,9 @@ public class AnalysisUI {
 
         //左右分割界面
         JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT); //左右分割
-        split.setDividerLocation(0.7); //设置分隔条的位置为 JSplitPane 大小的一个百分比,70%->0.7
-        split.setResizeWeight(0.7);
+        // split.setEnabled(false); // 禁止移动
+        split.setDividerLocation(0.8); //设置分隔条的位置为 JSplitPane 大小的一个百分比,70%->0.7
+        split.setResizeWeight(0.8);
         //右侧信息展示区的基础面板
         // 1.标签区
         CommonStore.list = new JList<>();
@@ -228,6 +229,7 @@ public class AnalysisUI {
 
         //2.右侧总ui
         JPanel rightPanl = new JPanel();
+        // rightPanl.setPreferredSize(new Dimension(340, 0)); // 本来想是设置这个的宽度来固定整个UI的比例，但好像不行
         rightPanl.setBorder(new EmptyBorder(0, 0, 0, 0)); //组件间间隙
         VerticalFlowLayout rightPanl_boxLayout = new VerticalFlowLayout();; // 自定义的垂直布局
         rightPanl.setLayout(rightPanl_boxLayout);

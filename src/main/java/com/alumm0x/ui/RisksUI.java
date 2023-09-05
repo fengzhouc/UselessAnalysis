@@ -50,7 +50,7 @@ public class RisksUI {
         //上下分割界面
         splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT); //上下分割
         splitPane.setDividerLocation(0.3); //设置分隔条的位置为 JSplitPane 大小的一个百分比,70%->0.7,貌似没啥用
-        // splitPane.setResizeWeight(0.3);
+        splitPane.setResizeWeight(0.3); 
 
         // 下面板，risk的内容展示面板
         riskViewPane = new JTabbedPane();

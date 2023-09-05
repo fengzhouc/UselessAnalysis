@@ -78,6 +78,7 @@ public class UselessTreeNodeEntity {
      */
     private void parserHeaders() {
         for (Map.Entry<String, Object> entry : BurpReqRespTools.getReqHeadersToMap(requestResponse).entrySet()){
+            // 保存非标的请求头
             if (!CommonStore.rfc_reqheader.contains(entry.getKey().toLowerCase())) {
                 reqHeaders_custom.put(entry.getKey(), entry.getValue().toString());
             }
@@ -93,7 +94,7 @@ public class UselessTreeNodeEntity {
                     }
             }
         }
-
+        // 保存非标的响应头
         for (Map.Entry<String, String> entry : BurpReqRespTools.getRespHeadersToMap(requestResponse).entrySet()) {
             if (!CommonStore.rfc_reqheader.contains(entry.getKey().toLowerCase())) {
                 respHeaders_custom.put(entry.getKey(), entry.getValue());

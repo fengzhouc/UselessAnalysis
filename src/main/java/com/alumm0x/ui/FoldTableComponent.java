@@ -49,6 +49,7 @@ public class FoldTableComponent {
             @Override
             public void actionPerformed(ActionEvent e) {
                 expand();
+                clear(); // 切换不同类也清理一次
                 if (expand) {
                     // 展开某个的时候，把其他已展开的折叠上
                     SwingUtilities.invokeLater(new Runnable() {
@@ -87,7 +88,7 @@ public class FoldTableComponent {
         this.foldPanl.setVisible(expand); //默认不展开
         tscrollPane = new JScrollPane(this.table); //滚动条
         // tscrollPane.setPreferredSize(new Dimension(335, this.table.getTableHeader().getHeight() + this.table.getRowHeight()));
-        // tscrollPane.setPreferredSize(new Dimension(335, 100));
+        tscrollPane.setPreferredSize(new Dimension(335, 100));
         tscrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED); // 垂直方向滚动
 
         //上下分割界面
@@ -130,11 +131,7 @@ public class FoldTableComponent {
         // }
         this.button.setText(this.button.getText().split(" \\(")[0] + " (" + this.table.getRowCount() + ")");
         // 清空数据，为什么在这里执行，因为tree切换选中节点的时候都会调用这个方法
-        infoViewer.setMessage("".getBytes(StandardCharsets.UTF_8), false); // 清空信息
-        // 折叠后就删除tab
-        if (splitPane.getRightComponent() != null) {
-            splitPane.remove(infoViewPane);
-        }
+        clear();
     }
 
     /**
@@ -173,6 +170,18 @@ public class FoldTableComponent {
     }
 
     /**
+     * 还原UI，动态展示行内容
+     */
+    public void clear(){
+        // 清空数据，为什么在这里执行，因为tree切换选中节点的时候都会调用这个方法
+        infoViewer.setMessage("".getBytes(StandardCharsets.UTF_8), false); // 清空信息
+        // 折叠后就删除tab
+        if (splitPane.getRightComponent() != null) {
+            splitPane.remove(infoViewPane);
+        }
+    }
+
+    /**
      * 拓展JTable，选中即展示详细完整内容
      */
     private class FoldTableComponentTable extends JTable {
@@ -185,12 +194,13 @@ public class FoldTableComponent {
             @Override
             public void changeSelection(int row, int col, boolean toggle, boolean extend)
             {
+                super.changeSelection(row, col, toggle, extend);
+                // 选中即展示详细完整内容
                 StringBuffer stringBuffer = new StringBuffer();
                 stringBuffer.append("Name: ").append(this.getValueAt(row, 0)).append("\r\n");
                 stringBuffer.append("Value: ").append(this.getValueAt(row, 1)).append("\r\n");
                 infoViewer.setMessage(stringBuffer.toString().getBytes(StandardCharsets.UTF_8), false);
                 // 选中后才显示具体内容
-                // infoViewPane.add("Detail", infoViewer.getComponent());
                 splitPane.setRightComponent(infoViewPane); 
                 // UI的更新需要新线程
                 SwingUtilities.invokeLater(new Runnable() {
@@ -199,8 +209,6 @@ public class FoldTableComponent {
                         splitPane.updateUI();
                     }
                 });
-
-                super.changeSelection(row, col, toggle, extend);
             }
     }
 }

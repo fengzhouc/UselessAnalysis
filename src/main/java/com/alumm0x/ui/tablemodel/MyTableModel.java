@@ -1,5 +1,6 @@
 package com.alumm0x.ui.tablemodel;
 
+import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,7 +13,12 @@ public class MyTableModel extends AbstractTableModel {
 
     public void setMessages(Map<String, Object> datas) {
         this.messages = datas;
-        fireTableDataChanged();
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                fireTableDataChanged();
+            }
+        });
     }
 
     /**

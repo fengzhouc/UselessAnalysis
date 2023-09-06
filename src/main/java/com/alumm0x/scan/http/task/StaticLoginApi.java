@@ -1,6 +1,5 @@
 package com.alumm0x.scan.http.task;
 
-import java.util.Arrays;
 
 import com.alumm0x.scan.http.task.impl.StaticTaskImpl;
 import com.alumm0x.tree.UselessTreeNodeEntity;

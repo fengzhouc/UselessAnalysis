@@ -5,6 +5,7 @@ import com.alumm0x.ui.tablemodel.RisksTable;
 import com.alumm0x.util.CommonStore;
 
 import burp.IMessageEditor;
+import burp.ITextEditor;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -16,7 +17,8 @@ import java.awt.*;
 
 public class RisksUI {
 
-    public static IMessageEditor risksViewer; // 显示选中的risk的内容，用于复制
+    // public static IMessageEditor risksViewer; // 显示选中的risk的内容，用于复制
+    public static ITextEditor risksViewer; // 显示选中的risk的内容，用于复制
     public static JTabbedPane riskViewPane; // 显示内容的Pane
     public static JSplitPane splitPane; // 用于选中行后才添加riskViewPane
 
@@ -55,7 +57,8 @@ public class RisksUI {
 
         // 下面板，risk的内容展示面板
         riskViewPane = new JTabbedPane();
-        risksViewer = CommonStore.callbacks.createMessageEditor((HttpListener) CommonStore.callbacks.getHttpListeners().stream().filter(ls -> ls instanceof HttpListener).findFirst().get(), false);
+        // risksViewer = CommonStore.callbacks.createMessageEditor((HttpListener) CommonStore.callbacks.getHttpListeners().stream().filter(ls -> ls instanceof HttpListener).findFirst().get(), false);
+        risksViewer = CommonStore.callbacks.createTextEditor();
         riskViewPane.addTab("Risk", risksViewer.getComponent());
 
         // 组装

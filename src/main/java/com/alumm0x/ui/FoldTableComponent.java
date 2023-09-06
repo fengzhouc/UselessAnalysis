@@ -5,6 +5,7 @@ import com.alumm0x.util.CommonStore;
 import com.alumm0x.util.SourceLoader;
 
 import burp.IMessageEditor;
+import burp.ITextEditor;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -33,7 +34,8 @@ public class FoldTableComponent {
     ImageIcon down = new ImageIcon(new ImageIcon(SourceLoader.loadSourceToUrl("down.png")).getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH));
 
     private JTabbedPane infoViewPane;
-    private IMessageEditor infoViewer; // 展示选中行的完整信息
+    // private IMessageEditor infoViewer; // 展示选中行的完整信息
+    private ITextEditor infoViewer; // 展示选中行的完整信息
     private JSplitPane splitPane;
 
     public FoldTableComponent(String name, TableModel tableModel) {
@@ -102,7 +104,9 @@ public class FoldTableComponent {
         // 下面板，risk的内容展示面板
         infoViewPane = new JTabbedPane();
         // infoViewPane.setPreferredSize(new Dimension(335, 200));
-        infoViewer = CommonStore.callbacks.createMessageEditor((HttpListener) CommonStore.callbacks.getHttpListeners().stream().filter(ls -> ls instanceof HttpListener).findFirst().get(), false);
+        // infoViewer = CommonStore.callbacks.createMessageEditor((HttpListener) CommonStore.callbacks.getHttpListeners().stream().filter(ls -> ls instanceof HttpListener).findFirst().get(), false);
+        infoViewer = CommonStore.callbacks.createTextEditor();
+        infoViewer.setEditable(false);
         infoViewPane.add("Detail", infoViewer.getComponent());
 
         // 组装
@@ -175,7 +179,8 @@ public class FoldTableComponent {
      */
     public void clear(){
         // 清空数据，为什么在这里执行，因为tree切换选中节点的时候都会调用这个方法
-        infoViewer.setMessage("".getBytes(StandardCharsets.UTF_8), false); // 清空信息
+        // infoViewer.setMessage("".getBytes(StandardCharsets.UTF_8), false); // 清空信息
+        infoViewer.setText("".getBytes(StandardCharsets.UTF_8));
         // 折叠后就删除tab
         if (splitPane.getRightComponent() != null) {
             splitPane.remove(infoViewPane);
@@ -198,9 +203,10 @@ public class FoldTableComponent {
                 super.changeSelection(row, col, toggle, extend);
                 // 选中即展示详细完整内容
                 StringBuffer stringBuffer = new StringBuffer();
-                stringBuffer.append("Name: ").append(this.getValueAt(row, 0)).append("\r\n");
-                stringBuffer.append("Value: ").append(this.getValueAt(row, 1)).append("\r\n");
-                infoViewer.setMessage(stringBuffer.toString().getBytes(StandardCharsets.UTF_8), false);
+                stringBuffer.append("[Name] \r\n").append(this.getValueAt(row, 0)).append("\r\n");
+                stringBuffer.append("\r\n[Value] \r\n").append(this.getValueAt(row, 1)).append("\r\n");
+                // infoViewer.setMessage(stringBuffer.toString().getBytes(StandardCharsets.UTF_8), false);
+                infoViewer.setText(stringBuffer.toString().getBytes(StandardCharsets.UTF_8));
                 // 选中后才显示具体内容
                 splitPane.setRightComponent(infoViewPane); 
                 // UI的更新需要新线程

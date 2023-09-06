@@ -48,7 +48,8 @@ public class HttpListener implements IHttpListener, IMessageEditorController {
             CommonStore.TREE.addTreeSelectionListener(new TreeSelectionListener() {
                 @Override
                 public void valueChanged(TreeSelectionEvent e) {
-                    RisksUI.risksViewer.setMessage("".getBytes(StandardCharsets.UTF_8), false); // 清空信息
+                    // RisksUI.risksViewer.setMessage("".getBytes(StandardCharsets.UTF_8), false); // 清空信息
+                    RisksUI.risksViewer.setText("".getBytes(StandardCharsets.UTF_8));
                     // 处理选中节点的信息初始化
                     DefaultMutableTreeNode n = (DefaultMutableTreeNode) e.getNewLeadSelectionPath().getLastPathComponent();
                     CommonStore.entity = (UselessTreeNodeEntity) n.getUserObject();

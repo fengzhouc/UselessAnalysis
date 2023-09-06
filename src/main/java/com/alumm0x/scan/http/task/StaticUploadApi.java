@@ -21,7 +21,7 @@ public class StaticUploadApi extends StaticTaskImpl {
     @Override
     public void run() {
         //识别请求头的contentype，文件上传的是multipart/
-        String mul = ToolsUtil.hasHdeader(BurpReqRespTools.getRespHeaders(entity.getRequestResponse()), "Content-Type");
+        String mul = ToolsUtil.hasHeader(BurpReqRespTools.getRespHeaders(entity.getRequestResponse()), "Content-Type");
         if (mul != null && mul.equalsIgnoreCase("multipart/")) {
             entity.addTag(this.getClass().getSimpleName());
         }

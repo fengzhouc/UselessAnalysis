@@ -10,12 +10,30 @@ public class ToolsUtil {
      * 检查头部是否包含某信息
      * @return 返回找到的头信息
      */
-    public static String hasHdeader(List<String> headers, String header) {
+    public static String hasHeader(List<String> headers, String header) {
         if (null == headers) {
             return null;
         }
         for (String s : headers) {
             if (s.toLowerCase(Locale.ROOT).startsWith(header.toLowerCase(Locale.ROOT))) {
+                return s;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 检查headers中是否存在inheaders的某元素，并返回其值
+     * @param headers 待检查的list
+     * @param inheaders headers中是否存在inheaders的某元素
+     * @return 返回找到的头信息
+     */
+    public static String hasHeaderInList(List<String> headers, List<String> inheaders) {
+        if (null == headers || null == inheaders) {
+            return null;
+        }
+        for (String s : headers) {
+            if (inheaders.contains(s.toLowerCase(Locale.ROOT))) {
                 return s;
             }
         }

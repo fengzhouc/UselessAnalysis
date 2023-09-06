@@ -41,21 +41,21 @@ public class StaticSecHeaders extends StaticTaskImpl {
     public  List<StaticCheckResult> checkSecHeader(IHttpRequestResponse requestResponse) {
         List<String> respHeaders = BurpReqRespTools.getRespHeaders(requestResponse);
         List<StaticCheckResult> results = new ArrayList<>();
-        if (ToolsUtil.hasHdeader(respHeaders, "x-xss-protection") == null) {
+        if (ToolsUtil.hasHeader(respHeaders, "x-xss-protection") == null) {
             StaticCheckResult result = new StaticCheckResult();
             result.desc = "未开启X-XSS-Protection";
             result.risk_param = "";
             result.fix = "建议开启，纵深防御，客户端防护XSS。推荐配置 1;mode=block";
             results.add(result);
         }
-        if (ToolsUtil.hasHdeader(respHeaders, "x-frame-options") == null) {
+        if (ToolsUtil.hasHeader(respHeaders, "x-frame-options") == null) {
             StaticCheckResult result = new StaticCheckResult();
             result.desc = "未开启X-Frame-Options";
             result.risk_param = "";
             result.fix = "建议开启，纵深防御，客户端防护XSS。推荐配置 SAMEORIGIN";
             results.add(result);
         }
-        if (ToolsUtil.hasHdeader(respHeaders, "x-content-type-options") == null) {
+        if (ToolsUtil.hasHeader(respHeaders, "x-content-type-options") == null) {
             StaticCheckResult result = new StaticCheckResult();
             result.desc = "未开启X-Content-Type-Options";
             result.risk_param = "";

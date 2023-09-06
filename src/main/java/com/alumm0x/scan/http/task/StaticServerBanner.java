@@ -27,7 +27,7 @@ public class StaticServerBanner extends StaticTaskImpl {
         IRequestInfo requestInfo = BurpReqRespTools.getRequestInfo(entity.getRequestResponse());
         byte[] responseBody = BurpReqRespTools.getRespBody(entity.getRequestResponse());
         // Server指纹
-        String server = ToolsUtil.hasHdeader(BurpReqRespTools.getReqHeaders(entity.getRequestResponse()), "Server");
+        String server = ToolsUtil.hasHeader(BurpReqRespTools.getReqHeaders(entity.getRequestResponse()), "Server");
         if (server != null) {
             entity.addTag(server);
         }

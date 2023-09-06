@@ -2,6 +2,7 @@ package com.alumm0x.scan.http.task;
 
 import burp.IParameter;
 import com.alumm0x.scan.http.task.impl.StaticTaskImpl;
+import com.alumm0x.scan.risk.StaticCheckResult;
 import com.alumm0x.tree.UselessTreeNodeEntity;
 import com.alumm0x.util.BurpReqRespTools;
 import com.alumm0x.util.CommonStore;
@@ -26,10 +27,16 @@ public class StaticJWTSensitiveMessage extends StaticTaskImpl {
     }
     @Override
     public void run() {
+        List<StaticCheckResult> results = new ArrayList<>();
         // 检查请求的参数，使用burp解析的，包含如下:查询参数/cookie/form参数
         for (IParameter parameter : CommonStore.helpers.analyzeRequest(entity.getRequestResponse()).getParameters()) {
             byte[] decode = CommonStore.helpers.base64Decode(parameter.getValue());
             if (new String(decode).contains("\"alg\"") && isSensitiveKey(new String(decode))) {
+                StaticCheckResult result = new StaticCheckResult();
+                result.desc = "参数:JWT中存在敏感信息";
+                result.risk_param = new String(decode);
+                result.fix = "JWT禁止传递敏感信息";
+                results.add(result);
                 entity.addTag(this.getClass().getSimpleName());
             }
         }
@@ -37,6 +44,11 @@ public class StaticJWTSensitiveMessage extends StaticTaskImpl {
         for (Object value : BurpReqRespTools.getReqHeadersToMap(entity.getRequestResponse()).values()) {
             byte[] decode = CommonStore.helpers.base64Decode(value.toString());
             if (new String(decode).contains("\"alg\"") && isSensitiveKey(new String(decode))) {
+                StaticCheckResult result = new StaticCheckResult();
+                result.desc = "请求头:JWT中存在敏感信息";
+                result.risk_param = new String(decode);
+                result.fix = "JWT禁止传递敏感信息";
+                results.add(result);
                 entity.addTag(this.getClass().getSimpleName());
             }
         }
@@ -52,6 +64,11 @@ public class StaticJWTSensitiveMessage extends StaticTaskImpl {
                         List<ParamKeyValue> paramKeyValues = new ArrayList<>();
                         byte[] decode = CommonStore.helpers.base64Decode(value.toString());
                         if (new String(decode).contains("\"alg\"") && isSensitiveKey(new String(decode))) {
+                            StaticCheckResult result = new StaticCheckResult();
+                            result.desc = "Json参数:JWT中存在敏感信息";
+                            result.risk_param = new String(decode);
+                            result.fix = "JWT禁止传递敏感信息";
+                            results.add(result);
                             entity.addTag(this.getClass().getSimpleName());
                         }
                         paramKeyValues.add(new ParamKeyValue(key, value));
@@ -61,6 +78,9 @@ public class StaticJWTSensitiveMessage extends StaticTaskImpl {
             } catch (Exception e) {
                 CommonStore.callbacks.printError(e.getMessage());
             }
+        }
+        if (results.size() > 0) {
+            entity.addMap(results);
         }
     }
 

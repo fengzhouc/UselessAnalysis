@@ -42,16 +42,16 @@ public class StaticCORS extends StaticTaskImpl {
         List<String> reqHeaders = BurpReqRespTools.getReqHeaders(requestResponse);
         List<String> respHeaders = BurpReqRespTools.getRespHeaders(requestResponse);
         //cors会利用浏览器的cookie自动发送机制，如果不是使用cookie做会话管理就没这个问题了
-        if (ToolsUtil.hasHdeader(reqHeaders, "Cookie") != null){
+        if (ToolsUtil.hasHeader(reqHeaders, "Cookie") != null){
             List<StaticCheckResult> results = new ArrayList<>();
             /*
              * ajax请求跨域获取数据的条件
              * 1、Access-Control-Allow-Credentials为true
              * 2、Access-Control-Allow-Origin为*或者根据origin动态设置
              */
-            if (ToolsUtil.hasHdeader(respHeaders, "Access-Control-Allow-Origin") != null){
-                String origin_resp = ToolsUtil.hasHdeader(respHeaders, "Access-Control-Allow-Origin");
-                String credentials = ToolsUtil.hasHdeader(respHeaders, "Access-Control-Allow-Credentials");
+            if (ToolsUtil.hasHeader(respHeaders, "Access-Control-Allow-Origin") != null){
+                String origin_resp = ToolsUtil.hasHeader(respHeaders, "Access-Control-Allow-Origin");
+                String credentials = ToolsUtil.hasHeader(respHeaders, "Access-Control-Allow-Credentials");
                 if (credentials != null && credentials.contains("true")){
                     if (origin_resp.contains("*")) {
                         // 配置为*则允许任意跨域请求，存在风险
@@ -61,7 +61,7 @@ public class StaticCORS extends StaticTaskImpl {
                         result.fix = "如需要跨域请求，则不要配置为* ，需根据业务场景，精确限制跨域范围；如不需要跨域，则Access-Control-Allow-Credentials配置为false。";
                         results.add(result);
                     }else {
-                        String origin_req = ToolsUtil.hasHdeader(reqHeaders, "Origin");
+                        String origin_req = ToolsUtil.hasHeader(reqHeaders, "Origin");
                         // 请求头中存在Orgin，且origin的值相同
                         if (origin_req != null && origin_req.split(":", 2)[1].trim().equalsIgnoreCase(origin_resp.split(":", 2)[1].trim())) {
                             // 检查下是否为Origin请求头的值，如果是，则需要验证下是否动态设置，动态设置相当于允许任意跨域

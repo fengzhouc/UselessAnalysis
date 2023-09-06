@@ -41,7 +41,7 @@ public class JsonCsrf extends TaskImpl {
          * */
 
         //csrf会利用浏览器的cookie自动发送机制，如果不是使用cookie做会话管理就没这个问题了
-        if (ToolsUtil.hasHdeader(BurpReqRespTools.getReqHeaders(entity.getRequestResponse()), "Cookie") != null) {
+        if (ToolsUtil.hasHeader(BurpReqRespTools.getReqHeaders(entity.getRequestResponse()), "Cookie") != null) {
             /*
              * 1、请求体需要是json数据
              */

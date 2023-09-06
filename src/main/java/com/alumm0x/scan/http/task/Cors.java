@@ -50,7 +50,7 @@ public class Cors extends TaskImpl {
             }
         });
         // 检查是否存在origin,不存在就添加一个
-        if (ToolsUtil.hasHdeader(header.NEW_HEADER, "Origin") == null) {
+        if (ToolsUtil.hasHeader(header.NEW_HEADER, "Origin") == null) {
             header.NEW_HEADER.add("Origin: http://evil.com");
         }
         //新的请求包
@@ -95,8 +95,8 @@ class CorsCallback implements Callback {
         logEntry.requestResponse = CommonStore.callbacks.saveBuffersToTempFiles(requestResponse);
         logEntry.Status = (short) response.code();
         // 这两个头必须要存在，不存在浏览器默认不允许跨域
-        String origin = ToolsUtil.hasHdeader(BurpReqRespTools.getRespHeaders(requestResponse), "Access-Control-Allow-Origin");
-        String credentials = ToolsUtil.hasHdeader(BurpReqRespTools.getRespHeaders(requestResponse), "Access-Control-Allow-Credentials");
+        String origin = ToolsUtil.hasHeader(BurpReqRespTools.getRespHeaders(requestResponse), "Access-Control-Allow-Origin");
+        String credentials = ToolsUtil.hasHeader(BurpReqRespTools.getRespHeaders(requestResponse), "Access-Control-Allow-Credentials");
         if (response.isSuccessful() &&
                 origin != null && origin.contains("http://evil.com") &&
                 credentials != null && origin.contains("true")

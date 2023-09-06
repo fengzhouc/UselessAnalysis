@@ -21,7 +21,7 @@ public class StaticShiroBanner extends StaticTaskImpl {
     @Override
     public void run() {
         // 检测shiro的指纹
-        String setCookie = ToolsUtil.hasHdeader(BurpReqRespTools.getRespHeaders(entity.getRequestResponse()), "Set-Cookie");
+        String setCookie = ToolsUtil.hasHeader(BurpReqRespTools.getRespHeaders(entity.getRequestResponse()), "Set-Cookie");
         if (setCookie != null && setCookie.toLowerCase().contains("rememberme=")) {
             entity.addTag(this.getClass().getSimpleName());
         }

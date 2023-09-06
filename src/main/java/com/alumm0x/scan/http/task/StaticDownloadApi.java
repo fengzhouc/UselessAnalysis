@@ -25,7 +25,7 @@ public class StaticDownloadApi extends StaticTaskImpl {
             entity.addTag(this.getClass().getSimpleName());
         }
         // 下载特有的响应头
-        String cd = ToolsUtil.hasHdeader(BurpReqRespTools.getRespHeaders(entity.getRequestResponse()), "Content-Disposition");
+        String cd = ToolsUtil.hasHeader(BurpReqRespTools.getRespHeaders(entity.getRequestResponse()), "Content-Disposition");
         if (cd != null && cd.contains("attachment")) {
             entity.addTag(this.getClass().getSimpleName());
         }

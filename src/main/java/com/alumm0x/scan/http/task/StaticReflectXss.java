@@ -41,7 +41,7 @@ public class StaticReflectXss extends StaticTaskImpl {
      */
     public static List<StaticCheckResult> checkReflectXss(IHttpRequestResponse requestResponse) {
         // 获取相应的content-type
-        String resp_ct = ToolsUtil.hasHdeader(BurpReqRespTools.getRespHeaders(requestResponse), "content-type");
+        String resp_ct = ToolsUtil.hasHeader(BurpReqRespTools.getRespHeaders(requestResponse), "content-type");
         if (resp_ct != null 
             && (resp_ct.contains("html") 
                 || resp_ct.contains("javascript")) // 有些模版js可能会有，后缀为js的不太会

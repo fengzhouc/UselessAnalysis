@@ -1,9 +1,5 @@
 package com.alumm0x.scan.http.task;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import com.alumm0x.scan.http.task.impl.StaticTaskImpl;
 import com.alumm0x.tree.UselessTreeNodeEntity;
 import com.alumm0x.util.BurpReqRespTools;

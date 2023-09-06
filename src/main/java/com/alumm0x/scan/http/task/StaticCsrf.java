@@ -48,9 +48,9 @@ public class StaticCsrf extends StaticTaskImpl {
         List<String> reqHeaders = BurpReqRespTools.getReqHeaders(requestResponse);
         byte[] reqBody = BurpReqRespTools.getReqBody(requestResponse);
         //cors会利用浏览器的cookie自动发送机制，如果不是使用cookie做会话管理就没这个问题了
-        if (ToolsUtil.hasHdeader(reqHeaders, "Cookie") != null) {
+        if (ToolsUtil.hasHeader(reqHeaders, "Cookie") != null) {
             //要包含centen-type,且为form表单
-            String ct = ToolsUtil.hasHdeader(reqHeaders, "Content-Type");
+            String ct = ToolsUtil.hasHeader(reqHeaders, "Content-Type");
             if (ct != null && ct.contains("application/x-www-form-urlencoded") && reqBody.length > 0) {
                 List<StaticCheckResult> results = new ArrayList<>();
                 // 也不包含可能的token，这里就宽泛点，非标请求头为0就存在问题，因为key也不一定带token字样

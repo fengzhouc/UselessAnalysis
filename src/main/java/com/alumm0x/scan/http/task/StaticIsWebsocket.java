@@ -35,7 +35,7 @@ public class StaticIsWebsocket extends StaticTaskImpl {
      */
     public static boolean isWebsocket(IHttpRequestResponse requestResponse){
         // 头部信息包含Upgrade
-        return ToolsUtil.hasHdeader(BurpReqRespTools.getReqHeaders(requestResponse), "Sec-WebSocket-Key") != null;
+        return ToolsUtil.hasHeader(BurpReqRespTools.getReqHeaders(requestResponse), "Sec-WebSocket-Key") != null;
     }
 }
 

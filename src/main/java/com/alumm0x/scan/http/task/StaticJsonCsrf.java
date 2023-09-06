@@ -48,7 +48,7 @@ public class StaticJsonCsrf extends StaticTaskImpl {
     public static List<StaticCheckResult> checkJsonCsrf(IHttpRequestResponse requestResponse) {
         List<String> reqHeaders = BurpReqRespTools.getReqHeaders(requestResponse);
         byte[] reqBody = BurpReqRespTools.getReqBody(requestResponse);
-        if ((JsonTools.isJsonObj(new String(BurpReqRespTools.getReqBody(requestResponse))) || JsonTools.isJsonArr(new String(BurpReqRespTools.getReqBody(requestResponse)))) && ToolsUtil.hasHdeader(reqHeaders, "Cookie") != null && reqBody.length > 0) {
+        if ((JsonTools.isJsonObj(new String(BurpReqRespTools.getReqBody(requestResponse))) || JsonTools.isJsonArr(new String(BurpReqRespTools.getReqBody(requestResponse)))) && ToolsUtil.hasHeader(reqHeaders, "Cookie") != null && reqBody.length > 0) {
                 List<StaticCheckResult> results = new ArrayList<>();
                 StaticCheckResult result = new StaticCheckResult();
                 result.desc = "JsonCsrf风险";

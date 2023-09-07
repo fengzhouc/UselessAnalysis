@@ -99,6 +99,16 @@ public class OkHttpRequester {
         call.enqueue(callback);
     }
 
+    public void get(String url, Callback callback){
+        //新的请求包
+        Request request = new Request.Builder()
+                .url(url)
+                .get()
+                .build();
+        Call call = this.client.newCall(request);
+        call.enqueue(callback);
+    }
+
 //    public IHttpRequestResponse postForm(IHttpService iHttpService, Headers headers, String param,Callback callback){
 //        //新的请求包
 //        OkHttpClient client = new OkHttpClient();

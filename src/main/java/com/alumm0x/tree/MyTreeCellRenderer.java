@@ -20,8 +20,6 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeCellRenderer;
 
-import com.alumm0x.ui.RisksUI;
-
 import sun.swing.DefaultLookup;
 
 public class MyTreeCellRenderer extends JLabel implements TreeCellRenderer {

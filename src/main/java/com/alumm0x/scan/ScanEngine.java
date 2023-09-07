@@ -35,7 +35,7 @@ public class ScanEngine  {
                     // 运行方法
                     run.invoke(cons.newInstance(entity));
                 } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | InstantiationException e) {
-                    CommonStore.callbacks.printError(e.getMessage());
+                    CommonStore.callbacks.printError("[ScanEngine] " + e.getMessage());
                 }
             }
         }

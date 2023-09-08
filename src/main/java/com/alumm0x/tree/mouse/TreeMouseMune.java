@@ -3,8 +3,10 @@ package com.alumm0x.tree.mouse;
 import com.alumm0x.listeners.HttpListener;
 import com.alumm0x.scan.ScanEngine;
 import com.alumm0x.scan.StaticScanEngine;
+import com.alumm0x.scan.VulScanEngine;
 import com.alumm0x.scan.http.task.impl.StaticTaskImpl;
 import com.alumm0x.scan.http.task.impl.TaskImpl;
+import com.alumm0x.scan.http.task.impl.VulTaskImpl;
 import com.alumm0x.tree.UselessTreeNodeEntity;
 import com.alumm0x.ui.AnalysisUI;
 import com.alumm0x.ui.SettingUI;
@@ -70,10 +72,18 @@ public class TreeMouseMune {
         // 扫描动作-动态扫描
         JMenu scan = new JMenu("Scan");
         JMenu scan_static = new JMenu("StaticCheck");
+        JMenu scan_design = new JMenu("DesignCheck");
+        JMenu scan_vuls = new JMenu("CveCheck");
         scan.add(scan_static);
+        scan.add(scan_design);
+        scan.add(scan_vuls);
         JMenu scan_search = new JMenu("Scan search");
         JMenu scan_search_static = new JMenu("StaticCheck");
+        JMenu scan_search_design = new JMenu("DesignCheck");
+        JMenu scan_search_vuls = new JMenu("CveCheck");
         scan_search.add(scan_search_static);
+        scan_search.add(scan_search_design);
+        scan_search.add(scan_search_vuls);
         // 添加TaskImpl子类的菜单，也就是主动扫描任务
         for (Class<? extends TaskImpl> task : ScanEngine.tasks) {
             try{
@@ -87,7 +97,7 @@ public class TreeMouseMune {
                             ScanEngine.addScan(pocvalue, entity);
                         }
                     }
-                },scan);
+                },scan_design);
                 addMenuItemBySearch(task.getSimpleName(), new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
@@ -95,7 +105,7 @@ public class TreeMouseMune {
                         String pocvalue = ((JMenuItem)e.getSource()).getText();
                         addScanFormSearch(new TreePath(CommonStore.ROOTNODE), pocvalue);
                     }
-                }, scan_search);
+                }, scan_search_design);
             } catch (SecurityException | IllegalArgumentException e) {
                 CommonStore.callbacks.printError(e.getMessage());
             }
@@ -105,19 +115,18 @@ public class TreeMouseMune {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // 点击后添加扫描任务
-                String pocvalue = ((JMenuItem) e.getSource()).getText();
                 if (entity.getRequestResponse() != null) {
                     // 添加扫描任务的逻辑，因为需要根据验证结果修改entity的color跟pocs
-                    StaticScanEngine.addScan(pocvalue, entity);
+                    StaticScanEngine.StaticCheck(entity);
                 }
             }
         },scan_static);
+        // 静态任务的添加
         addMenuItemBySearch("ALL", new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // 点击后添加扫描任务,会将当前搜索的结果加入扫描
-                String pocvalue = ((JMenuItem)e.getSource()).getText();
-                addStaticScanFormSearch(new TreePath(CommonStore.ROOTNODE), pocvalue);
+                // 点击后添加扫描任务,会将当前搜索的结果，扫描所有的静态检查项
+                addStaticScanAllFormSearch(new TreePath(CommonStore.ROOTNODE));
             }
         }, scan_search_static);
         // 添加StaticTaskImpl子类的菜单，也就是静态检查的触发菜单
@@ -142,6 +151,32 @@ public class TreeMouseMune {
                         addStaticScanFormSearch(new TreePath(CommonStore.ROOTNODE), pocvalue);
                     }
                 }, scan_search_static);
+            } catch (SecurityException | IllegalArgumentException e) {
+                CommonStore.callbacks.printError(e.getMessage());
+            }
+        }
+        // CVE漏洞任务的添加
+        for (Class<? extends VulTaskImpl> task : VulScanEngine.tasks) {
+            try{
+                addMenuItem(task.getSimpleName(), new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        // 点击后添加扫描任务
+                        String pocvalue = ((JMenuItem) e.getSource()).getText();
+                        if (entity.getRequestResponse() != null) {
+                            // 添加扫描任务的逻辑，因为需要根据验证结果修改entity的color跟pocs
+                            VulScanEngine.addScan(pocvalue, entity);
+                        }
+                    }
+                },scan_vuls);
+                addMenuItemBySearch(task.getSimpleName(), new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        // 点击后添加扫描任务,会将当前搜索的结果加入扫描
+                        String pocvalue = ((JMenuItem)e.getSource()).getText();
+                        addVulScanFormSearch(new TreePath(CommonStore.ROOTNODE), pocvalue);
+                    }
+                }, scan_search_vuls);
             } catch (SecurityException | IllegalArgumentException e) {
                 CommonStore.callbacks.printError(e.getMessage());
             }
@@ -293,6 +328,29 @@ public class TreeMouseMune {
     }
 
     /**
+     * 遍历搜索结果，以添加所有结果到扫描
+     */
+    private static void addVulScanFormSearch(TreePath parent, String poc){
+        TreeNode node = (TreeNode) parent.getLastPathComponent();
+        if (node.getChildCount() > 0) {
+            for (Enumeration<?> e = node.children(); e.hasMoreElements();) {
+                DefaultMutableTreeNode n = (DefaultMutableTreeNode) e.nextElement(); // 获取父节点的子节点
+                UselessTreeNodeEntity entity = ((UselessTreeNodeEntity)n.getUserObject()); // 修改isVisible
+                // 并限制不搜索第二层node，也就是domain那层，那层是没有数据的，纯粹为了归类请求
+                if (entity.isVisible() && entity.getCurrent().startsWith("[")) {
+                    // 只有有请求的才会被添加
+                    if (entity.getRequestResponse() != null) {
+                        // 添加扫描任务的逻辑,需要传入的数entity，因为需要根据验证结果修改entity的color跟pocs
+                        VulScanEngine.addScan(poc, entity);
+                    }
+                }
+                TreePath path = parent.pathByAddingChild(n); // 父节点path拼接子节点
+                addVulScanFormSearch(path,poc); // 递归子节点，进行查询
+            }
+        }
+    }
+
+    /**
      * 遍历搜索结果，以添加所有结果到静态扫描
      */
     private static void addStaticScanFormSearch(TreePath parent, String poc){
@@ -311,6 +369,29 @@ public class TreeMouseMune {
                 }
                 TreePath path = parent.pathByAddingChild(n); // 父节点path拼接子节点
                 addStaticScanFormSearch(path,poc); // 递归子节点，进行查询
+            }
+        }
+    }
+
+    /**
+     * 遍历搜索结果，以添加所有结果到静态扫描
+     */
+    private static void addStaticScanAllFormSearch(TreePath parent){
+        TreeNode node = (TreeNode) parent.getLastPathComponent();
+        if (node.getChildCount() > 0) {
+            for (Enumeration<?> e = node.children(); e.hasMoreElements();) {
+                DefaultMutableTreeNode n = (DefaultMutableTreeNode) e.nextElement(); // 获取父节点的子节点
+                UselessTreeNodeEntity entity = ((UselessTreeNodeEntity)n.getUserObject()); // 修改isVisible
+                // 并限制不搜索第二层node，也就是domain那层，那层是没有数据的，纯粹为了归类请求
+                if (entity.isVisible() && entity.getCurrent().startsWith("[")) {
+                    // 只有有请求的才会被添加
+                    if (entity.getRequestResponse() != null) {
+                        // 添加扫描任务的逻辑,需要传入的数entity，因为需要根据验证结果修改entity的color跟pocs
+                        StaticScanEngine.StaticCheck(entity);
+                    }
+                }
+                TreePath path = parent.pathByAddingChild(n); // 父节点path拼接子节点
+                addStaticScanAllFormSearch(path); // 递归子节点，进行查询
             }
         }
     }

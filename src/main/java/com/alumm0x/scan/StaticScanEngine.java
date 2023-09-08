@@ -20,7 +20,7 @@ public class StaticScanEngine  {
 
     // 获取StaticTaskImpl的子类，其就是实现的所有检测项
     static {
-        Reflections reflections = new Reflections("com.alumm0x");
+        Reflections reflections = new Reflections("com.alumm0x.scan.http.task");
         tasks = reflections.getSubTypesOf(StaticTaskImpl.class);
     }
 
@@ -35,8 +35,10 @@ public class StaticScanEngine  {
                 Method run = task.getMethod("run");
                 // 运行方法
                 run.invoke(cons.newInstance(entity));
-            } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | InstantiationException e) {
-                CommonStore.callbacks.printError("[StaticScanEngine.StaticCheck] " + e.getMessage());
+            } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InstantiationException e) {
+                CommonStore.callbacks.printError("[StaticScanEngine.StaticCheck] " + e.getClass().getSimpleName() + " " + e.getMessage());
+            } catch (InvocationTargetException e) {
+                CommonStore.callbacks.printError("[StaticScanEngine.StaticCheck] " + e.getClass().getSimpleName() + " " + e.getTargetException().toString());
             }
         }
     }
@@ -57,8 +59,10 @@ public class StaticScanEngine  {
                     Method run = task.getMethod("run");
                     // 运行方法
                     run.invoke(cons.newInstance(entity));
-                } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | InstantiationException e) {
-                    CommonStore.callbacks.printError("[StaticScanEngine.addScan] " + e.getMessage());
+                } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InstantiationException e) {
+                    CommonStore.callbacks.printError("[StaticScanEngine.addScan] " + e.getClass().getSimpleName() + " " + e.getMessage());
+                } catch (InvocationTargetException e) {
+                    CommonStore.callbacks.printError("[StaticScanEngine.addScan] " + e.getClass().getSimpleName() + " " + e.getTargetException().toString());
                 }
             }
         }

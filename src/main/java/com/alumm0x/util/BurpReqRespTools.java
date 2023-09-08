@@ -281,6 +281,20 @@ public class BurpReqRespTools {
     }
 
     /**
+     * 获取请求的url，不带urlpath，如https://xxx.com/sdfasd -> https://xxx.com/
+     * @param requestResponse  burp的IHttpRequestResponse
+     * @return String
+     */
+    public static String getRootUrl(IHttpRequestResponse requestResponse){
+        if (requestResponse != null) {
+            StringBuffer url = new StringBuffer();
+            url.append(requestResponse.getHttpService().getProtocol()).append("://").append(requestResponse.getHttpService().getHost()).append("/");
+            return url.toString().replace(":443/", "/").replace(":80/", "/");
+        }
+        return "";
+    }
+
+    /**
      * 获取请求的url，不带查询参数的
      * @param requestResponse  burp的IHttpRequestResponse
      * @return String

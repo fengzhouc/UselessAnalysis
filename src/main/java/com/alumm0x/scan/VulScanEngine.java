@@ -7,24 +7,24 @@ import java.util.Set;
 
 import org.reflections.Reflections;
 
-import com.alumm0x.scan.http.task.impl.TaskImpl;
+import com.alumm0x.scan.http.task.impl.VulTaskImpl;
 import com.alumm0x.tree.UselessTreeNodeEntity;
 import com.alumm0x.util.CommonStore;
 
-public class ScanEngine  {
+public class VulScanEngine  {
 
-    public static Set<Class<? extends TaskImpl>> tasks;
+    public static Set<Class<? extends VulTaskImpl>> tasks;
 
-    // 获取TaskImpl的子类，其就是实现的所有检测项
+    // 获取VulTaskImpl的子类，其就是实现的所有检测项
     static {
         Reflections reflections = new Reflections("com.alumm0x.scan.http.task");
-        tasks = reflections.getSubTypesOf(TaskImpl.class);
+        tasks = reflections.getSubTypesOf(VulTaskImpl.class);
     }
 
     public static void addScan(String poc, UselessTreeNodeEntity entity) {
 
         // 遍历tasks找到指定的poc
-        for (Class<? extends TaskImpl> task : tasks) {
+        for (Class<? extends VulTaskImpl> task : tasks) {
             if (task.getSimpleName().equalsIgnoreCase(poc)) {
                 try {
                     // 反射获取实例
@@ -34,9 +34,9 @@ public class ScanEngine  {
                     // 运行方法
                     run.invoke(cons.newInstance(entity));
                 } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InstantiationException e) {
-                    CommonStore.callbacks.printError("[ScanEngine] " + e.getClass().getSimpleName() + " " + e.getMessage());
+                    CommonStore.callbacks.printError("[VulScanEngine] " + e.getClass().getSimpleName() + " " + e.getMessage());
                 } catch (InvocationTargetException e) {
-                    CommonStore.callbacks.printError("[ScanEngine] " + e.getClass().getSimpleName() + " " + e.getTargetException().toString());
+                    CommonStore.callbacks.printError("[VulScanEngine] " + e.getClass().getSimpleName() + " " + e.getTargetException().toString());
                 }
             }
         }

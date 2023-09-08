@@ -1,6 +1,7 @@
 package com.alumm0x.ui;
 
 import com.alumm0x.listeners.HttpListener;
+import com.alumm0x.tree.mouse.DataHandlerMouseMune;
 import com.alumm0x.util.CommonStore;
 import com.alumm0x.util.SourceLoader;
 
@@ -17,6 +18,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.nio.charset.StandardCharsets;
+
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /**
  * 封装一个按钮折叠table的组件，因为会创建多个，封装好复用
@@ -107,6 +111,20 @@ public class FoldTableComponent {
         // infoViewer = CommonStore.callbacks.createMessageEditor((HttpListener) CommonStore.callbacks.getHttpListeners().stream().filter(ls -> ls instanceof HttpListener).findFirst().get(), false);
         infoViewer = CommonStore.callbacks.createTextEditor();
         infoViewer.setEditable(false);
+        // 右键菜单
+        infoViewer.getComponent().addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    // 限制右击
+                    if (SwingUtilities.isRightMouseButton(e)) {
+                        Rectangle pathBounds = infoViewer.getComponent().getBounds(); // 获取组件边界
+                        if ( pathBounds != null && pathBounds.contains (e.getX(), e.getY())) {
+                            JPopupMenu menu = DataHandlerMouseMune.getMune();
+                            menu.show (infoViewer.getComponent(), e.getX(), e.getY());
+                        }
+                    }
+                }
+            });
         infoViewPane.add("Detail", infoViewer.getComponent());
 
         // 组装

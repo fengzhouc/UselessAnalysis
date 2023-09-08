@@ -1,10 +1,9 @@
 package com.alumm0x.ui;
 
-import com.alumm0x.listeners.HttpListener;
+import com.alumm0x.tree.mouse.DataHandlerMouseMune;
 import com.alumm0x.ui.tablemodel.RisksTable;
 import com.alumm0x.util.CommonStore;
 
-import burp.IMessageEditor;
 import burp.ITextEditor;
 
 import javax.swing.*;
@@ -14,6 +13,8 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class RisksUI {
 
@@ -59,6 +60,20 @@ public class RisksUI {
         riskViewPane = new JTabbedPane();
         // risksViewer = CommonStore.callbacks.createMessageEditor((HttpListener) CommonStore.callbacks.getHttpListeners().stream().filter(ls -> ls instanceof HttpListener).findFirst().get(), false);
         risksViewer = CommonStore.callbacks.createTextEditor();
+        // 右键菜单
+        risksViewer.getComponent().addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    // 限制右击
+                    if (SwingUtilities.isRightMouseButton(e)) {
+                        Rectangle pathBounds = risksViewer.getComponent().getBounds(); // 获取组件边界
+                        if ( pathBounds != null && pathBounds.contains (e.getX(), e.getY())) {
+                            JPopupMenu menu = DataHandlerMouseMune.getMune();
+                            menu.show (risksViewer.getComponent(), e.getX(), e.getY());
+                        }
+                    }
+                }
+            });
         riskViewPane.addTab("Risk", risksViewer.getComponent());
 
         // 组装

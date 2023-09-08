@@ -1,4 +1,4 @@
-package com.alumm0x.tree.mouse;
+package com.alumm0x.mouse;
 
 import com.alumm0x.util.SourceLoader;
 

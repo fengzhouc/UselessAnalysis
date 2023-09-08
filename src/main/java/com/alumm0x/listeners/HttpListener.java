@@ -3,7 +3,7 @@ package com.alumm0x.listeners;
 import burp.*;
 import com.alumm0x.tree.MyTreeCellRenderer;
 import com.alumm0x.tree.UselessTreeNodeEntity;
-import com.alumm0x.tree.mouse.TreeMouseMune;
+import com.alumm0x.mouse.TreeMouseMune;
 import com.alumm0x.ui.AnalysisUI;
 import com.alumm0x.ui.RisksUI;
 import com.alumm0x.ui.SettingUI;

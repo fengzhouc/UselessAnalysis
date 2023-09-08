@@ -1,7 +1,7 @@
 package com.alumm0x.ui;
 
 import com.alumm0x.listeners.HttpListener;
-import com.alumm0x.tree.mouse.DataHandlerMouseMune;
+import com.alumm0x.mouse.DataHandlerMouseMune;
 import com.alumm0x.util.CommonStore;
 import com.alumm0x.util.SourceLoader;
 

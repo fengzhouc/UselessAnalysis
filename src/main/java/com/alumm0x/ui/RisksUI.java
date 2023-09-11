@@ -68,7 +68,7 @@ public class RisksUI {
                     if (SwingUtilities.isRightMouseButton(e)) {
                         Rectangle pathBounds = risksViewer.getComponent().getBounds(); // 获取组件边界
                         if ( pathBounds != null && pathBounds.contains (e.getX(), e.getY())) {
-                            JPopupMenu menu = DataHandlerMouseMune.getMune();
+                            JPopupMenu menu = DataHandlerMouseMune.getMune(risksViewer.getSelectedText());
                             menu.show (risksViewer.getComponent(), e.getX(), e.getY());
                         }
                     }

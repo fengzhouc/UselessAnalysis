@@ -119,7 +119,7 @@ public class FoldTableComponent {
                     if (SwingUtilities.isRightMouseButton(e)) {
                         Rectangle pathBounds = infoViewer.getComponent().getBounds(); // 获取组件边界
                         if ( pathBounds != null && pathBounds.contains (e.getX(), e.getY())) {
-                            JPopupMenu menu = DataHandlerMouseMune.getMune();
+                            JPopupMenu menu = DataHandlerMouseMune.getMune(infoViewer.getSelectedText());
                             menu.show (infoViewer.getComponent(), e.getX(), e.getY());
                         }
                     }

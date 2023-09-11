@@ -26,6 +26,8 @@ import java.util.List;
 
 public class CommonStore {
 
+    public static JFrame burpJFrame;
+
     public static IBurpExtenderCallbacks callbacks;
     public static IExtensionHelpers helpers;
 

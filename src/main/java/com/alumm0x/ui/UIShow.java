@@ -1,6 +1,9 @@
 package com.alumm0x.ui;
 
 import javax.swing.*;
+
+import com.alumm0x.util.CommonStore;
+
 import java.awt.*;
 
 public class UIShow {
@@ -18,6 +21,9 @@ public class UIShow {
         jTabbedPane.addTab("Scanner", scanner);
         jTabbedPane.addTab("Setting", SettingUI.getUI());
         contentPane.add(jTabbedPane);
+        // 保存burpJFrame，用于自定义弹窗
+        CommonStore.burpJFrame = (JFrame)SwingUtilities.getRoot(jTabbedPane);
+        
         return contentPane;
     }
 }

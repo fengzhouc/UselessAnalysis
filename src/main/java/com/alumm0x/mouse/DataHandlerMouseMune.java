@@ -100,19 +100,19 @@ public class DataHandlerMouseMune {
         }
     }
 
-    private static void createDialog(String name, byte[] data){
+    /**
+     * 创建弹窗组件
+     * @param title 窗口标题
+     * @param data 窗口显示的数据
+     */
+    private static void createDialog(String title, byte[] data){
         //创建JDialog
-        JDialog dialog=new JDialog(CommonStore.burpJFrame,name,true); 
+        JDialog dialog=new JDialog(CommonStore.burpJFrame, title, true); 
         dialog.setSize(350, 250);
         dialog.setResizable(false);
-        // // 设置弹窗局中（不行）
-        // Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        // Dimension frameSize = CommonStore.burpJFrame.getSize();
-        // if (frameSize.height > screenSize.height)
-        //     frameSize.height = screenSize.height;       
-        // if (frameSize.width > screenSize.width)
-        //     frameSize.width = screenSize.width;       
-        // dialog.setLocation((screenSize.width-frameSize.width)/2, (screenSize.height-frameSize.height) / 2);
+        // 设置弹窗局中
+        // setLocationRelativeTo 设定一个窗口的相对于另外一个窗口的位置（一般是居中于父窗口的中间），如果owner==null则窗口就居于屏幕的中央
+        dialog.setLocationRelativeTo(CommonStore.burpJFrame);
         // 构造内容显示的pane
         JPanel panel=new JPanel();
         panel.setLayout(new FlowLayout());

@@ -1,5 +1,6 @@
 package com.alumm0x.mouse;
 
+import com.alumm0x.ui.RisksUI;
 import com.alumm0x.util.CommonStore;
 import com.alumm0x.util.SourceLoader;
 
@@ -33,6 +34,7 @@ public class DataHandlerMouseMune {
         title.setIcon(nodeIcon); // 设置个图标
         // 编解码、加解密相关
         JMenu crypto = new JMenu("Crypto"); // 加解密相关
+        // url编码
         JMenu url = new JMenu("Url");
         addMenuItem("Url-encode", new ActionListener() {
             @Override
@@ -47,6 +49,7 @@ public class DataHandlerMouseMune {
             }
             
         }, url);
+        // base64编码
         JMenu base64 = new JMenu("Basee64");
         addMenuItem("Basee64-encode", new ActionListener() {
             @Override
@@ -60,10 +63,13 @@ public class DataHandlerMouseMune {
                 createDialog("Basee64-decode", CommonStore.helpers.base64Decode(selectdata));
             }
         }, base64);
-        // 聪明的解码，那就是根据具体的编码进行解码
+        // hash计算
+        JMenu hash = new JMenu("Hash");
+        // TODO: 聪明的解码，那就是根据具体的编码进行解码
         JMenuItem smart_decode = new JMenuItem("Smart-decode");
         crypto.add(url);
         crypto.add(base64);
+        crypto.add(hash);
         crypto.add(smart_decode);
         // 数据特殊处理,比如将选中数据转为javascript，
         JMenu convert = new JMenu("Convert");
@@ -112,7 +118,7 @@ public class DataHandlerMouseMune {
         dialog.setResizable(false);
         // 设置弹窗局中
         // setLocationRelativeTo 设定一个窗口的相对于另外一个窗口的位置（一般是居中于父窗口的中间），如果owner==null则窗口就居于屏幕的中央
-        dialog.setLocationRelativeTo(CommonStore.burpJFrame);
+        dialog.setLocationRelativeTo(RisksUI.splitPane);
         // 构造内容显示的pane
         JPanel panel=new JPanel();
         panel.setLayout(new FlowLayout());

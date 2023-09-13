@@ -1,6 +1,7 @@
 package com.alumm0x.mouse;
 
 import com.alumm0x.ui.RisksUI;
+import com.alumm0x.ui.UIShow;
 import com.alumm0x.util.CommonStore;
 import com.alumm0x.util.SourceLoader;
 
@@ -114,11 +115,11 @@ public class DataHandlerMouseMune {
     private static void createDialog(String title, byte[] data){
         //创建JDialog
         JDialog dialog=new JDialog(CommonStore.burpJFrame, title, true); 
-        dialog.setSize(350, 250);
+        dialog.setSize(400, 250);
         dialog.setResizable(false);
         // 设置弹窗局中
         // setLocationRelativeTo 设定一个窗口的相对于另外一个窗口的位置（一般是居中于父窗口的中间），如果owner==null则窗口就居于屏幕的中央
-        dialog.setLocationRelativeTo(RisksUI.splitPane);
+        dialog.setLocationRelativeTo(UIShow.contentPane);
         // 构造内容显示的pane
         JPanel panel=new JPanel();
         panel.setLayout(new FlowLayout());

@@ -7,11 +7,13 @@ import com.alumm0x.util.CommonStore;
 import java.awt.*;
 
 public class UIShow {
+
+    public static JPanel contentPane; // 弹窗都在这个Pane局中显示
     /**
      * 这里是组装各个部分的UI
      */
     public static Component getUI(){
-        JPanel contentPane = new JPanel();
+        contentPane = new JPanel();
         contentPane.setLayout(new BorderLayout());
         JTabbedPane jTabbedPane = new JTabbedPane();
         jTabbedPane.addTab("Analysis", AnalysisUI.getUI());

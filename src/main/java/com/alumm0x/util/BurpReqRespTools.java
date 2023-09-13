@@ -342,7 +342,7 @@ public class BurpReqRespTools {
             IRequestInfo requestInfo = CommonStore.helpers.analyzeRequest(requestResponse);
             return requestInfo.getUrl().getQuery();
         }
-        return null;
+        return "";
     }
 
     /**

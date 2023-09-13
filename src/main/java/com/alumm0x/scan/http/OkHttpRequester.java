@@ -54,13 +54,12 @@ public class OkHttpRequester {
 //        CommonStore.callbacks.printError(new String(bodyParam));
 //        CommonStore.callbacks.printError(contentType);
         // 根据query的情况进行组装url
-        url = query != null ? url + "?" + query : url;
+        url = !query.equals("") ? url + "?" + query : url;
         switch (method){
             case "GET":
                 get(url, headerList, callback);
                 break;
             case  "HEAD": //不发包检测
-            case  "OPTIONS":
                 break;
             default:
                 defSend(url, method, headerList, bodyParam, contentType, callback);

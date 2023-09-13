@@ -6,6 +6,7 @@ import com.alumm0x.scan.StaticScanEngine;
 import com.alumm0x.scan.risk.StaticCheckResult;
 import com.alumm0x.util.BurpReqRespTools;
 import com.alumm0x.util.CommonStore;
+import com.alumm0x.util.SourceLoader;
 import com.alumm0x.util.ToolsUtil;
 
 import java.net.URI;
@@ -78,25 +79,41 @@ public class UselessTreeNodeEntity {
      */
     private void parserHeaders() {
         for (Map.Entry<String, Object> entry : BurpReqRespTools.getReqHeadersToMap(requestResponse).entrySet()){
+            boolean hit = false;
             // 保存非标的请求头
-            if (!CommonStore.rfc_reqheader.contains(entry.getKey().toLowerCase())) {
+            for (String rfcheader : CommonStore.rfc_reqheader) {
+                // entry有些重复的头，比如set-cookie，key后面会加xxx_index,所以使用startWith
+                if (entry.getKey().equalsIgnoreCase(rfcheader) || entry.getKey().toLowerCase().startsWith(rfcheader.toLowerCase())) {
+                    hit = true;
+                    break;
+                }
+            }
+            // 一个都没匹配到就说明不是标准头
+            if (!hit) {
                 reqHeaders_custom.put(entry.getKey(), entry.getValue().toString());
             }
             // 将可能是会话凭证的头部保存下来
-            switch (entry.getKey().toLowerCase()) {
-                case "cookie":
+            for (String string : SourceLoader.loadSources("/rfc/rfc_authheaders.bbm")) {
+                if (entry.getKey().toLowerCase().contains(string.toLowerCase())) {
                     credentials.put(entry.getKey(), entry.getValue().toString());
-                case "www-authenticate":
+                } else if (entry.getKey().toLowerCase().contains("token") || entry.getKey().toLowerCase().contains("auth")) {
                     credentials.put(entry.getKey(), entry.getValue().toString());
-                default:
-                    if (entry.getKey().toLowerCase().contains("token") || entry.getKey().toLowerCase().contains("auth")) {
-                        credentials.put(entry.getKey(), entry.getValue().toString());
-                    }
+                }
+                
             }
         }
         // 保存非标的响应头
         for (Map.Entry<String, String> entry : BurpReqRespTools.getRespHeadersToMap(requestResponse).entrySet()) {
-            if (!CommonStore.rfc_reqheader.contains(entry.getKey().toLowerCase())) {
+            boolean hit = false;
+            for (String rfcheader : CommonStore.rfc_respheader) {
+                // entry有些重复的头，比如set-cookie，key后面会加xxx_index,所以使用startWith
+                if (entry.getKey().equalsIgnoreCase(rfcheader) || entry.getKey().toLowerCase().startsWith(rfcheader.toLowerCase())) {
+                    hit = true;
+                    break;
+                }
+            }
+            // 一个都没匹配到就说明不是标准头
+            if (!hit) {
                 respHeaders_custom.put(entry.getKey(), entry.getValue());
             }
         }

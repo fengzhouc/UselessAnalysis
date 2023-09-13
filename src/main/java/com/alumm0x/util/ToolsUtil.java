@@ -15,11 +15,30 @@ public class ToolsUtil {
             return null;
         }
         for (String s : headers) {
+            // 使用startsWith是因为有重复的头部会在后面添加xxx_index
             if (s.toLowerCase(Locale.ROOT).startsWith(header.toLowerCase(Locale.ROOT))) {
                 return s;
             }
         }
         return null;
+    }
+
+    /**
+     * 检查头部是否包含某信息
+     * @return 返回找到的所有头信息
+     */
+    public static List<String> hasHeaders(List<String> headers, String header) {
+        if (null == headers) {
+            return null;
+        }
+        List<String> hs = new ArrayList<>();
+        for (String s : headers) {
+            // 使用startsWith是因为有重复的头部会在后面添加xxx_index
+            if (s.toLowerCase(Locale.ROOT).startsWith(header.toLowerCase(Locale.ROOT))) {
+                hs.add(s);
+            }
+        }
+        return hs;
     }
 
     /**

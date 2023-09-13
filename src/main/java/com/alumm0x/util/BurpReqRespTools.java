@@ -173,9 +173,15 @@ public class BurpReqRespTools {
             IRequestInfo requestInfo = CommonStore.helpers.analyzeRequest(requestResponse);
             List<String> reqheaders = requestInfo.getHeaders();
             reqheaders.remove(0); // 删除状态行，不然下面splite取值会越界
+            int index = 0; // 用于重复的头部的添加
             for (String header : reqheaders) {
                 String[] kv = header.split(":");
-                headers.put(kv[0].trim(), kv[1].trim());
+                if (headers.keySet().contains(kv[0])) {
+                    // 重复的则key后面追加xx_index
+                    headers.put(kv[0].trim() + "_" + ++index, kv[1].trim());
+                } else {
+                    headers.put(kv[0].trim(), kv[1].trim());
+                } 
             }
         }
         return headers;
@@ -221,9 +227,15 @@ public class BurpReqRespTools {
             IResponseInfo responseInfo = CommonStore.helpers.analyzeResponse(requestResponse.getResponse());
             List<String> reqheaders = responseInfo.getHeaders();
             reqheaders.remove(0); // 删除状态行，不然下面splite取值会越界
+            int index = 0; // 用于重复的头部的添加
             for (String header : reqheaders) {
                 String[] kv = header.split(":");
-                headers.put(kv[0].trim(), kv[1].trim());
+                if (headers.keySet().contains(kv[0])) {
+                    // 重复的则key后面追加xx_index
+                    headers.put(kv[0].trim() + "_" + ++index, kv[1].trim());
+                } else {
+                    headers.put(kv[0].trim(), kv[1].trim());
+                } 
             }
         }
         return headers;

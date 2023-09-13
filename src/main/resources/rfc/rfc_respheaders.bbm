@@ -26,3 +26,13 @@ x-content-type-options
 content-type-options
 alt-svc
 x-download-options
+Connection
+Content-Length
+Server
+Vary
+ETag
+X-Powered-By
+Date
+Content-Type
+set-cookie
+Location

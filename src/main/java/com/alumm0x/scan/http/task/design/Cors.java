@@ -67,7 +67,7 @@ public class Cors extends TaskImpl {
         CommonStore.okHttpRequester.send(BurpReqRespTools.getUrlWithOutQuery(entity.getRequestResponse()),
                 "OPTIONS",
                 header.NEW_HEADER,
-                "",
+                null,
                 new byte[]{},
                 BurpReqRespTools.getContentType(entity.getRequestResponse()),
                 new CorsCallback(this));

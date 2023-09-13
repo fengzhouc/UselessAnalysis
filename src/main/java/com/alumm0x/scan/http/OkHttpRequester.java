@@ -54,7 +54,7 @@ public class OkHttpRequester {
 //        CommonStore.callbacks.printError(new String(bodyParam));
 //        CommonStore.callbacks.printError(contentType);
         // 根据query的情况进行组装url
-        url = !query.equals("") ? url + "?" + query : url;
+        url = query == null || query.equals("") ? url : url + "?" + query;
         switch (method){
             case "GET":
                 get(url, headerList, callback);
